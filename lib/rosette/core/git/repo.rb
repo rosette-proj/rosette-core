@@ -3,13 +3,14 @@
 java_import 'org.eclipse.jgit.internal.storage.file.FileRepository'
 java_import 'org.eclipse.jgit.lib.Constants'
 java_import 'org.eclipse.jgit.lib.ObjectId'
+java_import 'org.eclipse.jgit.revwalk.RevSort'
 java_import 'org.eclipse.jgit.revwalk.RevWalk'
 
 module Rosette
   module Core
     class Repo
 
-      attr_reader :jgit_repo
+      attr_reader :jgit_repo, :path
 
       def self.from_path(path)
         new(FileRepository.new(path))
@@ -23,11 +24,11 @@ module Rosette
         jgit_repo.getRef(ref_str)
       end
 
-      def get_rev_commit(ref_str_or_commit_id_str)
+      def get_rev_commit(ref_str_or_commit_id_str, walker = rev_walker)
         if ref = get_ref(ref_str_or_commit_id_str)
-          rev_walker.parseCommit(ref.getObjectId)
+          walker.parseCommit(ref.getObjectId)
         else
-          rev_walker.parseCommit(
+          walker.parseCommit(
             ObjectId.fromString(ref_str_or_commit_id_str)
           )
         end
@@ -65,6 +66,29 @@ module Rosette
 
       def read_object_bytes(object_id)
         object_reader.open(object_id).getBytes
+      end
+
+      def each_commit(start_ref)
+        if block_given?
+          commit_walker = RevWalk.new(jgit_repo).tap do |walker|
+            walker.markStart(get_rev_commit(start_ref, walker))
+            walker.sort(RevSort::REVERSE)
+          end
+
+          commit_walker.each { |cur_rev| yield cur_rev }
+          commit_walker.dispose
+        else
+          to_enum(__method__, start_ref)
+        end
+      end
+
+      def commit_count(start_ref)
+        commit_walker = RevWalk.new(jgit_repo).tap do |walker|
+          walker.markStart(get_rev_commit(start_ref, walker))
+        end
+        count = commit_walker.count
+        commit_walker.dispose
+        count
       end
 
       private

@@ -3,3 +3,4 @@ Gemfile.lock
 .jbundler/
 tester.rb
 .DS_Store
+spec/fixtures/repos/bin/*

@@ -4,6 +4,9 @@ module Rosette
   module Core
 
     class Phrase
+      include PhraseIndexPolicy
+      include PhraseToHash
+
       attr_reader :key, :meta_key
       attr_accessor :file, :commit_id
 
@@ -12,10 +15,6 @@ module Rosette
         @meta_key = meta_key
         @file = file
         @commit_id = commit_id
-      end
-
-      def to_h
-        { key: key, meta_key: meta_key, file: file, commit_id: commit_id }
       end
     end
 

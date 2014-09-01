@@ -7,6 +7,7 @@ ruby '1.9.3', engine: 'jruby', engine_version: '1.7.12'
 group :development, :test do
   gem 'pry-nav'
   gem 'rake'
+  gem 'repo-fixture'
 end
 
 group :test do

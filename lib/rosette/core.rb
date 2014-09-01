@@ -1,27 +1,41 @@
 # encoding: UTF-8
 
-require 'java'
+require 'rosette/core/errors'
 
 module Rosette
   module Core
-    autoload :StringUtils,               'rosette/core/string_utils'
+    DEFAULT_ENCODING = Encoding::UTF_8
 
-    autoload :Repo,                      'rosette/core/git/repo'
-    autoload :DiffFinder,                'rosette/core/git/diff_finder'
+    autoload :Configurator,          'rosette/core/configurator'
 
-    autoload :Snapshot,                  'rosette/core/snapshots/snapshot'
-    autoload :SnapshotFactory,           'rosette/core/snapshots/snapshot_factory'
-    autoload :FileTypeFilter,            'rosette/core/snapshots/file_type_filter'
+    autoload :StringUtils,           'rosette/core/string_utils'
+ 
+    autoload :Repo,                  'rosette/core/git/repo'
+    autoload :DiffFinder,            'rosette/core/git/diff_finder'
+ 
+    autoload :Snapshot,              'rosette/core/snapshots/snapshot'
+    autoload :SnapshotFactory,       'rosette/core/snapshots/snapshot_factory'
+    autoload :FileTypeFilter,        'rosette/core/snapshots/file_type_filter'
 
-    autoload :ProgressReporter,          'rosette/core/progress_reporters/progress_reporter'
-    autoload :NilProgressReporter,       'rosette/core/progress_reporters/nil_progress_reporter'
-    autoload :StagedProgressReporter,    'rosette/core/progress_reporters/staged_progress_reporter'
-    autoload :NilStagedProgressReporter, 'rosette/core/progress_reporters/nil_staged_progress_reporter'
+    autoload :Extractor,             'rosette/core/extractor/extractor'
+    autoload :Phrase,                'rosette/core/extractor/phrase'
+    autoload :ExtractorConfig,       'rosette/core/extractor/extractor_config'
+    autoload :RepoConfig,            'rosette/core/extractor/repo_config'
+    autoload :SerializerConfig,      'rosette/core/extractor/serializer_config'
+    autoload :ExtractorId,           'rosette/core/extractor/extractor_id'
+    autoload :SerializerId,          'rosette/core/extractor/serializer_id'
+    autoload :CommitProcessor,       'rosette/core/extractor/commit_processor'
+    autoload :Locale,                'rosette/core/extractor/locale'
 
-    autoload :Extractor,                  'rosette/core/extractor/extractor'
-    autoload :Phrase,                     'rosette/core/extractor/phrase'
-    autoload :ExtractorConfig,            'rosette/core/extractor/extractor_config'
-    autoload :RepoConfig,                 'rosette/core/extractor/repo_config'
-    autoload :ExtractorId,                'rosette/core/extractor/extractor_id'
+    autoload :PhraseIndexPolicy,     'rosette/core/extractor/phrase/phrase_index_policy'
+    autoload :PhraseToHash,          'rosette/core/extractor/phrase/phrase_to_hash'
+
+    autoload :TranslationToHash,     'rosette/core/extractor/translation/translation_to_hash'
+
+    autoload :NilErrorReporter,      'rosette/core/error_reporters/nil_error_reporter'
+    autoload :PrintingErrorReporter, 'rosette/core/error_reporters/printing_error_reporter'
+    autoload :BufferedErrorReporter, 'rosette/core/error_reporters/buffered_error_reporter'
+
+    autoload :Validators,            'rosette/core/validators'
   end
 end

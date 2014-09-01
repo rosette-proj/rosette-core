@@ -3,19 +3,19 @@
 module Rosette
   module Core
 
-    class ExtractorId
+    class SerializerId
       class << self
 
-        def resolve(extractor_id)
-          klass = case extractor_id
+        def resolve(serializer_id)
+          klass = case serializer_id
             when Class
-              extractor_id
+              serializer_id
             when String
-              parse_id(extractor_id)
+              parse_id(serializer_id)
           end
 
           unless klass
-            raise ArgumentError, "#{extractor_id} could not be found - have you required it?"
+            raise ArgumentError, "#{serializer_id} could not be found - have you required it?"
           end
 
           klass
@@ -33,18 +33,21 @@ module Rosette
           )
         end
 
+        # Searches for segment[0]/segment[1], etc, then
+        # segment[0]/segment[1]Serializer, then
+        # segment[0]Serializer/segment[1]Serializer
         def const_candidates(segments)
           [segments] + segments.map.with_index do |segment, idx|
             candidate = segments[0...(segments.size - (idx + 1))]
             candidate + segments[(segments.size - (idx + 1))..-1].map do |sub_seg|
-              "#{sub_seg}Extractor"
+              "#{sub_seg}Serializer"
             end
           end
         end
 
         def find_const(candidates)
           candidates.each do |segments|
-            found_const = segments.inject(Rosette::Extractors) do |const, segment|
+            found_const = segments.inject(Rosette::Serializers) do |const, segment|
               if const && const.const_defined?(segment)
                 const.const_get(segment)
               end

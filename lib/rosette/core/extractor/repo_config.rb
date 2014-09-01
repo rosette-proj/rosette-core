@@ -4,11 +4,13 @@ module Rosette
   module Core
 
     class RepoConfig
-      attr_reader :name, :path, :repo, :extractor_configs
+      attr_reader :name, :path, :repo, :extractor_configs, :serializer_configs, :locales
 
       def initialize(name)
         @name = name
         @extractor_configs = []
+        @serializer_configs = []
+        @locales = []
       end
 
       def set_path(path)
@@ -23,10 +25,36 @@ module Rosette
         )
       end
 
+      def add_serializer(serializer_id)
+        klass = SerializerId.resolve(serializer_id)
+        serializer_configs << SerializerConfig.new(klass, serializer_id)
+      end
+
+      def add_locale(locale_code, format = Locale::DEFAULT_FORMAT)
+        add_locales(locale_code)
+      end
+
+      def add_locales(locale_codes, format = Locale::DEFAULT_FORMAT)
+        @locales += Array(locale_codes).map do |locale_code|
+          Locale.parse(locale_code, format)
+        end
+      end
+
       def get_extractor_configs(path)
         extractor_configs.select do |config|
           config.matches?(path)
         end
+      end
+
+      def get_serializer_config(serializer_id)
+        serializer_configs.find do |config|
+          config.serializer_id == serializer_id
+        end
+      end
+
+      def get_locale(code, format = Locale::DEFAULT_FORMAT)
+        locale_to_find = Locale.parse(code, format)
+        locales.find { |locale| locale == locale_to_find }
       end
     end
 

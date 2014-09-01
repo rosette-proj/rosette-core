@@ -9,7 +9,7 @@ module Rosette
       def initialize(extractor_class, root)
         @extractor = extractor_class.new(self)
         @root = root
-        @encoding = Encoding::UTF_8
+        @encoding = Rosette::Core::DEFAULT_ENCODING
       end
 
       def set_encoding(new_encoding)
