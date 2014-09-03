@@ -29,14 +29,6 @@ module Rosette
           errors.each
         end
       end
-
-      # def each_error
-      #   if block_given?
-      #     errors.each { |err| yield err }
-      #   else
-      #     to_enum(__method__)
-      #   end
-      # end
     end
 
   end

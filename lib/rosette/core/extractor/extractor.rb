@@ -39,6 +39,10 @@ module Rosette
         raise NotImplementedError, "#{__method__} must be implemented by derived classes."
       end
 
+      def get_key(node)
+        raise NotImplementedError, "#{__method__} must be implemented by derived classes."
+      end
+
       def make_phrase(key, meta_key = nil, file = nil)
         Phrase.new(key, meta_key, file)
       end

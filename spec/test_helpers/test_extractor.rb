@@ -1,0 +1,30 @@
+# encoding: UTF-8
+
+module Rosette
+  module Extractors
+
+    # parses "test" code by splitting the file into lines
+    module Test
+      class TestExtractor < Rosette::Core::Extractor
+        protected
+
+        def each_function_call(source_code, &block)
+          source_code.split("\n").each(&block)
+        end
+
+        def valid_name?(node)
+          true
+        end
+
+        def valid_args?(node)
+          true
+        end
+
+        def get_key(node)
+          node
+        end
+      end
+    end
+
+  end
+end

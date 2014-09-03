@@ -1,27 +1,32 @@
 # encoding: UTF-8
 
+require 'jbundler'
 require 'rspec'
 require 'rosette/core'
 require 'repo-fixture'
 require 'fileutils'
 require 'pry-nav'
 
-require 'spec/helpers/test_extractor'
+require 'spec/test_helpers'
 
 RSpec.configure do |config|
   config.mock_with :rr
 
-  # build all repo fixtures
-  fixture_path = File.join(File.expand_path('./', File.dirname(__FILE__)), 'fixtures/repos')
-  bin_dir = File.join(fixture_path, 'bin')
-  puts "Removing old fixtures at #{fixture_path}"
-  FileUtils.rm_rf(bin_dir)
-  FileUtils.mkdir_p(bin_dir)
+  # build all fixtures before tests run
+  TestHelpers::Fixtures.build_all
 
-  Dir.glob(File.join(fixture_path, 'lib/*.rb')).each do |fixture_script|
-    STDOUT.write("Building repo fixture in #{fixture_script} ... ")
-    load fixture_script
-    puts 'done.'
+  def load_repo_fixture(*args)
+    TestHelpers::Fixtures.load_repo_fixture(*args) do |config, repo_config|
+      repo_config.add_extractor('test/test') do |ext|
+        ext.match_file_extension('.txt')
+      end
+
+      yield config, repo_config if block_given?
+    end
+  end
+
+  config.after(:each) do
+    TestHelpers::Fixtures.cleanup
   end
 end
 

@@ -14,6 +14,7 @@ module Rosette
 
       def set_encoding(new_encoding)
         @encoding = new_encoding
+        self
       end
 
       def matches?(path)
