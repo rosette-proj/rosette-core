@@ -144,7 +144,7 @@ module Rosette
         end
 
         def matches?(match_path)
-          match_path[0..path.size] == path
+          match_path[0...path.size] == path
         end
       end
 
