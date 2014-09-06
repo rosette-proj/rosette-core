@@ -19,9 +19,21 @@ module Rosette
           end
         end
       end
+
+      attr_reader :language, :territory
+
+      def initialize(language, territory = nil)
+        @language = language
+        @territory = territory
+        after_initialize
+      end
+
+      private
+
+      def after_initialize; end
     end
 
-    class Bcp47Locale
+    class Bcp47Locale < Locale
       class << self
         def parse(locale_code)
           if valid?(locale_code)
@@ -33,25 +45,18 @@ module Rosette
 
         # @TODO this probably isn't very correct
         def valid?(locale_code)
-          !!(locale_code =~ /\A[a-z]{2,4}(?:[-_][a-z0-9]{2,5})?\z/)
+          !!(locale_code =~ /\A[a-zA-Z]{2,4}(?:[-_][a-zA-Z0-9]{2,5})?\z/)
         end
       end
 
-      attr_reader :language, :territory
-
-      def initialize(language, territory = nil)
-        @language = language
-        @territory = territory
-      end
-
       def code
-        "#{language}-#{territory}"
+        territory ? language + "-#{territory}" : language
       end
 
       def eql?(other)
         other.is_a?(self.class) &&
-          other.language == language &&
-          other.territory == territory
+          other.language.downcase == language.downcase &&
+          other.territory.downcase == territory.downcase
       end
 
       def ==(other)

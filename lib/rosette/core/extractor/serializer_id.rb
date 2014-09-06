@@ -6,12 +6,12 @@ module Rosette
     class SerializerId
       class << self
 
-        def resolve(serializer_id)
+        def resolve(serializer_id, namespace = Rosette::Serializers)
           klass = case serializer_id
             when Class
               serializer_id
             when String
-              parse_id(serializer_id)
+              parse_id(serializer_id, namespace)
           end
 
           unless klass
@@ -23,19 +23,20 @@ module Rosette
 
         private
 
-        def parse_id(extractor_id)
+        def parse_id(extractor_id, namespace)
           find_const(
             const_candidates(
               extractor_id.split('/').map do |segment|
                 StringUtils.camelize(segment)
               end
-            )
+            ), namespace
           )
         end
 
-        # Searches for segment[0]/segment[1], etc, then
-        # segment[0]/segment[1]Serializer, then
-        # segment[0]Serializer/segment[1]Serializer
+        # Appends 'Serializer' to each segment one at a time and returns intermediate
+        # arrays of segments. For example, if given ['Json', 'KeyValue'],
+        # this method would return:
+        # [['Json', 'KeyValue'], ['Json', 'KeyValueSerializer'], ['JsonSerializer', 'KeyValueSerializer']]
         def const_candidates(segments)
           [segments] + segments.map.with_index do |segment, idx|
             candidate = segments[0...(segments.size - (idx + 1))]
@@ -45,9 +46,9 @@ module Rosette
           end
         end
 
-        def find_const(candidates)
+        def find_const(candidates, namespace)
           candidates.each do |segments|
-            found_const = segments.inject(Rosette::Serializers) do |const, segment|
+            found_const = segments.inject(namespace) do |const, segment|
               if const && const.const_defined?(segment)
                 const.const_get(segment)
               end

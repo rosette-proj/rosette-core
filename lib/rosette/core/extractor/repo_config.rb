@@ -4,7 +4,8 @@ module Rosette
   module Core
 
     class RepoConfig
-      attr_reader :name, :path, :repo, :extractor_configs, :serializer_configs, :locales
+      attr_reader :name, :repo, :locales
+      attr_reader :extractor_configs, :serializer_configs
 
       def initialize(name)
         @name = name
@@ -14,8 +15,11 @@ module Rosette
       end
 
       def set_path(path)
-        @path = path
         @repo = Repo.from_path(path)
+      end
+
+      def path
+        repo.path if repo
       end
 
       def add_extractor(extractor_id)

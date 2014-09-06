@@ -3,6 +3,7 @@
 require 'jbundler'
 require 'rspec'
 require 'rosette/core'
+require 'rosette/serializers'
 require 'repo-fixture'
 require 'fileutils'
 require 'pry-nav'

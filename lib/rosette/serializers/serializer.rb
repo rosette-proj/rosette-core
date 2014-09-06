@@ -16,12 +16,16 @@ module Rosette
         end
       end
 
+      def initialize(stream)
+        @stream = stream
+      end
+
       def write_translation(trans)
         raise NotImplementedError, 'expected to be implemented in child classes'
       end
 
       def close
-        raise NotImplementedError, 'expected to be implemented in child classes'
+        stream.close
       end
     end
 

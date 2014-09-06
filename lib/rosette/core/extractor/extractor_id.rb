@@ -6,12 +6,12 @@ module Rosette
     class ExtractorId
       class << self
 
-        def resolve(extractor_id)
+        def resolve(extractor_id, namespace = Rosette::Extractors)
           klass = case extractor_id
             when Class
               extractor_id
             when String
-              parse_id(extractor_id)
+              parse_id(extractor_id, namespace)
           end
 
           unless klass
@@ -23,16 +23,20 @@ module Rosette
 
         private
 
-        def parse_id(extractor_id)
+        def parse_id(extractor_id, namespace)
           find_const(
             const_candidates(
               extractor_id.split('/').map do |segment|
                 StringUtils.camelize(segment)
               end
-            )
+            ), namespace
           )
         end
 
+        # Appends 'Extractor' to each segment one at a time and returns intermediate
+        # arrays of segments. For example, if given ['Ruby', 'FastGettext'],
+        # this method would return:
+        # [['Ruby', 'FastGettext'], ['Ruby', 'FastGettextExtractor'], ['RubyExtractor', 'FastGettextExtractor']]
         def const_candidates(segments)
           [segments] + segments.map.with_index do |segment, idx|
             candidate = segments[0...(segments.size - (idx + 1))]
@@ -42,9 +46,9 @@ module Rosette
           end
         end
 
-        def find_const(candidates)
+        def find_const(candidates, namespace)
           candidates.each do |segments|
-            found_const = segments.inject(Rosette::Extractors) do |const, segment|
+            found_const = segments.inject(namespace) do |const, segment|
               if const && const.const_defined?(segment)
                 const.const_get(segment)
               end

@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
 require 'spec/test_helpers/test_extractor'
+require 'spec/test_helpers/test_serializer'
 
 module TestHelpers
   autoload :Fixtures, 'spec/test_helpers/fixtures'
