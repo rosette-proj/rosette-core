@@ -14,6 +14,7 @@ describe RepoConfig do
       expect(config.repo).to be_a(Repo)
       expect(config.repo.path).to eq(repo.working_dir.to_s)
       expect(config.path).to eq(repo.working_dir.to_s)
+      repo.unlink
     end
   end
 

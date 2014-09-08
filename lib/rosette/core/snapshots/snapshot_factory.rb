@@ -1,5 +1,7 @@
 # encoding: UTF-8
 
+require 'progress-reporters'
+
 java_import 'org.eclipse.jgit.lib.Constants'
 java_import 'org.eclipse.jgit.diff.DiffEntry'
 java_import 'org.eclipse.jgit.lib.ObjectInserter'
@@ -9,6 +11,7 @@ java_import 'org.eclipse.jgit.revwalk.RevCommit'
 java_import 'org.eclipse.jgit.revwalk.RevSort'
 java_import 'org.eclipse.jgit.revwalk.RevWalk'
 java_import 'org.eclipse.jgit.treewalk.filter.OrTreeFilter'
+java_import 'org.eclipse.jgit.treewalk.filter.AndTreeFilter'
 java_import 'org.eclipse.jgit.treewalk.filter.PathFilterGroup'
 java_import 'org.eclipse.jgit.treewalk.TreeWalk'
 
@@ -16,7 +19,10 @@ module Rosette
   module Core
     class SnapshotFactory
 
-      attr_reader :repo, :start_commit, :filters
+      DEFAULT_FILTER_STRATEGY = :or
+      AVAILABLE_FILTER_STRATEGIES = [:and, :or]
+
+      attr_reader :repo, :start_commit, :filters, :filter_strategy
 
       attr_reader :file_walker
       private :file_walker
@@ -25,8 +31,18 @@ module Rosette
         @repo = repo
         @start_commit = start_commit
         @file_walker = TreeWalk.new(repo.jgit_repo)
+        @filter_strategy = :or
         @filters ||= []
         reset
+      end
+
+      def set_filter_strategy(strategy)
+        if AVAILABLE_FILTER_STRATEGIES.include?(strategy)
+          @filter_strategy = strategy
+          self
+        else
+          raise ArgumentError, "'#{strategy}' is not a valid filter strategy."
+        end
       end
 
       def add_filter(filter)
@@ -44,9 +60,10 @@ module Rosette
         self
       end
 
-      def take_snapshot(progress_reporter = NilStagedProgressReporter.instance)
+      def take_snapshot(progress_reporter = nil_progress_reporter)
         unless progress_reporter.respond_to?(:change_stage)
-          raise "Progress reporter must be able to change stage. Consider using a #{StagedProgressReporter.name}."
+          raise ArgumentError, "Progress reporter must be able to change stage."\
+            "Consider using a #{staged_progress_reporter_class.name}."
         end
 
         file_walker.setFilter(compile_filter)
@@ -106,8 +123,12 @@ module Rosette
         if filters.size == 1
           filters.first
         elsif filters.size >= 2
-          # logical or all the filters together
-          OrTreeFilter.create(filters)
+          case filter_strategy
+            when :or
+              OrTreeFilter.create(filters)
+            when :and
+              AndTreeFilter.create(filters)
+          end
         end
       end
 
@@ -142,6 +163,14 @@ module Rosette
         else
           to_enum(__method__, tree_walk)
         end
+      end
+
+      def staged_progress_reporter_class
+        ::ProgressReporters::StagedProgressReporter
+      end
+
+      def nil_progress_reporter
+        ::ProgressReporters::NilStagedProgressReporter.instance
       end
 
     end

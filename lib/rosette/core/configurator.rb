@@ -21,12 +21,21 @@ module Rosette
       end
 
       def use_datastore(datastore, options = {})
-        @datastore = case datastore
+        const = case datastore
           when String
-            find_datastore_const(datastore).new(options)
-          else
+            if const = find_datastore_const(datastore)
+              const
+            else
+              raise ArgumentError, "'#{datastore}' couldn't be found."
+            end
+          when Class
             datastore
+          else
+            raise ArgumentError, "'#{datastore}' must be a String or Class."
         end
+
+        @datastore = const.new(options)
+        nil
       end
 
       private

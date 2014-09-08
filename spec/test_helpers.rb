@@ -2,6 +2,7 @@
 
 require 'spec/test_helpers/test_extractor'
 require 'spec/test_helpers/test_serializer'
+require 'spec/test_helpers/test_data_store'
 
 module TestHelpers
   autoload :Fixtures, 'spec/test_helpers/fixtures'

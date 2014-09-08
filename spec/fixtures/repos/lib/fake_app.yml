@@ -1,0 +1,28 @@
+:phrases:
+  HEAD~1: &first_commit
+    app/controllers/product_controller.txt:
+      - Edit product
+      - Save product
+      - Add product
+    app/models/product.txt:
+      - Invalid price.
+      - A product must be associated with a user.
+  HEAD:
+    <<: *first_commit
+    app/controllers/order_controller.txt:
+      - There was an error submitting your order.
+      - Your order has been successfully submitted!
+    app/models/order.txt:
+      - Invalid credit card number
+      - Invalid shipping address
+    app/models/line_item.txt:
+      - Item no longer available
+      - Invalid quantity
+    app/views/order/index.txt:
+      - Total
+      - Grand total
+      - Total units
+      - Unit price
+      - Shipping address
+      - Sales tax
+      - Shipping fee

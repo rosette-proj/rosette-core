@@ -40,7 +40,17 @@ module Rosette
         end
       end
 
+      def read_new_entry(entry, encoding = Encoding::UTF_8)
+        Java::JavaLang::String.new(
+          object_reader.open(entry.newId.toObjectId).getBytes, encoding.to_s
+        )
+      end
+
       private
+
+      def object_reader
+        @object_reader ||= jgit_repo.newObjectReader
+      end
 
       def construct_filter(paths)
         paths = fix_paths(paths)

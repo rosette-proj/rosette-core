@@ -1,0 +1,2 @@
+Invalid credit card number
+Invalid shipping address

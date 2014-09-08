@@ -20,10 +20,6 @@ module Rosette
         @jgit_repo = jgit_repo
       end
 
-      def get_ref(ref_str)
-        jgit_repo.getRef(ref_str)
-      end
-
       def get_rev_commit(ref_str_or_commit_id_str, walker = rev_walker)
         if ref = get_ref(ref_str_or_commit_id_str)
           walker.parseCommit(ref.getObjectId)
@@ -57,7 +53,7 @@ module Rosette
       end
 
       def parent_ids_of(rev)
-        parents_of(rev).map { |parent| parent.getId.name }
+        parents_of(rev).map { |parent| parent.getName }
       end
 
       def path
@@ -92,6 +88,10 @@ module Rosette
       end
 
       private
+
+      def get_ref(ref_str)
+        jgit_repo.getRef(ref_str)
+      end
 
       def diff_finder
         @diff_finder ||= DiffFinder.new(jgit_repo, rev_walker)

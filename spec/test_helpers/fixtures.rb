@@ -5,13 +5,54 @@ require 'yaml'
 
 module TestHelpers
 
+  class FixturePhraseCommit
+    attr_reader :phrase_map, :phrase_map_copy
+    attr_reader :ref, :sha
+
+    def initialize(ref, sha, phrase_map)
+      @rev = ref
+      @sha = sha
+      @phrase_map = phrase_map
+      reset
+    end
+
+    def reset
+      @phrase_map_copy = phrase_map.each_with_object({}) do |(file, phrases), ret|
+        ret[file] = phrases.dup
+      end
+    end
+
+    def remove(phrase)
+      phrase_map_copy[phrase.file].tap do |expected_phrases|
+        expected_phrases.delete_if do |expected_phrase|
+          expected_phrase == phrase.key
+        end
+      end
+    end
+
+    def has_more_phrases?
+      phrase_map_copy.any? { |key, val| !val.empty? }
+    end
+  end
+
   Fixture = Struct.new(:config, :properties, :repo_fixture) do
     def respond_to?(method)
-      repo_fixture.respond_to?(method)
+      super || repo_fixture.respond_to?(method)
     end
 
     def method_missing(method, *args, &block)
       repo_fixture.send(method, *args, &block)
+    end
+
+    def each_commit
+      if block_given?
+        properties[:phrases].each_pair do |ref, phrase_hash|
+          sha = repo_fixture.git("rev-parse #{ref}").strip
+          yield FixturePhraseCommit.new(ref, sha, phrase_hash)
+        end
+      else
+        to_enum(__method__)
+      end
     end
   end
 
