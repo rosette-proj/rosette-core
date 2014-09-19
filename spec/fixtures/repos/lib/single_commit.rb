@@ -8,7 +8,11 @@ dir = File.expand_path("./#{name}", wd)
 zipfile = File.expand_path("../bin/#{name}.zip", wd)
 
 fixture = RepoFixture.create do |fixture|
-  fixture.copy_files(Dir.glob(File.join(dir, '**/**'))) do |file|
+  files = Dir.glob(File.join(dir, '**/**')).select do |file|
+    File.file?(file)
+  end
+
+  fixture.copy_files(files) do |file|
     file.gsub(/\A#{Regexp.escape(dir)}/, '')
   end
 

@@ -3,7 +3,8 @@
 module Rosette
   module Core
 
-    # Extractor base class
+    # Base class for extractors that extract phrases from source code,
+    # eg. Ruby, JavaScript, HAML, etc.
     class Extractor
       attr_reader :config
 

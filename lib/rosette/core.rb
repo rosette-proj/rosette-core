@@ -18,6 +18,7 @@ module Rosette
     autoload :FileTypeFilter,        'rosette/core/snapshots/file_type_filter'
 
     autoload :Extractor,             'rosette/core/extractor/extractor'
+    autoload :StaticExtractor,       'rosette/core/extractor/static_extractor'
     autoload :Phrase,                'rosette/core/extractor/phrase'
     autoload :ExtractorConfig,       'rosette/core/extractor/extractor_config'
     autoload :RepoConfig,            'rosette/core/extractor/repo_config'
