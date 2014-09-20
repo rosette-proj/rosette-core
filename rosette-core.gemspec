@@ -14,7 +14,6 @@ Gem::Specification.new do |s|
   s.has_rdoc = true
 
   s.add_dependency 'progress-reporters', '~> 1.0.0'
-  s.add_dependency 'jbundler'
   s.requirements << "jar 'org.eclipse.jgit:org.eclipse.jgit', '3.4.1.201406201815-r'"
 
   s.require_path = 'lib'
