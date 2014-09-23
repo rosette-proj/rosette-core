@@ -2,6 +2,6 @@
 
 module Rosette
   module Serializers
-    autoload :Serializer, 'lib/rosette/serializers/serializer'
+    autoload :Serializer, 'rosette/serializers/serializer'
   end
 end

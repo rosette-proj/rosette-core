@@ -55,12 +55,16 @@ module Rosette
 
       def eql?(other)
         other.is_a?(self.class) &&
-          other.language.downcase == language.downcase &&
-          other.territory.downcase == territory.downcase
+          downcase(other.language) == downcase(language) &&
+          downcase(other.territory) == downcase(territory)
       end
 
       def ==(other)
         eql?(other)
+      end
+
+      def downcase(str)
+        (str || '').downcase
       end
     end
 

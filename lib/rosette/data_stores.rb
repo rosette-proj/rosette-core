@@ -2,6 +2,6 @@
 
 module Rosette
   module DataStores
-    autoload :Errors, 'lib/rosette/data_stores/errors'
+    autoload :Errors, 'rosette/data_stores/errors'
   end
 end
