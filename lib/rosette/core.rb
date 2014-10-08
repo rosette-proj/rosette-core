@@ -20,6 +20,7 @@ module Rosette
     autoload :Extractor,             'rosette/core/extractor/extractor'
     autoload :StaticExtractor,       'rosette/core/extractor/static_extractor'
     autoload :Phrase,                'rosette/core/extractor/phrase'
+    autoload :Translation,           'rosette/core/extractor/translation'
     autoload :ExtractorConfig,       'rosette/core/extractor/extractor_config'
     autoload :RepoConfig,            'rosette/core/extractor/repo_config'
     autoload :SerializerConfig,      'rosette/core/extractor/serializer_config'

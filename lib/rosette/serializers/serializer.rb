@@ -18,6 +18,7 @@ module Rosette
 
       def initialize(stream)
         @stream = stream
+        after_initialize
       end
 
       def write_translation(trans)
