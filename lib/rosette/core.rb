@@ -1,18 +1,27 @@
 # encoding: UTF-8
 
+require 'logger'
 require 'rosette/core/errors'
 
 module Rosette
+  def self.logger
+    @logger ||= Logger.new(STDOUT)
+  end
+
+  def self.logger=(new_logger)
+    @logger = new_logger
+  end
+
   module Core
     DEFAULT_ENCODING = Encoding::UTF_8
 
     autoload :Configurator,          'rosette/core/configurator'
 
     autoload :StringUtils,           'rosette/core/string_utils'
- 
+
     autoload :Repo,                  'rosette/core/git/repo'
     autoload :DiffFinder,            'rosette/core/git/diff_finder'
- 
+
     autoload :Snapshot,              'rosette/core/snapshots/snapshot'
     autoload :SnapshotFactory,       'rosette/core/snapshots/snapshot_factory'
     autoload :FileTypeFilter,        'rosette/core/snapshots/file_type_filter'
