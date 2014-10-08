@@ -12,6 +12,14 @@ module Rosette
     @logger = new_logger
   end
 
+  def self.env
+    @env || 'development'
+  end
+
+  def self.env=(new_env)
+    @env = new_env
+  end
+
   module Core
     DEFAULT_ENCODING = Encoding::UTF_8
 
