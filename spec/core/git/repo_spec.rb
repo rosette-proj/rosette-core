@@ -114,6 +114,31 @@ describe Repo do
     end
   end
 
+  context 'with the four commits fixture' do
+    let(:repo_name) { 'four_commits' }
+    let(:fixture) { load_repo_fixture(repo_name) }
+    let(:repo) { repo_class.from_path(fixture.working_dir.join('.git').to_s) }
+    let(:commits) do
+      fixture.git('rev-list --all').split("\n").map do |sha|
+        repo.get_rev_commit(sha)
+      end.reverse
+    end
+
+    describe '#each_commit_in_range' do
+      it 'yields only the commits in the given range' do
+        commit_args = [commits[2].getId.name, commits[0].getId.name]
+
+        found_commits = repo.each_commit_in_range(*commit_args).map do |c|
+          c.getId.name
+        end
+
+        expect(found_commits).to(
+          eq(commits[0..2].map { |c| c.getId.name }.reverse)
+        )
+      end
+    end
+  end
+
   context 'with a merge commit fixture' do
     let(:repo_name) { 'merge_commit' }
     let(:fixture) { load_repo_fixture(repo_name) }

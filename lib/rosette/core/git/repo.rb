@@ -78,6 +78,25 @@ module Rosette
         end
       end
 
+      def each_commit_in_range(start_ref, end_ref)
+        if block_given?
+          commit_walker = RevWalk.new(jgit_repo).tap do |walker|
+            walker.markStart(get_rev_commit(start_ref, walker))
+          end
+
+          end_rev = get_rev_commit(end_ref, commit_walker)
+
+          commit_walker.each do |cur_rev|
+            yield cur_rev
+            break if cur_rev.getId.name == end_rev.getId.name
+          end
+
+          commit_walker.dispose
+        else
+          to_enum(__method__, start_ref, end_ref)
+        end
+      end
+
       def commit_count(start_ref)
         commit_walker = RevWalk.new(jgit_repo).tap do |walker|
           walker.markStart(get_rev_commit(start_ref, walker))
