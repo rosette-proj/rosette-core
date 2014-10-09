@@ -1,4 +1,5 @@
 # encoding: UTF-8
+require 'pry'
 
 java_import 'org.eclipse.jgit.internal.storage.file.FileRepository'
 java_import 'org.eclipse.jgit.lib.Constants'
@@ -106,8 +107,19 @@ module Rosette
         count
       end
 
-      def most_recent_commit
+      def newest_commit
         get_rev_commit('HEAD')
+      end
+
+      def oldest_commit
+        commit_walker = RevWalk.new(jgit_repo).tap do |walker|
+          walker.markStart(get_rev_commit('HEAD', walker))
+          walker.sort(RevSort::REVERSE)
+        end
+
+        commit = commit_walker.next
+        commit_walker.dispose
+        commit
       end
 
       private

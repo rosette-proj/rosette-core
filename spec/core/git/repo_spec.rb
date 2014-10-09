@@ -113,9 +113,15 @@ describe Repo do
       end
     end
 
-    describe '#most_recent_commit' do
-      it 'returns the most recent commit for the repo' do
-        expect(repo.most_recent_commit.getId.name).to eq(commits.last.getName)
+    describe '#newest_commit' do
+      it 'returns the newest commit for the repo' do
+        expect(repo.newest_commit.getId.name).to eq(commits.last.getName)
+      end
+    end
+
+    describe '#oldest_commit' do
+      it 'return the oldest commit for the repo' do
+        expect(repo.oldest_commit.getId.name).to eq(commits.first.getName)
       end
     end
   end
