@@ -106,6 +106,10 @@ module Rosette
         count
       end
 
+      def most_recent_commit
+        get_rev_commit('HEAD')
+      end
+
       private
 
       def get_ref(ref_str)

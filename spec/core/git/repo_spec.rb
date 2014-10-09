@@ -112,6 +112,12 @@ describe Repo do
         expect(repo.commit_count('HEAD')).to eq(2)
       end
     end
+
+    describe '#most_recent_commit' do
+      it 'returns the most recent commit for the repo' do
+        expect(repo.most_recent_commit.getId.name).to eq(commits.last.getName)
+      end
+    end
   end
 
   context 'with the four commits fixture' do
