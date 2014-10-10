@@ -4,7 +4,7 @@ module Rosette
   module Core
 
     class RepoConfig
-      attr_reader :name, :repo, :locales
+      attr_reader :name, :repo, :locales, :hooks
       attr_reader :extractor_configs, :serializer_configs
 
       def initialize(name)
@@ -12,6 +12,7 @@ module Rosette
         @extractor_configs = []
         @serializer_configs = []
         @locales = []
+        @hooks = Hash.new { |h, key| h[key] = [] }
       end
 
       def set_path(path)
@@ -42,6 +43,10 @@ module Rosette
         @locales += Array(locale_codes).map do |locale_code|
           Locale.parse(locale_code, format)
         end
+      end
+
+      def after(action, &block)
+        hooks[action] << block
       end
 
       def get_extractor_configs(path)
