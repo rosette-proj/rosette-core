@@ -1,5 +1,4 @@
 # encoding: UTF-8
-require 'pry'
 
 java_import 'org.eclipse.jgit.internal.storage.file.FileRepository'
 java_import 'org.eclipse.jgit.lib.Constants'
