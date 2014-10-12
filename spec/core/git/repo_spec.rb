@@ -94,34 +94,16 @@ describe Repo do
 
     describe '#each_commit' do
       it 'yields each commit or returns an enumerator' do
-        repo.each_commit('HEAD').tap do |commit_enum|
+        repo.each_commit.tap do |commit_enum|
           expect(commit_enum).to be_a(Enumerator)
           expect(commit_enum.map(&:getName)).to eq(commits.map(&:getName))
         end
-      end
-
-      it 'starts the enumerator at the commit given' do
-        expect(repo.each_commit(commits.first.getName).map(&:getName)).to(
-          eq([commits.first.getName])
-        )
       end
     end
 
     describe '#commit_count' do
       it 'returns the total number of commits in the repo' do
-        expect(repo.commit_count('HEAD')).to eq(2)
-      end
-    end
-
-    describe '#newest_commit' do
-      it 'returns the newest commit for the repo' do
-        expect(repo.newest_commit.getId.name).to eq(commits.last.getName)
-      end
-    end
-
-    describe '#oldest_commit' do
-      it 'return the oldest commit for the repo' do
-        expect(repo.oldest_commit.getId.name).to eq(commits.first.getName)
+        expect(repo.commit_count).to eq(2)
       end
     end
   end
@@ -195,7 +177,7 @@ describe Repo do
 
     describe '#commit_count' do
       it 'returns the total number of commits in the repo' do
-        expect(repo.commit_count('HEAD')).to eq(3)
+        expect(repo.commit_count).to eq(3)
       end
     end
   end

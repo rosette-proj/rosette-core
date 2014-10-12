@@ -5,6 +5,7 @@ java_import 'org.eclipse.jgit.lib.Constants'
 java_import 'org.eclipse.jgit.lib.ObjectId'
 java_import 'org.eclipse.jgit.revwalk.RevSort'
 java_import 'org.eclipse.jgit.revwalk.RevWalk'
+java_import 'org.eclipse.jgit.lib.RefDatabase'
 
 module Rosette
   module Core
@@ -64,17 +65,17 @@ module Rosette
         object_reader.open(object_id).getBytes
       end
 
-      def each_commit(start_ref)
+      def each_commit
         if block_given?
           commit_walker = RevWalk.new(jgit_repo).tap do |walker|
-            walker.markStart(get_rev_commit(start_ref, walker))
+            walker.markStart(all_heads)
             walker.sort(RevSort::REVERSE)
           end
 
           commit_walker.each { |cur_rev| yield cur_rev }
           commit_walker.dispose
         else
-          to_enum(__method__, start_ref)
+          to_enum(__method__)
         end
       end
 
@@ -97,31 +98,27 @@ module Rosette
         end
       end
 
-      def commit_count(start_ref)
+      def commit_count
         commit_walker = RevWalk.new(jgit_repo).tap do |walker|
-          walker.markStart(get_rev_commit(start_ref, walker))
+          walker.markStart(all_heads)
         end
+
         count = commit_walker.count
         commit_walker.dispose
         count
       end
 
-      def newest_commit
-        get_rev_commit('HEAD')
-      end
+      private
 
-      def oldest_commit
-        commit_walker = RevWalk.new(jgit_repo).tap do |walker|
-          walker.markStart(get_rev_commit('HEAD', walker))
-          walker.sort(RevSort::REVERSE)
+      def all_heads
+        all_refs = jgit_repo.refDatabase.getRefs(RefDatabase::ALL).keys
+
+        refs = all_refs.select do |ref|
+          ref =~ /\Arefs\/(?:heads|remotes)/
         end
 
-        commit = commit_walker.next
-        commit_walker.dispose
-        commit
+        refs.map { |ref| get_rev_commit(ref) }
       end
-
-      private
 
       def get_ref(ref_str)
         jgit_repo.getRef(ref_str)
