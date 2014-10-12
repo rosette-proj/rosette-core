@@ -25,8 +25,8 @@ module Rosette
         raise NotImplementedError, 'expected to be implemented in child classes'
       end
 
-      def close
-        stream.close
+      def flush
+        stream.flush
       end
     end
 
