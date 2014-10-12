@@ -21,7 +21,7 @@ module Rosette
         after_initialize
       end
 
-      def write_translation(trans)
+      def write_key_value(trans)
         raise NotImplementedError, 'expected to be implemented in child classes'
       end
 
