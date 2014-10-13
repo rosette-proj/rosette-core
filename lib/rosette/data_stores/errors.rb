@@ -8,6 +8,7 @@ module Rosette
       class PhraseNotFoundError < StandardError; end
       class MissingParamError < StandardError; end
       class CommitLogUpdateError < StandardError; end
+      class CommitLogLocaleUpdateError < StandardError; end
 
     end
   end
