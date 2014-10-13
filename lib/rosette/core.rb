@@ -20,6 +20,12 @@ module Rosette
     @env = new_env
   end
 
+  def self.build_config
+    configuration = Rosette::Core::Configurator.new
+    yield configuration
+    configuration
+  end
+
   module Core
     DEFAULT_ENCODING = Encoding::UTF_8
 
