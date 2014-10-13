@@ -14,6 +14,10 @@ module Rosette
         def open(file)
           new(File.open(file))
         end
+
+        def default_extension
+          raise NotImplementedError, 'expected to be implemented in child classes'
+        end
       end
 
       def initialize(stream)
