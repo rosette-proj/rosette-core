@@ -6,9 +6,9 @@ module Rosette
     class ExtractorConfig
       attr_reader :extractor, :encoding, :root
 
-      def initialize(extractor_class, root)
+      def initialize(extractor_class)
         @extractor = extractor_class.new(self)
-        @root = root
+        @root = ExtractorConfigurationFactory.create_root
         @encoding = Rosette::Core::DEFAULT_ENCODING
       end
 
@@ -19,6 +19,18 @@ module Rosette
 
       def matches?(path)
         root.matches?(path)
+      end
+
+      def method_missing(method, *args, &block)
+        if root.respond_to?(method)
+          root.send(method, *args, &block)
+        else
+          raise NoMethodError, "no method #{method} for #{self.class.name}"
+        end
+      end
+
+      def respond_to?(method)
+        super || root.respond_to?(method)
       end
     end
 

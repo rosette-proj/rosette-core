@@ -25,9 +25,9 @@ module Rosette
 
       def add_extractor(extractor_id)
         klass = ExtractorId.resolve(extractor_id)
-        extractor_configs << ExtractorConfig.new(
-          klass, yield(ExtractorConfigurationFactory.create_root)
-        )
+        config = ExtractorConfig.new(klass)
+        yield config if block_given?
+        extractor_configs << config
       end
 
       def add_serializer(serializer_id)
