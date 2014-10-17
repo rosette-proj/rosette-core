@@ -5,30 +5,22 @@ require 'spec_helper'
 include Rosette::Core
 
 describe ExtractorConfig do
-  let(:factory) { ExtractorConfigurationFactory }
-  let(:root) { factory.create_root }
   let(:extractor_class) { Rosette::Extractors::Test::TestExtractor }
 
   it 'instantiates the extractor given' do
-    ExtractorConfig.new(extractor_class, root).tap do |config|
+    ExtractorConfig.new(extractor_class).tap do |config|
       expect(config.extractor).to be_instance_of(extractor_class)
     end
   end
 
-  it 'assigns root' do
-    ExtractorConfig.new(extractor_class, root).tap do |config|
-      expect(config.root).to be(root)
-    end
-  end
-
   it 'sets a default encoding' do
-    ExtractorConfig.new(extractor_class, root).tap do |config|
+    ExtractorConfig.new(extractor_class).tap do |config|
       expect(config.encoding).to eq(Rosette::Core::DEFAULT_ENCODING)
     end
   end
 
   describe '#set_encoding' do
-    let(:config) { ExtractorConfig.new(extractor_class, root) }
+    let(:config) { ExtractorConfig.new(extractor_class) }
 
     it 'sets the encoding on the instance' do
       config.set_encoding(Encoding::UTF_16BE).tap do |config_with_encoding|

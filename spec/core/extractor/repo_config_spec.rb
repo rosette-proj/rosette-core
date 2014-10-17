@@ -23,7 +23,7 @@ describe RepoConfig do
       expect(config.extractor_configs.size).to eq(0)
 
       config.add_extractor('test/test') do |extractor_config|
-        expect(extractor_config).to be_a(ExtractorConfigurationFactory::Node)
+        expect(extractor_config).to be_a(ExtractorConfig)
       end
 
       expect(config.extractor_configs.size).to eq(1)

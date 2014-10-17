@@ -23,7 +23,7 @@ module Rosette
 
       def method_missing(method, *args, &block)
         if root.respond_to?(method)
-          root.send(method, *args, &block)
+          @root = root.send(method, *args, &block)
         else
           raise NoMethodError, "no method #{method} for #{self.class.name}"
         end
