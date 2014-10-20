@@ -65,5 +65,6 @@ module Rosette
     autoload :Resolver,                      'rosette/core/resolvers/resolver'
     autoload :ExtractorId,                   'rosette/core/resolvers/extractor_id'
     autoload :SerializerId,                  'rosette/core/resolvers/serializer_id'
+    autoload :PreprocessorId,                'rosette/core/resolvers/preprocessor_id'
   end
 end
