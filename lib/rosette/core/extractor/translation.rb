@@ -13,6 +13,13 @@ module Rosette
         @locale = locale
         @translation = translation
       end
+
+      def self.from_h(hash)
+        new(
+          Phrase.from_h(hash[:phrase]),
+          hash[:locale], hash[:translation]
+        )
+      end
     end
 
   end

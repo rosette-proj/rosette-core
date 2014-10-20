@@ -16,6 +16,15 @@ module Rosette
         @file = file
         @commit_id = commit_id
       end
+
+      def self.from_h(hash)
+        if hash
+          new(
+            hash[:key], hash[:meta_key],
+            hash[:file], hash[:commit_id]
+          )
+        end
+      end
     end
 
   end
