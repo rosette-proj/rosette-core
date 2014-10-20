@@ -58,9 +58,13 @@ module Rosette
         end
       end
 
-      def get_serializer_config(serializer_id)
-        serializer_configs.find do |config|
-          config.serializer_id == serializer_id
+      def get_serializer_config(name_or_id)
+        found = serializer_configs.find do |config|
+          config.name == name_or_id
+        end
+
+        found || serializer_configs.find do |config|
+          config.serializer_id == name_or_id
         end
       end
 
