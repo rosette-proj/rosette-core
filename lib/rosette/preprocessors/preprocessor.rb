@@ -21,6 +21,8 @@ module Rosette
             raise Rosette::Preprocessors::Errors::UnsupportedObjectError,
               "don't know how to preprocess a #{object.class.name}"
           end
+        else
+          object
         end
       end
     end
