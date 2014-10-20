@@ -4,11 +4,18 @@ module Rosette
   module Core
 
     class SerializerConfig
-      attr_reader :klass, :serializer_id
+      attr_reader :name, :klass, :serializer_id, :preprocessors
 
-      def initialize(klass, serializer_id)
+      def initialize(name, klass, serializer_id)
+        @name = name
         @klass = klass
         @serializer_id = serializer_id
+        @preprocessors = []
+      end
+
+      def add_preprocessor(preprocessor_id, &block)
+        klass = PreprocessorId.resolve(preprocessor_id)
+        preprocessors << klass.configure(&block)
       end
     end
 

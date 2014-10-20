@@ -48,8 +48,6 @@ module Rosette
     autoload :ExtractorConfigurationFactory, 'rosette/core/extractor/extractor_config'
     autoload :RepoConfig,                    'rosette/core/extractor/repo_config'
     autoload :SerializerConfig,              'rosette/core/extractor/serializer_config'
-    autoload :ExtractorId,                   'rosette/core/extractor/extractor_id'
-    autoload :SerializerId,                  'rosette/core/extractor/serializer_id'
     autoload :CommitProcessor,               'rosette/core/extractor/commit_processor'
     autoload :Locale,                        'rosette/core/extractor/locale'
 
@@ -63,5 +61,9 @@ module Rosette
     autoload :BufferedErrorReporter,         'rosette/core/error_reporters/buffered_error_reporter'
 
     autoload :Validators,                    'rosette/core/validators'
+
+    autoload :Resolver,                      'rosette/core/resolvers/resolver'
+    autoload :ExtractorId,                   'rosette/core/resolvers/extractor_id'
+    autoload :SerializerId,                  'rosette/core/resolvers/serializer_id'
   end
 end
