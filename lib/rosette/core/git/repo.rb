@@ -141,6 +141,13 @@ module Rosette
             .call
         end
       end
+
+      def find_first_non_merge_parent(commit_id)
+        each_commit_starting_at(commit_id) do |prev_rev|
+          break prev_rev if prev_rev.getParentCount == 1
+        end
+      end
+
       private
 
       def git
