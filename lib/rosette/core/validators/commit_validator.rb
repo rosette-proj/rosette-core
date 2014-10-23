@@ -7,6 +7,7 @@ module Rosette
       class CommitValidator < Validator
         def valid?(commit_str, repo_name, configuration)
           if repo_config = configuration.get_repo(repo_name)
+            repo_config.repo.fetch
             repo_config.repo.get_rev_commit(commit_str)
             true
           else
