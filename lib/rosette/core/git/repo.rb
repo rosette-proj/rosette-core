@@ -85,6 +85,19 @@ module Rosette
         end
       end
 
+      def each_commit_starting_at(start_ref)
+        if block_given?
+          commit_walker = RevWalk.new(jgit_repo).tap do |walker|
+            walker.markStart(get_rev_commit(start_ref, walker))
+          end
+
+          commit_walker.each { |cur_rev| yield cur_rev }
+          commit_walker.dispose
+        else
+          to_enum(__method__)
+        end
+      end
+
       def each_commit_in_range(start_ref, end_ref)
         if block_given?
           commit_walker = RevWalk.new(jgit_repo).tap do |walker|
