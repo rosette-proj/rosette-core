@@ -1,11 +1,16 @@
 # encoding: UTF-8
 
+require 'thread'
+
+java_import 'org.eclipse.jgit.api.CloneCommand'
+java_import 'org.eclipse.jgit.api.FetchCommand'
+java_import 'org.eclipse.jgit.api.Git'
 java_import 'org.eclipse.jgit.internal.storage.file.FileRepository'
 java_import 'org.eclipse.jgit.lib.Constants'
 java_import 'org.eclipse.jgit.lib.ObjectId'
+java_import 'org.eclipse.jgit.lib.RefDatabase'
 java_import 'org.eclipse.jgit.revwalk.RevSort'
 java_import 'org.eclipse.jgit.revwalk.RevWalk'
-java_import 'org.eclipse.jgit.lib.RefDatabase'
 
 module Rosette
   module Core
@@ -19,6 +24,7 @@ module Rosette
 
       def initialize(jgit_repo)
         @jgit_repo = jgit_repo
+        @fetch_clone_mutex = Mutex.new
       end
 
       def get_rev_commit(ref_str_or_commit_id_str, walker = rev_walker)
@@ -108,7 +114,25 @@ module Rosette
         count
       end
 
+      def fetch(remote = 'origin')
+        @fetch_clone_mutex.synchronize do
+          git.fetch.setRemote(remote).call
+        end
+      end
+
+      def self.clone(repo_uri, repo_dir)
+        @fetch_clone_mutex.synchronize do
+          CloneCommand.new
+            .setDirectory(Java::JavaIo::File.new(repo_dir))
+            .setURI(repo_uri)
+            .call
+        end
+      end
       private
+
+      def git
+        @git ||= Git.new(jgit_repo)
+      end
 
       def all_heads
         all_refs = jgit_repo.refDatabase.getRefs(RefDatabase::ALL).keys
