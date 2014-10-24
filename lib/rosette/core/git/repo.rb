@@ -143,7 +143,8 @@ module Rosette
       end
 
       def find_first_non_merge_parent(commit_id)
-        each_commit_starting_at(commit_id) do |prev_rev|
+        each_commit_starting_at(commit_id).with_index do |prev_rev, idx|
+          next if idx == 0
           break prev_rev if prev_rev.getParentCount == 1
         end
       end
