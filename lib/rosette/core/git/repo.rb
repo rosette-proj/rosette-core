@@ -94,7 +94,7 @@ module Rosette
           commit_walker.each { |cur_rev| yield cur_rev }
           commit_walker.dispose
         else
-          to_enum(__method__)
+          to_enum(__method__, start_ref)
         end
       end
 
