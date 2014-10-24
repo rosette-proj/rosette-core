@@ -5,6 +5,12 @@ module Rosette
     module Validators
 
       class Validator
+        attr_reader :options
+
+        def initialize(options = {})
+          @options = options
+        end
+
         def messages
           @messages ||= []
         end
