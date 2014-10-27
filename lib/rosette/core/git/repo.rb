@@ -2,9 +2,11 @@
 
 require 'thread'
 
+java_import 'org.eclipse.jgit.api.BlameCommand'
 java_import 'org.eclipse.jgit.api.CloneCommand'
 java_import 'org.eclipse.jgit.api.FetchCommand'
 java_import 'org.eclipse.jgit.api.Git'
+java_import 'org.eclipse.jgit.diff.RawTextComparator'
 java_import 'org.eclipse.jgit.internal.storage.file.FileRepository'
 java_import 'org.eclipse.jgit.lib.Constants'
 java_import 'org.eclipse.jgit.lib.ObjectId'
@@ -147,6 +149,27 @@ module Rosette
           next if idx == 0
           break prev_rev if prev_rev.getParentCount == 1
         end
+      end
+
+      def blame(path, commit_id)
+        blame_result = BlameCommand.new(jgit_repo)
+          .setFilePath(path)
+          .setFollowFileRenames(true)
+          .setTextComparator(RawTextComparator::WS_IGNORE_ALL)
+          .setStartCommit(ObjectId.fromString(commit_id))
+          .call
+
+        lines_to_authors = {}
+        line_number = 0
+        loop do
+          begin
+            lines_to_authors[line_number] = blame_result.getSourceAuthor(line_number)
+            line_number += 1
+          rescue Java::JavaLang::ArrayIndexOutOfBoundsException
+            break
+          end
+        end
+        lines_to_authors
       end
 
       private

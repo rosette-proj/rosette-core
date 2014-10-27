@@ -31,11 +31,14 @@ module Rosette
       def process_diff_entry(diff_entry, repo_config, commit)
         repo_config.get_extractor_configs(diff_entry.getNewPath).each do |extractor_config|
           source_code = read_object_from_entry(diff_entry, repo_config, extractor_config)
-
+          line_numbers_to_author = repo_config.repo.blame(diff_entry.getNewPath, commit.getId.name)
           begin
-            extractor_config.extractor.extract_each_from(source_code) do |phrase|
+            extractor_config.extractor.extract_each_from(source_code) do |phrase, line_number|
               phrase.file = diff_entry.getNewPath
               phrase.commit_id = commit.getId.name
+              author_identity = line_numbers_to_author[line_number]
+              phrase.author_name = author_identity.getName
+              phrase.author_email = author_identity.getEmailAddress
               yield phrase
             end
           rescue SyntaxError => e
