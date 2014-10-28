@@ -14,11 +14,9 @@ module Rosette
 
       def extract_each_from(source_code)
         if block_given?
-          each_function_call(source_code) do |node|
+          each_function_call(source_code) do |node, line_number|
             if valid_name?(node) && valid_args?(node)
-              yield make_phrase(
-                get_key(node)
-              )
+              yield make_phrase(get_key(node)), line_number
             end
           end
         else
