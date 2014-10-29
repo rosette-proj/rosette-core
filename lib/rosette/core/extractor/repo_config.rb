@@ -5,12 +5,13 @@ module Rosette
 
     class RepoConfig
       attr_reader :name, :repo, :locales, :hooks
-      attr_reader :extractor_configs, :serializer_configs
+      attr_reader :extractor_configs, :serializer_configs, :integrations
 
       def initialize(name)
         @name = name
         @extractor_configs = []
         @serializer_configs = []
+        @integrations = []
         @locales = []
         @hooks = Hash.new { |h, key| h[key] = [] }
       end
@@ -28,6 +29,11 @@ module Rosette
         config = ExtractorConfig.new(klass)
         yield config if block_given?
         extractor_configs << config
+      end
+
+      def add_integration(integration_id, &block)
+        klass = IntegrationId.resolve(integration_id)
+        integrations << klass.configure(&block)
       end
 
       def add_serializer(name, options = {})
