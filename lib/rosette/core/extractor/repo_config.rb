@@ -31,11 +31,6 @@ module Rosette
         extractor_configs << config
       end
 
-      def add_integration(integration_id, &block)
-        klass = IntegrationId.resolve(integration_id)
-        integrations << klass.configure(&block)
-      end
-
       def add_serializer(name, options = {})
         serializer_id = options[:format]
         klass = SerializerId.resolve(serializer_id)

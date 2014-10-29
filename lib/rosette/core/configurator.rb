@@ -4,10 +4,11 @@ module Rosette
   module Core
 
     class Configurator
-      attr_reader :repo_configs, :datastore
+      attr_reader :repo_configs, :datastore, :integrations
 
       def initialize
         @repo_configs = []
+        @integrations = []
       end
 
       def add_repo(name)
@@ -18,6 +19,17 @@ module Rosette
 
       def get_repo(name)
         repo_configs.find { |rc| rc.name == name }
+      end
+
+      def add_integration(integration_id, &block)
+        klass = IntegrationId.resolve(integration_id)
+        integrations << klass.configure(&block)
+      end
+
+      def apply_integrations(obj)
+        integrations.each do |integration|
+          integration.integrate(obj)
+        end
       end
 
       def use_datastore(datastore, options = {})
