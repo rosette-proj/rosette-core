@@ -5,13 +5,12 @@ module Rosette
 
     class RepoConfig
       attr_reader :name, :repo, :locales, :hooks
-      attr_reader :extractor_configs, :serializer_configs, :integrations
+      attr_reader :extractor_configs, :serializer_configs
 
       def initialize(name)
         @name = name
         @extractor_configs = []
         @serializer_configs = []
-        @integrations = []
         @locales = []
         @hooks = Hash.new { |h, key| h[key] = [] }
       end
