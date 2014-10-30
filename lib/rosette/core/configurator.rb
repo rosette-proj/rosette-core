@@ -28,7 +28,9 @@ module Rosette
 
       def apply_integrations(obj)
         integrations.each do |integration|
-          integration.integrate(obj)
+          if integration.integrates_with?(obj)
+            integration.integrate(obj)
+          end
         end
       end
 
