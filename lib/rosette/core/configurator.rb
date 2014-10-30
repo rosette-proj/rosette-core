@@ -26,6 +26,16 @@ module Rosette
         integrations << klass.configure(&block)
       end
 
+      def get_integration(integration_id)
+        klass = IntegrationId.resolve(integration_id)
+
+        if klass
+          integrations.find do |integration|
+            integration.is_a?(klass)
+          end
+        end
+      end
+
       def apply_integrations(obj)
         integrations.each do |integration|
           if integration.integrates_with?(obj)
