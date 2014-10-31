@@ -8,8 +8,10 @@ module Rosette
       class TestExtractor < Rosette::Core::Extractor
         protected
 
-        def each_function_call(source_code, &block)
-          source_code.split("\n").each(&block)
+        def each_function_call(source_code)
+          source_code.split("\n").each_with_index do |line, idx|
+            yield line, idx
+          end
         end
 
         def valid_name?(node)
