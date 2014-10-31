@@ -4,6 +4,9 @@ require 'jbundler'
 require 'rspec'
 require 'rosette/core'
 require 'rosette/serializers'
+require 'rosette/integrations'
+require 'rosette/preprocessors'
+require 'rosette/data_stores'
 require 'repo-fixture'
 require 'fileutils'
 require 'pry-nav'
@@ -11,8 +14,6 @@ require 'pry-nav'
 require 'spec/test_helpers'
 
 RSpec.configure do |config|
-  config.mock_with :rr
-
   # build all fixtures before tests run
   TestHelpers::Fixtures.build_all
 

@@ -13,5 +13,4 @@ end
 group :test do
   gem 'jbundler'
   gem 'rspec'
-  gem 'rr'
 end

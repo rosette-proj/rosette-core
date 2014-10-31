@@ -31,11 +31,13 @@ describe CommitProcessor do
     end
 
     it 'reports syntax errors if they occur' do
-      any_instance_of(Rosette::Extractors::Test::TestExtractor) do |extractor|
-        stub(extractor).each_function_call(anything) do
-          raise Rosette::Core::SyntaxError.new('nope', :error, :txt)
-        end
-      end
+      allow_any_instance_of(Rosette::Extractors::Test::TestExtractor).to(
+        receive(:each_function_call)
+        .with(anything)
+        .and_raise(
+          Rosette::Core::SyntaxError.new('nope', :error, :txt)
+        )
+      )
 
       fixture.each_commit do |fixture_commit|
         processor.process_each_phrase(repo_name, fixture_commit.sha).to_a
