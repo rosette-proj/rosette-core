@@ -37,7 +37,7 @@ describe RepoConfig do
   describe '#add_serializer' do
     it 'creates a serializer config and adds it to the list of serializer configs' do
       expect(config.serializer_configs.size).to eq(0)
-      config.add_serializer('test/test')
+      config.add_serializer('my_serializer', format: 'test/test')
       expect(config.serializer_configs.size).to eq(1)
 
       config.serializer_configs.first.tap do |serializer_config|
@@ -103,7 +103,7 @@ describe RepoConfig do
 
   describe '#get_serializer_config' do
     it 'returns the serializer config that matches the given id' do
-      config.add_serializer('test/test')
+      config.add_serializer('my_serializer', format: 'test/test')
       expect(config.get_serializer_config('test/test')).to(
         be(config.serializer_configs.first)
       )
