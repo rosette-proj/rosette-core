@@ -13,7 +13,7 @@ module Rosette
             messages << "Unable to find repo #{repo_name}."
             false
           end
-        rescue Java::OrgEclipseJgitErrors::MissingObjectException
+        rescue Java::OrgEclipseJgitErrors::MissingObjectException, Java::JavaLang::IllegalArgumentException
           messages << "Unable to find commit '#{commit_str}'."
           false
         end
