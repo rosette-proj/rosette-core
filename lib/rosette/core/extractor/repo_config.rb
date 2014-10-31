@@ -14,7 +14,12 @@ module Rosette
         @extractor_configs = []
         @serializer_configs = []
         @locales = []
-        @hooks = Hash.new { |h, key| h[key] = [] }
+
+        @hooks = Hash.new do |h, key|
+          h[key] = Hash.new do |h2, key2|
+            h2[key2] = []
+          end
+        end
       end
 
       def set_path(path)
@@ -51,7 +56,7 @@ module Rosette
       end
 
       def after(action, &block)
-        hooks[action] << block
+        hooks[:after][action] << block
       end
 
       def get_extractor_configs(path)
