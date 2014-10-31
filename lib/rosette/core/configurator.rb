@@ -4,7 +4,9 @@ module Rosette
   module Core
 
     class Configurator
-      attr_reader :repo_configs, :datastore, :integrations
+      include Integrations::Integratable
+
+      attr_reader :repo_configs, :datastore
 
       def initialize
         @repo_configs = []
@@ -14,34 +16,12 @@ module Rosette
       def add_repo(name)
         repo_configs << Rosette::Core::RepoConfig.new(name).tap do |repo_config|
           yield repo_config
+          repo_config.apply_integrations(repo_config)
         end
       end
 
       def get_repo(name)
         repo_configs.find { |rc| rc.name == name }
-      end
-
-      def add_integration(integration_id, &block)
-        klass = IntegrationId.resolve(integration_id)
-        integrations << klass.configure(&block)
-      end
-
-      def get_integration(integration_id)
-        klass = IntegrationId.resolve(integration_id)
-
-        if klass
-          integrations.find do |integration|
-            integration.is_a?(klass)
-          end
-        end
-      end
-
-      def apply_integrations(obj)
-        integrations.each do |integration|
-          if integration.integrates_with?(obj)
-            integration.integrate(obj)
-          end
-        end
       end
 
       def use_datastore(datastore, options = {})

@@ -4,6 +4,8 @@ module Rosette
   module Core
 
     class RepoConfig
+      include Integrations::Integratable
+
       attr_reader :name, :repo, :locales, :hooks
       attr_reader :extractor_configs, :serializer_configs
 
