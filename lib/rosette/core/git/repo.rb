@@ -172,6 +172,10 @@ module Rosette
         lines_to_authors
       end
 
+      def get_ref(ref_str)
+        jgit_repo.getRef(ref_str)
+      end
+
       private
 
       def git
@@ -186,10 +190,6 @@ module Rosette
         end
 
         refs.map { |ref| get_rev_commit(ref) }
-      end
-
-      def get_ref(ref_str)
-        jgit_repo.getRef(ref_str)
       end
 
       def diff_finder
