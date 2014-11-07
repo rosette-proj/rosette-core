@@ -6,7 +6,7 @@ module Rosette
     class RepoConfig
       include Integrations::Integratable
 
-      attr_reader :name, :repo, :locales, :hooks
+      attr_reader :name, :repo, :locales, :hooks, :description
       attr_reader :extractor_configs, :serializer_configs
 
       def initialize(name)
@@ -24,6 +24,10 @@ module Rosette
 
       def set_path(path)
         @repo = Repo.from_path(path)
+      end
+
+      def set_description(desc)
+        @description = desc
       end
 
       def path
