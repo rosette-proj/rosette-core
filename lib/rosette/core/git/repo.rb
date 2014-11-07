@@ -176,6 +176,10 @@ module Rosette
         jgit_repo.getRef(ref_str)
       end
 
+      def all_refs
+        jgit_repo.all_refs
+      end
+
       private
 
       def git
