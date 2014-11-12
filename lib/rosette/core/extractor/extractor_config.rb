@@ -112,17 +112,29 @@ module Rosette
         def matches?(path)
           left.matches?(path) && right.matches?(path)
         end
+
+        def to_s
+          "(#{left.to_s} AND #{right.to_s})"
+        end
       end
 
       class OrNode < BinaryNode
         def matches?(path)
           left.matches?(path) || right.matches?(path)
         end
+
+        def to_s
+          "(#{left.to_s} OR #{right.to_s})"
+        end
       end
 
       class NotNode < UnaryNode
         def matches?(path)
           !child.matches?(path)
+        end
+
+        def to_s
+          "(NOT #{child.to_s})"
         end
       end
 
@@ -138,6 +150,10 @@ module Rosette
           # eg. file.html.erb
           path[-extension.size..-1] == extension
         end
+
+        def to_s
+          "has_file_extension('#{extension}')"
+        end
       end
 
       class PathNode < Node
@@ -150,6 +166,10 @@ module Rosette
         def matches?(match_path)
           match_path[0...path.size] == path
         end
+
+        def to_s
+          "matches_path('#{path}')"
+        end
       end
 
       class RegexNode < Node
@@ -161,6 +181,10 @@ module Rosette
 
         def matches?(path)
           path =~ regex
+        end
+
+        def to_s
+          "matches_regex(/#{regex.source}/)"
         end
       end
     end
