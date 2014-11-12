@@ -67,5 +67,7 @@ module Rosette
     autoload :IntegrationId,                 'rosette/core/resolvers/integration_id'
     autoload :SerializerId,                  'rosette/core/resolvers/serializer_id'
     autoload :PreprocessorId,                'rosette/core/resolvers/preprocessor_id'
+
+    autoload :Commands,                      'rosette/core/commands'
   end
 end
