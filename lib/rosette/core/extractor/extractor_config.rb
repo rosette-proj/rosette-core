@@ -21,16 +21,8 @@ module Rosette
         root.matches?(path)
       end
 
-      def method_missing(method, *args, &block)
-        if root.respond_to?(method)
-          @root = root.send(method, *args, &block)
-        else
-          raise NoMethodError, "no method #{method} for #{self.class.name}"
-        end
-      end
-
-      def respond_to?(method)
-        super || root.respond_to?(method)
+      def set_conditions
+        @root = yield ExtractorConfigurationFactory.create_root
       end
     end
 
