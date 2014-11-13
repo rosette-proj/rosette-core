@@ -76,7 +76,7 @@ module Rosette
       def each_commit
         if block_given?
           commit_walker = RevWalk.new(jgit_repo).tap do |walker|
-            walker.markStart(all_heads)
+            walker.markStart(all_heads(walker))
             walker.sort(RevSort::REVERSE)
           end
 
@@ -121,7 +121,7 @@ module Rosette
 
       def commit_count
         commit_walker = RevWalk.new(jgit_repo).tap do |walker|
-          walker.markStart(all_heads)
+          walker.markStart(all_heads(walker))
         end
 
         count = commit_walker.count
@@ -186,14 +186,14 @@ module Rosette
         @git ||= Git.new(jgit_repo)
       end
 
-      def all_heads
+      def all_heads(walker = rev_walker)
         all_refs = jgit_repo.refDatabase.getRefs(RefDatabase::ALL).keys
 
         refs = all_refs.select do |ref|
           ref =~ /\Arefs\/(?:heads|remotes)/
         end
 
-        refs.map { |ref| get_rev_commit(ref) }
+        refs.map { |ref| get_rev_commit(ref, walker) }
       end
 
       def diff_finder
