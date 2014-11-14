@@ -11,7 +11,8 @@ module Rosette
           file: file,
           commit_id: commit_id,
           author_name: author_name,
-          author_email: author_email
+          author_email: author_email,
+          commit_datetime: commit_datetime
         }
       end
     end
