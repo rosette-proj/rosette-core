@@ -24,10 +24,12 @@ module Rosette
         end
 
         def commit_id
-          @commit_id ||= get_repo(repo_name)
+          @commit_id ||= rev_commit.getId.name
+        end
+
+        def rev_commit
+          @rev_commit ||= get_repo(repo_name)
             .repo.get_rev_commit(@commit_str)
-            .getId
-            .name
         end
       end
 

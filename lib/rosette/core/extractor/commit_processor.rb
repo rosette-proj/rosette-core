@@ -39,7 +39,6 @@ module Rosette
               author_identity = line_numbers_to_author[line_number]
               phrase.author_name = author_identity.getName
               phrase.author_email = author_identity.getEmailAddress
-              phrase.commit_datetime = Time.at(commit.getCommitTime)
               yield phrase
             end
           rescue SyntaxError => e
