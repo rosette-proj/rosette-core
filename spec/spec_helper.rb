@@ -20,7 +20,9 @@ RSpec.configure do |config|
   def load_repo_fixture(*args)
     TestHelpers::Fixtures.load_repo_fixture(*args) do |config, repo_config|
       repo_config.add_extractor('test/test') do |ext|
-        ext.match_file_extension('.txt')
+        ext.set_conditions do |conditions|
+          conditions.match_file_extension('.txt')
+        end
       end
 
       yield config, repo_config if block_given?
