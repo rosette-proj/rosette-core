@@ -1,8 +1,6 @@
 # encoding: UTF-8
 
-java_import 'org.eclipse.jgit.treewalk.TreeWalk'
 java_import 'org.eclipse.jgit.treewalk.filter.TreeFilter'
-java_import 'org.eclipse.jgit.util.StringUtils'
 
 module Rosette
   module Core
