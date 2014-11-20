@@ -13,13 +13,15 @@ module Rosette
         @language = language
       end
 
-      def to_s
+      def message
         "#{message} (#{language})"
       end
+
+      alias :to_s :message
     end
 
     class ExtractionSyntaxError < StandardError
-      attr_reader :message, :original_exception, :language, :file, :commit_id
+      attr_reader :original_exception, :language, :file, :commit_id
 
       def initialize(msg, original_exception, language, file, commit_id)
         super(msg)
@@ -30,9 +32,11 @@ module Rosette
         @commit_id = commit_id
       end
 
-      def to_s
-        "#{message} (#{language}) in #{file} at #{commit_id}"
+      def message
+        "#{@message}: #{original_exception.message} (#{language}) in #{file} at #{commit_id}"
       end
+
+      alias :to_s :message
     end
 
   end
