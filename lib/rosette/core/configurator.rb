@@ -1,16 +1,19 @@
 # encoding: UTF-8
 
+require 'active_support'
+
 module Rosette
   module Core
 
     class Configurator
       include Integrations::Integratable
 
-      attr_reader :repo_configs, :datastore
+      attr_reader :repo_configs, :datastore, :cache
 
       def initialize
         @repo_configs = []
         @integrations = []
+        @cache = ActiveSupport::Cache.lookup_store
       end
 
       def add_repo(name)
@@ -40,6 +43,10 @@ module Rosette
 
         @datastore = const.new(options)
         nil
+      end
+
+      def use_cache(*args)
+        @cache = ActiveSupport::Cache.lookup_store(args)
       end
 
       private
