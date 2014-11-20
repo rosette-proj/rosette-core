@@ -1,8 +1,11 @@
 # encoding: UTF-8
 
+java_import 'org.eclipse.jgit.revwalk.RevWalk'
+
 module Rosette
   module Core
 
+    # This class tries to be thread-safe
     class CommitProcessor
       attr_reader :config, :error_reporter
 
@@ -15,8 +18,11 @@ module Rosette
       def process_each_phrase(repo_name, commit_ref)
         if block_given?
           repo_config = config.get_repo(repo_name)
-          commit = repo_config.repo.get_rev_commit(commit_ref)
-          repo_config.repo.rev_diff_with_parent(commit).each do |diff_entry|
+          rev_walk = RevWalk.new(repo_config.repo.jgit_repo)
+          diff_finder = DiffFinder.new(repo_config.repo.jgit_repo, rev_walk)
+          commit = repo_config.repo.get_rev_commit(commit_ref, rev_walk)
+
+          diff_finder.diff_with_parent(commit).each do |diff_entry|
             process_diff_entry(diff_entry, repo_config, commit) do |phrase|
               yield phrase
             end
@@ -32,13 +38,15 @@ module Rosette
         repo_config.get_extractor_configs(diff_entry.getNewPath).each do |extractor_config|
           source_code = read_object_from_entry(diff_entry, repo_config, extractor_config)
           line_numbers_to_author = repo_config.repo.blame(diff_entry.getNewPath, commit.getId.name)
+
           begin
             extractor_config.extractor.extract_each_from(source_code) do |phrase, line_number|
               phrase.file = diff_entry.getNewPath
               phrase.commit_id = commit.getId.name
-              author_identity = line_numbers_to_author[line_number]
+              author_identity = line_numbers_to_author[line_number - 1]
               phrase.author_name = author_identity.getName
               phrase.author_email = author_identity.getEmailAddress
+              phrase.line_number = line_number
               yield phrase
             end
           rescue SyntaxError => e
@@ -53,7 +61,8 @@ module Rosette
       end
 
       def read_object_from_entry(diff_entry, repo_config, extractor_config)
-        bytes = repo_config.repo.read_object_bytes(diff_entry.getNewId.toObjectId)
+        object_reader = repo_config.repo.jgit_repo.newObjectReader
+        bytes = object_reader.open(diff_entry.getNewId.toObjectId).getBytes
         Java::JavaLang::String.new(bytes, extractor_config.encoding.to_s).to_s
       end
     end

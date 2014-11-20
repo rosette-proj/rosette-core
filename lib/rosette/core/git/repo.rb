@@ -16,8 +16,9 @@ java_import 'org.eclipse.jgit.revwalk.RevWalk'
 
 module Rosette
   module Core
-    class Repo
 
+    # NOTE: This class is NOT thread safe.
+    class Repo
       attr_reader :jgit_repo, :path
 
       def self.from_path(path)
@@ -207,7 +208,7 @@ module Rosette
       def object_reader
         @object_reader ||= jgit_repo.newObjectReader
       end
-
     end
+
   end
 end

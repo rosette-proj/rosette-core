@@ -1,5 +1,7 @@
 # encoding: UTF-8
 
+require 'digest/sha1'
+
 module Rosette
   module Core
     module Commands
@@ -68,6 +70,10 @@ module Rosette
 
         def datastore
           configuration.datastore
+        end
+
+        def path_digest(paths)
+          Digest::MD5.hexdigest(paths.join)
         end
       end
 

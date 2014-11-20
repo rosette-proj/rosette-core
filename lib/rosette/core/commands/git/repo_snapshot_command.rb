@@ -5,12 +5,18 @@ module Rosette
     module Commands
 
       class RepoSnapshotCommand < GitCommand
+        attr_reader :paths
+
         include WithSnapshots
         include WithRepoName
         include WithRef
 
+        def set_paths(paths)
+          @paths = paths
+        end
+
         def execute
-          take_snapshot(get_repo(repo_name).repo, commit_id)
+          take_snapshot(get_repo(repo_name), commit_id, paths)
         end
       end
 

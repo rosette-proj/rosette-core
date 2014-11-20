@@ -38,6 +38,7 @@ module Rosette
 
     autoload :Snapshot,                      'rosette/core/snapshots/snapshot'
     autoload :SnapshotFactory,               'rosette/core/snapshots/snapshot_factory'
+    autoload :CachedSnapshotFactory,         'rosette/core/snapshots/cached_snapshot_factory'
     autoload :FileTypeFilter,                'rosette/core/snapshots/file_type_filter'
 
     autoload :Extractor,                     'rosette/core/extractor/extractor'

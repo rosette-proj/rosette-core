@@ -10,7 +10,7 @@ module Rosette
         include WithRef
 
         def execute
-          snapshot = take_snapshot(get_repo(repo_name).repo, commit_id)
+          snapshot = take_snapshot(get_repo(repo_name), commit_id)
           datastore.phrases_by_commits(repo_name, snapshot).to_a
         end
       end

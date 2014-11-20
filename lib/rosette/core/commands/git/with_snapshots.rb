@@ -1,22 +1,21 @@
 # encoding: UTF-8
 
+require 'digest/sha1'
+
 module Rosette
   module Core
     module Commands
 
       module WithSnapshots
-        def take_snapshot(repo, commit_id, paths = [])
-          paths = Array(paths)
-          rev = repo.get_rev_commit(commit_id)
-          factory = snapshot_factory.new(repo, rev)
-          factory = factory.filter_by_paths(paths) if paths.size > 0
-          snapshot = factory.take_snapshot
+        def take_snapshot(repo_config, commit_id, paths = [])
+          __snapshot_factory__.take_snapshot(repo_config, commit_id, paths)
         end
 
         private
 
-        def snapshot_factory
-          Rosette::Core::SnapshotFactory
+        def __snapshot_factory__
+          @@__snapshot_factory__ ||=
+            CachedSnapshotFactory.new(configuration.cache)
         end
       end
 
