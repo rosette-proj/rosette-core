@@ -11,6 +11,7 @@ group :development, :test do
 end
 
 group :test do
+  gem 'simplecov'
   gem 'jbundler'
   gem 'rspec'
 end
