@@ -1,5 +1,5 @@
 $:.unshift File.join(File.dirname(__FILE__), 'lib')
-require 'rosette/core/version'  
+require 'rosette/core/version'
 
 Gem::Specification.new do |s|
   s.name     = "rosette-core"
