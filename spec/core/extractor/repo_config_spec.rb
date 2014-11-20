@@ -81,7 +81,9 @@ describe RepoConfig do
   describe '#get_extractor_configs' do
     before(:each) do
       config.add_extractor('test/test') do |extractor_config|
-        extractor_config.match_file_extension('.js')
+        extractor_config.set_conditions do |conditions|
+          conditions.match_file_extension('.js')
+        end
       end
     end
 
