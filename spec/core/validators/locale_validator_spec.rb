@@ -11,12 +11,12 @@ describe LocaleValidator do
   let(:validator) { LocaleValidator.new }
 
   let(:config) do
-    config = Configurator.new
-    config.add_repo(repo_name) do |repo_config|
-      repo_config.set_path(fixture.working_dir.join('.git').to_s)
-      repo_config.add_locale('es-MX')
+    Rosette.build_config do |config|
+      config.add_repo(repo_name) do |repo_config|
+        repo_config.set_path(fixture.working_dir.join('.git').to_s)
+        repo_config.add_locale('es-MX')
+      end
     end
-    config
   end
 
   describe '#valid?' do

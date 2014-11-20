@@ -11,11 +11,11 @@ describe RepoValidator do
   let(:validator) { RepoValidator.new }
 
   let(:config) do
-    config = Configurator.new
-    config.add_repo(repo_name) do |repo_config|
-      repo_config.set_path(fixture.working_dir.join('.git').to_s)
+    Rosette.build_config do |config|
+      config.add_repo(repo_name) do |repo_config|
+        repo_config.set_path(fixture.working_dir.join('.git').to_s)
+      end
     end
-    config
   end
 
   describe '#valid?' do
