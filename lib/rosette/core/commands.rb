@@ -6,6 +6,8 @@ module Rosette
   module Core
     module Commands
 
+      autoload :Errors,                        'rosette/core/commands/errors'
+
       autoload :CommitCommand,                 'rosette/core/commands/git/commit_command'
       autoload :DiffBaseCommand,               'rosette/core/commands/git/diff_base_command'
       autoload :DiffCommand,                   'rosette/core/commands/git/diff_command'
