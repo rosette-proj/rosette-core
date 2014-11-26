@@ -181,12 +181,6 @@ module Rosette
         jgit_repo.all_refs
       end
 
-      private
-
-      def git
-        @git ||= Git.new(jgit_repo)
-      end
-
       def all_heads(walker = rev_walker)
         all_refs = jgit_repo.refDatabase.getRefs(RefDatabase::ALL).keys
 
@@ -195,6 +189,12 @@ module Rosette
         end
 
         refs.map { |ref| get_rev_commit(ref, walker) }
+      end
+
+      private
+
+      def git
+        @git ||= Git.new(jgit_repo)
       end
 
       def diff_finder
