@@ -4,7 +4,7 @@ module Rosette
   module Core
 
     class CachedSnapshotFactory
-      attr_reader :cache, :factory
+      attr_reader :cache
 
       def initialize(cache)
         @cache = cache
