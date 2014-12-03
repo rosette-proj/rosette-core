@@ -34,6 +34,14 @@ module Rosette
         repo.path if repo
       end
 
+      def source_locale
+        @source_locale ||= Locale.parse('en-US', Locale::DEFAULT_FORMAT)
+      end
+
+      def set_source_locale(code, format = Locale::DEFAULT_FORMAT)
+        @source_locale = Locale.parse(code, format)
+      end
+
       def add_extractor(extractor_id)
         klass = ExtractorId.resolve(extractor_id)
         config = ExtractorConfig.new(klass)
