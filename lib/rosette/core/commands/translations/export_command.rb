@@ -40,11 +40,15 @@ module Rosette
           self
         end
 
+        def locale_obj
+          @locale_obj ||= get_repo(repo_name).get_locale(locale)
+        end
+
         def execute
           stream = StringIO.new
           repo_config = get_repo(repo_name)
           serializer_config = get_serializer_config(repo_config)
-          serializer_instance = serializer_config.klass.new(stream, encoding)
+          serializer_instance = serializer_config.klass.new(stream, locale_obj, encoding)
           snapshot = take_snapshot(repo_config, commit_id)
           translation_count = 0
 
