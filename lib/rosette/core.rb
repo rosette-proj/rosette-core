@@ -3,6 +3,8 @@
 require 'logger'
 require 'rosette/core/errors'
 
+java_import java.lang.System
+
 module Rosette
   def self.logger
     @logger ||= Logger.new(STDOUT)
@@ -13,7 +15,7 @@ module Rosette
   end
 
   def self.env
-    @env || 'development'
+    @env ||= ENV['ROSETTE_ENV'] || System.getProperty('ROSETTE_ENV') || 'development'
   end
 
   def self.env=(new_env)
