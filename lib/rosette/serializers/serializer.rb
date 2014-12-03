@@ -20,9 +20,9 @@ module Rosette
         end
       end
 
-      def initialize(stream)
+      def initialize(stream, locale, encoding = Encoding::UTF_8)
         @stream = stream
-        after_initialize
+        @locale = locale
       end
 
       def write_key_value(trans)
