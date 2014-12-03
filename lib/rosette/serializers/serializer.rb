@@ -4,7 +4,7 @@ module Rosette
   module Serializers
 
     class Serializer
-      attr_reader :stream
+      attr_reader :stream, :locale, :encoding
 
       class << self
         def from_stream(stream)
@@ -23,6 +23,7 @@ module Rosette
       def initialize(stream, locale, encoding = Encoding::UTF_8)
         @stream = stream
         @locale = locale
+        @encoding = encoding
       end
 
       def write_key_value(trans)
