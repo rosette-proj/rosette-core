@@ -25,6 +25,7 @@ module Rosette
   def self.build_config
     configuration = Rosette::Core::Configurator.new
     yield configuration
+    configuration.apply_integrations(configuration)
     configuration
   end
 
