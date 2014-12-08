@@ -14,7 +14,7 @@ module Rosette
       end
 
       def message
-        "#{message} (#{language})"
+        "#{@message} (#{language})"
       end
 
       alias :to_s :message
