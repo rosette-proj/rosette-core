@@ -8,12 +8,13 @@ module Rosette
     class Configurator
       include Integrations::Integratable
 
-      attr_reader :repo_configs, :datastore, :cache
+      attr_reader :repo_configs, :datastore, :cache, :error_reporter
 
       def initialize
         @repo_configs = []
         @integrations = []
         @cache = ActiveSupport::Cache.lookup_store
+        @error_reporter ||= PrintingErrorReporter.new(Rosette.logger)
       end
 
       def add_repo(name)
@@ -43,6 +44,10 @@ module Rosette
 
         @datastore = const.new(options)
         nil
+      end
+
+      def use_error_reporter(reporter)
+        @error_reporter = reporter
       end
 
       def use_cache(*args)
