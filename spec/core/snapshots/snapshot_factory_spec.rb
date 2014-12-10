@@ -16,25 +16,12 @@ describe SnapshotFactory do
     end.reverse
   end
 
-  class StagedCollector
-    attr_reader :reporter, :messages
-
-    StageChangedArgs = Struct.new(:new_stage, :old_stage)
-    StageFinishedArgs = Struct.new(:count, :total, :percentage, :stage)
-    ProgressArgs = Struct.new(:count, :total, :percentage, :stage)
-
-    def initialize
-      @messages = []
-      @reporter = ProgressReporters::StagedProgressReporter.new
-        .on_stage_changed { |*args| @messages << StageChangedArgs.new(*args) }
-        .on_stage_finished { |*args| @messages << StageFinishedArgs.new(*args) }
-        .on_progress { |*args| @messages << ProgressArgs.new(*args) }
-    end
-  end
-
   describe '#take_snapshot' do
     it 'returns the correct snapshot for the first commit' do
-      factory = factory_class.new(repo, commits.first)
+      factory = factory_class.new
+        .set_repo(repo)
+        .set_start_commit(commits.first)
+
       factory.take_snapshot.tap do |snapshot|
         expect(snapshot).to eq(
           'app/controllers/product_controller.txt' => commits.first.getName,
@@ -47,33 +34,20 @@ describe SnapshotFactory do
 
     it 'raises an error if passed a non-staged progress reporter' do
       reporter = ::ProgressReporters::ProgressReporter.new
-      factory = factory_class.new(repo, commits.first)
+
+      factory = factory_class.new
+        .set_repo(repo)
+        .set_start_commit(commits.first)
+
       expect(lambda { factory.take_snapshot(reporter) }).to raise_error(ArgumentError)
     end
 
-    it 'reports stages to the progress reporter' do
-      collector = StagedCollector.new
-      factory = factory_class.new(repo, commits.first)
-      factory.take_snapshot(collector.reporter)
-
-      collector.messages.tap do |messages|
-        messages[0..4].each_with_index do |message, idx|
-          expect(message.stage).to eq(:finding_objects)
-          expect(message.count).to eq(idx)
-        end
-
-        expect(messages[5].old_stage).to eq(:finding_objects)
-        expect(messages[5].new_stage).to eq(:finding_commit_ids)
-
-        messages[6..9].each_with_index do |message, idx|
-          expect(message.stage).to eq(:finding_commit_ids)
-          expect(message.count).to eq(idx + 1) # starts at 1, 0 is not logged
-        end
-      end
-    end
-
     context 'with a factory pointed at the last commit' do
-      let(:factory) { factory_class.new(repo, commits.last) }
+      let(:factory) do
+        factory_class.new
+          .set_repo(repo)
+          .set_start_commit(commits.last)
+      end
 
       it 'returns the correct snapshot for the second commit' do
         factory.take_snapshot.tap do |snapshot|
