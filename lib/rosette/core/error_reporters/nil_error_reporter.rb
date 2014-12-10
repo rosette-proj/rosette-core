@@ -9,6 +9,7 @@ module Rosette
       end
 
       def report_error(error); end
+      def report_warning(error); end
     end
 
   end

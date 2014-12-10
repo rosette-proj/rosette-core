@@ -22,6 +22,10 @@ module Rosette
           end
         end
       end
+
+      def report_warning(error)
+        report_error(error)
+      end
     end
 
   end
