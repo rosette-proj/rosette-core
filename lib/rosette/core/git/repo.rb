@@ -181,14 +181,15 @@ module Rosette
         jgit_repo.all_refs
       end
 
-      def all_heads(walker = rev_walker)
+      def all_head_refs
         all_refs = jgit_repo.refDatabase.getRefs(RefDatabase::ALL).keys
-
-        refs = all_refs.select do |ref|
+        all_refs.select do |ref|
           ref =~ /\Arefs\/(?:heads|remotes)/
         end
+      end
 
-        refs.map { |ref| get_rev_commit(ref, walker) }
+      def all_heads(walker = rev_walker)
+        all_head_refs.map { |ref| get_rev_commit(ref, walker) }
       end
 
       private
