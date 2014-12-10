@@ -38,6 +38,7 @@ end
 
 require 'jbundler'
 require 'rspec'
+require 'progress-reporters'
 require 'rosette/core'
 require 'rosette/serializers'
 require 'rosette/integrations'
