@@ -16,8 +16,8 @@ module Rosette
 
         include WithSnapshots
 
-        validate :serializer, serializer: true
-        validate :encoding, encoding: true
+        validate :serializer, type: :serializer
+        validate :encoding, type: :encoding
 
         def set_serializer(serializer)
           @serializer = serializer
