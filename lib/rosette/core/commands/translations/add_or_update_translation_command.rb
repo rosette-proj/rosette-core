@@ -36,6 +36,8 @@ module Rosette
               locale: locale
             }
           )
+        rescue Rosette::DataStores::Errors::PhraseNotFoundError => e
+          configuration.error_reporter.report_warning(e)
         end
       end
 
