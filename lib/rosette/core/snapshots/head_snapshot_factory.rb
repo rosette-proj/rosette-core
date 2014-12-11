@@ -22,7 +22,7 @@ module Rosette
       end
 
       def take_snapshot
-        rev_walk = RevWalk.new(repo_config.jgit_repo)
+        rev_walk = RevWalk.new(repo_config.repo.jgit_repo)
         repo_config.repo.all_head_refs.each_with_object({}) do |ref, snapshot|
           snapshot[ref] = process_ref(rev_walk, ref)
         end
