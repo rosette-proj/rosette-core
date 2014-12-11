@@ -17,7 +17,7 @@ module Rosette
       def process_ref(rev_walk, ref)
         cache_key = head_snapshot_cache_key(
           repo_config.name,
-          repo.get_rev_commit(ref, rev_walk).getId.name
+          repo_config.repo.get_rev_commit(ref, rev_walk).getId.name
         )
 
         cache.fetch(cache_key) do
@@ -26,7 +26,7 @@ module Rosette
       end
 
       def head_snapshot_cache_key(repo_name, commit_id)
-        ['head_snapshots', repo_name, commit_id].join('/')
+        ['head_snapshots', repo_config.name, commit_id].join('/')
       end
 
       def head_snapshot_factory
