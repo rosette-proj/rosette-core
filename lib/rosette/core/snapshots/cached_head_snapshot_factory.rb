@@ -26,7 +26,7 @@ module Rosette
       end
 
       def head_snapshot_cache_key(repo_name, commit_id)
-        ['head_snapshots', repo_name, commit_id)
+        ['head_snapshots', repo_name, commit_id].join('/')
       end
 
       def head_snapshot_factory
