@@ -17,11 +17,9 @@ module Rosette
         cache_key = snapshot_cache_key(repo_config.name, commit_id, paths)
 
         cache.fetch(cache_key) do
-          rev = repo_config.repo.get_rev_commit(commit_id)
-
           factory = snapshot_factory.new
             .set_repo(repo_config.repo)
-            .set_start_commit(rev)
+            .set_start_commit_id(commit_id)
 
           factory.filter_by_paths(paths) if paths.size > 0
           factory.take_snapshot

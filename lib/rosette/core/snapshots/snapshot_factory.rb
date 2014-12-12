@@ -14,7 +14,7 @@ module Rosette
 
       include SnapshotFilterable
 
-      attr_reader :repo, :start_commit
+      attr_reader :repo, :start_commit_id
 
       def initialize
         reset
@@ -25,8 +25,8 @@ module Rosette
         self
       end
 
-      def set_start_commit(commit)
-        @start_commit = commit
+      def set_start_commit_id(commit_id)
+        @start_commit_id = commit_id
         self
       end
 
@@ -39,13 +39,15 @@ module Rosette
       private
 
       def build_hash
-        make_path_hash.tap do |path_hash|
+        rev_walk = RevWalk.new(repo.jgit_repo)
+        rev_commit = repo.get_rev_commit(start_commit_id, rev_walk)
+
+        make_path_hash(rev_commit).tap do |path_hash|
           path_filter = PathFilterGroup.createFromStrings(path_hash.keys)
           tree_filter = AndTreeFilter.create(path_filter, TreeFilter::ANY_DIFF)
           tree_walk = TreeWalk.new(repo.jgit_repo)
 
-          rev_walk = RevWalk.new(repo.jgit_repo)
-          rev_walk.markStart(rev_walk.lookupCommit(start_commit.getId))
+          rev_walk.markStart(rev_commit)
           rev_walk.setRevFilter(RevFilter::NO_MERGES)
 
           while cur_commit = rev_walk.next
@@ -75,15 +77,15 @@ module Rosette
         end
       end
 
-      def make_path_hash
-        each_file_in(make_path_gatherer).each_with_object({}) do |walker, ret|
+      def make_path_hash(rev_commit)
+        each_file_in(make_path_gatherer(rev_commit)).each_with_object({}) do |walker, ret|
           ret[walker.getPathString] = nil
         end
       end
 
-      def make_path_gatherer
+      def make_path_gatherer(rev_commit)
         TreeWalk.new(repo.jgit_repo).tap do |walker|
-          walker.addTree(start_commit.getTree)
+          walker.addTree(rev_commit.getTree)
           walker.setFilter(compile_filter)
           walker.setRecursive(true)
         end
