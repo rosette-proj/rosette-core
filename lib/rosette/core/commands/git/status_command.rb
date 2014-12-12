@@ -4,7 +4,6 @@ module Rosette
   module Core
     module Commands
 
-      # A show is really just a diff with your parent
       class StatusCommand < GitCommand
         include WithRepoName
         include WithRef
