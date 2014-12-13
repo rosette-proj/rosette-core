@@ -13,6 +13,7 @@ module Rosette
             datastore.store_phrase(repo_name, phrase)
           end
 
+          rev_commit = get_repo(repo_name).repo.get_rev_commit(commit_id)
           datastore.add_or_update_commit_log(repo_name, commit_id, Time.at(rev_commit.getCommitTime))
           trigger_hooks(:after)
         end
