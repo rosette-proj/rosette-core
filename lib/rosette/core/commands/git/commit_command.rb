@@ -6,7 +6,7 @@ module Rosette
 
       class CommitCommand < GitCommand
         include WithRepoName
-        include WithRef
+        include WithNonMergeRef
 
         def execute
           commit_processor.process_each_phrase(repo_name, commit_id) do |phrase|
