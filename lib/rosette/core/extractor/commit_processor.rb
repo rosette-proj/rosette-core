@@ -43,10 +43,14 @@ module Rosette
             extractor_config.extractor.extract_each_from(source_code) do |phrase, line_number|
               phrase.file = diff_entry.getNewPath
               phrase.commit_id = commit.getId.name
-              author_identity = line_numbers_to_author[line_number - 1]
-              phrase.author_name = author_identity.getName
-              phrase.author_email = author_identity.getEmailAddress
-              phrase.line_number = line_number
+
+              if extractor_config.extractor.supports_line_numbers?
+                author_identity = line_numbers_to_author[line_number - 1]
+                phrase.author_name = author_identity.getName
+                phrase.author_email = author_identity.getEmailAddress
+                phrase.line_number = line_number
+              end
+
               yield phrase
             end
           rescue SyntaxError => e
