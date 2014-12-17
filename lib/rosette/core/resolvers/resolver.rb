@@ -11,7 +11,7 @@ module Rosette
             when Class
               id
             when String
-              parse_id(id, namespace)
+              lookup(id, namespace)
           end
 
           unless klass
@@ -21,12 +21,16 @@ module Rosette
           klass
         end
 
+        def parse_id(id)
+          id.split('/')
+        end
+
         private
 
-        def parse_id(id, namespace)
+        def lookup(id, namespace)
           find_const(
             const_candidates(
-              id.split('/').map do |segment|
+              parse_id(id).map do |segment|
                 StringUtils.camelize(segment)
               end
             ), namespace
