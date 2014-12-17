@@ -43,8 +43,11 @@ module Rosette
         rev_commit = repo.get_rev_commit(start_commit_id, rev_walk)
 
         make_path_hash(rev_commit).tap do |path_hash|
-          path_filter = PathFilterGroup.createFromStrings(path_hash.keys)
-          tree_filter = AndTreeFilter.create(path_filter, TreeFilter::ANY_DIFF)
+          tree_filter = if path_hash.size > 0
+            path_filter = PathFilterGroup.createFromStrings(path_hash.keys)
+            AndTreeFilter.create(path_filter, TreeFilter::ANY_DIFF)
+          end
+
           tree_walk = TreeWalk.new(repo.jgit_repo)
 
           rev_walk.markStart(rev_commit)
