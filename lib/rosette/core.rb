@@ -15,7 +15,7 @@ module Rosette
   end
 
   def self.env
-    @env ||= ENV['ROSETTE_ENV'] || System.getProperty('ROSETTE_ENV') || 'development'
+    @env || 'development'
   end
 
   def self.env=(new_env)
