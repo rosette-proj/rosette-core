@@ -6,6 +6,10 @@ module Rosette
     # parses "test" code by splitting the file into lines
     module Test
       class TestExtractor < Rosette::Core::Extractor
+        def supports_line_numbers?
+          true
+        end
+
         protected
 
         def each_function_call(source_code)

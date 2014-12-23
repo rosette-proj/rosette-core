@@ -35,7 +35,9 @@ describe CommitProcessor do
         receive(:each_function_call)
         .with(anything)
         .and_raise(
-          Rosette::Core::SyntaxError.new('nope', :error, :txt)
+          Rosette::Core::SyntaxError.new(
+            'nope', StandardError.new('error'), :txt
+          )
         )
       )
 
@@ -46,8 +48,8 @@ describe CommitProcessor do
           expect(errors.size).to eq(2)
 
           errors.each do |error|
-            expect(error.original_exception).to eq(:error)
-            expect(error.message).to eq('nope')
+            expect(error.original_exception).to be_a(StandardError)
+            expect(error.message).to eq("nope (txt): error (txt) in #{error.file} at #{fixture_commit.sha}")
             expect(error.language).to eq(:txt)
             expect(error.commit_id).to eq(fixture_commit.sha)
           end
