@@ -19,7 +19,7 @@ module Rosette
 
     # NOTE: This class is NOT thread safe.
     class Repo
-      attr_reader :jgit_repo, :path
+      attr_reader :jgit_repo
 
       def self.from_path(path)
         new(FileRepository.new(path))
