@@ -13,6 +13,10 @@ group :development, :test do
   gem 'repo-fixture'
 end
 
+group :development do
+  gem 'yard', '~> 0.8.0'
+end
+
 group :test do
   gem 'simplecov'
   gem 'jbundler'

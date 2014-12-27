@@ -7,8 +7,55 @@ module Rosette
   module Core
     module Commands
 
+      # Finds, encodes, and serializes the translations identified by a
+      # snapshot of the given git ref or commit id. In other words, this
+      # command exports the translations for a git branch or commit. This
+      # command also applies any configured pre-processors to the
+      # translations before serializing them. As a better visualization,
+      # here's the pipeline translations go through when exported:
+      #
+      # preprocessed -> serialized/encoded -> base 64 encoded (if
+      # requested) -> returned
+      #
+      # @!attribute [r] locale
+      #   @return [String] the locale to export translations for.
+      # @!attribute [r] serializer
+      #   @return [String] the serializer to use when exporting the
+      #     translations. Must be recognizable as a serializer id, eg.
+      #     'yaml/rails' or 'json/key-value'.
+      # @!attribute [r] base_64_encode
+      #   @return [Boolean] whether or not the serialized translations
+      #     should be returned encoded in base 64.
+      # @!attribute [r] encoding
+      #   @return [String, Encoding] the encoding translations are
+      #     expected to be in. This attribute refers to string encoding
+      #     and is distinct from base 64 encoding.
+      # @!attribute [r] include_snapshot
+      #   @return [Boolean] whether or not the snapshot used to identify
+      #     translations is returned alongside the serialized phrases.
+      #
+      # @example
+      #   cmd = ExportCommand.new(configuration)
+      #     .set_repo_name('my_repo')
+      #     .set_ref('master')
+      #     .set_locale('pt-BR')
+      #     .set_serializer('json/key-value')
+      #     .set_base_64_encode(true)
+      #     .set_encoding(Encoding::UTF_8)
+      #     .set_include_snapshot(false)
+      #
+      #   cmd.execute
+      #   # =>
+      #   # {
+      #   #   payload: "<base 64 encoded string>",
+      #   #   encoding: "UTF_8"
+      #   #   translation_count: 105,
+      #   #   base_64_encoded: true
+      #   #   locale: "pt-BR"
+      #   # }
       class ExportCommand < GitCommand
-        attr_reader :locale, :serializer, :base_64_encode, :encoding, :include_snapshot
+        attr_reader :locale, :serializer, :base_64_encode,
+        attr_reader :encoding, :include_snapshot
 
         include WithRepoName
         include WithRef
@@ -19,31 +66,59 @@ module Rosette
         validate :serializer, type: :serializer
         validate :encoding, type: :encoding
 
+        # Sets the serializer used to export translations. Must be recognizable
+        # as a serializer id, eg. 'yaml/rails' or 'json/key-value'.
+        #
+        # @param [String] serializer The serializer to use.
+        # @return [self]
         def set_serializer(serializer)
           @serializer = serializer
           self
         end
 
+        # Sets whether or not the serialized translations should be returned
+        # encoded in base 64.
+        #
+        # @param [Boolean] should_encode To encode or not encode, that is
+        #   the question.
+        # @return [self]
         def set_base_64_encode(should_encode)
           @base_64_encode = should_encode
           self
         end
 
-        # eg. UTF-8, UTF-16BE, etc
+        # Sets the encoding translations are expected to be in. Not to be
+        # confused with base 64 encoding.
+        #
+        # @param [String, Encoding] encoding The encoding to use. Can be
+        #   either a +String+ or a Ruby +Encoding+, eg. +Encoding::UTF_8+.
+        # @return [self]
         def set_encoding(encoding)
           @encoding = encoding
           self
         end
 
+        # Sets whether or not to include the snapshot in the return value.
+        #
+        # @param [Boolean] should_include_snapshot whether or not to
+        #   return the snapshot.
+        # @return [self]
         def set_include_snapshot(should_include_snapshot)
           @include_snapshot = should_include_snapshot
           self
         end
 
-        def locale_obj
-          @locale_obj ||= get_repo(repo_name).get_locale(locale)
-        end
-
+        # Perform the export.
+        #
+        # @return [Hash] containing the following attributes:
+        #   * +payload+: The serialized +String+ blob of all the translations.
+        #   * +encoding+: The encoding of the strings in +payload+.
+        #   * +translation_count+: The number of translations in +payload+.
+        #   * +base_64_encoded+: A boolean indicating if +payload+ is base
+        #     64 encoded.
+        #   * +locale+: The locale the translations in +payload+ are written in.
+        #   * +snapshot+: The snapshot used to identify the translations in
+        #     +payload+. Not included if +base_64_encode+ is +false+.
         def execute
           stream = StringIO.new
           repo_config = get_repo(repo_name)
@@ -80,6 +155,10 @@ module Rosette
         end
 
         private
+
+        def locale_obj
+          @locale_obj ||= get_repo(repo_name).get_locale(locale)
+        end
 
         def apply_preprocessors(translation, serializer_config)
           serializer_config.preprocessors.inject(translation) do |trans, preprocessor|

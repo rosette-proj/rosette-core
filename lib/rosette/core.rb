@@ -63,6 +63,7 @@ module Rosette
 
     autoload :TranslationToHash,             'rosette/core/extractor/translation/translation_to_hash'
 
+    autoload :ErrorReporter,                 'rosette/core/error_reporters/error_reporter'
     autoload :NilErrorReporter,              'rosette/core/error_reporters/nil_error_reporter'
     autoload :PrintingErrorReporter,         'rosette/core/error_reporters/printing_error_reporter'
     autoload :BufferedErrorReporter,         'rosette/core/error_reporters/buffered_error_reporter'

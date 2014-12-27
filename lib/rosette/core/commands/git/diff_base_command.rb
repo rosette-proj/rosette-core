@@ -4,7 +4,7 @@ module Rosette
   module Core
     module Commands
 
-      # the base class for commands that need to calculate diffs (eg. diff, show)
+      # The base class for commands that need to calculate diffs.
       class DiffBaseCommand < GitCommand
         protected
 

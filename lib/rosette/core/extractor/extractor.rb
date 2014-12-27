@@ -5,13 +5,30 @@ module Rosette
 
     # Base class for extractors that extract phrases from source code,
     # eg. Ruby, JavaScript, HAML, etc.
+    #
+    # @!attribute [r] config
+    #   @return [Configurator] the Rosette config to use.
     class Extractor
       attr_reader :config
 
+      # Creates a new extractor.
+      #
+      # @param [Configurator] config The Rosette config to use.
       def initialize(config = nil)
         @config = config
       end
 
+      # Extracts each translatable phrase from the given source code.
+      # Derived classes must implement the +#each_function_call+ method
+      # for this to work.
+      #
+      # @param [String] source_code The source code to extract phrases
+      #   from.
+      # @return [nil, Enumerator] If passed a block, this method yields
+      #   each consecutive phrase found in +source_code+. If no block is
+      #   passed, it returns an +Enumerator+.
+      # @yield [phrase] a single extracted phrase.
+      # @yieldparam phrase [Phrase]
       def extract_each_from(source_code)
         if block_given?
           each_function_call(source_code) do |node, line_number|
