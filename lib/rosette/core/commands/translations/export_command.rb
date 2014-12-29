@@ -54,7 +54,7 @@ module Rosette
       #   #   locale: "pt-BR"
       #   # }
       class ExportCommand < GitCommand
-        attr_reader :locale, :serializer, :base_64_encode,
+        attr_reader :locale, :serializer, :base_64_encode
         attr_reader :encoding, :include_snapshot
 
         include WithRepoName

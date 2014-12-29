@@ -8,7 +8,7 @@ module Rosette
       # Meant to be mixed into the classes in {Rosette::Core::Commands}.
       #
       # @example
-      #   class MyCommand < Rosette::Core::Commands::Command
+      #   class MyCommand < Command
       #     include WithRepoName
       #     include WithLocale
       #   end
@@ -26,6 +26,10 @@ module Rosette
       module WithLocale
         attr_reader :locale
 
+        # Sets the locale code.
+        #
+        # @param [String] locale_code
+        # @return [self]
         def set_locale(locale_code)
           @locale = locale_code
           self

@@ -109,8 +109,8 @@ module Rosette
 
       # Creates a new repo config object.
       #
-      # @param [String] The name of the repository. Usually matches the name
-      #   of the directory on disk, but that's not required.
+      # @param [String] name The name of the repository. Usually matches the
+      #   name of the directory on disk, but that's not required.
       def initialize(name)
         @name = name
         @extractor_configs = []

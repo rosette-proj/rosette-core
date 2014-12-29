@@ -36,8 +36,8 @@ module Rosette
       # Overridden. Returns true if the current file has a matching extension,
       # false otherwise. Generally this method is only called by Jgit internals.
       #
-      # @param [Java::OrgEclipseJgitTreewalk::TreeWalk] The walker with the
-      #   current file.
+      # @param [Java::OrgEclipseJgitTreewalk::TreeWalk] walker The walker with
+      #   the current file.
       # @return [Boolean]
       def include(walker)
         if walker.isSubtree

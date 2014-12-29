@@ -5,7 +5,7 @@ require 'active_support'
 module Rosette
   module Core
 
-    # Builds Rosette configuration. Usually used via {Rosette#build_config}.
+    # Builds Rosette configuration. Usually used via +Rosette#build_config+.
     #
     # @see Rosette
     #

@@ -16,9 +16,9 @@ module Rosette
 
         # Parses and identifies the class constant for the given preprocessor id.
         #
-        # @param [Class, String] id When given a class, returns the class. When
-        #   given a string, parses and identifies the corresponding class
-        #   constant in +namespace+.
+        # @param [Class, String] preprocessor_id When given a class, returns the
+        #   class. When given a string, parses and identifies the corresponding
+        #   class constant in +namespace+.
         # @param [Class] namespace The namespace to look in.
         # @return [Class] The identified class constant.
         def resolve(preprocessor_id, namespace = Rosette::Preprocessors)

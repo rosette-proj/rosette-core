@@ -148,7 +148,7 @@ module Rosette
 
         # Creates a bunch of {PathNode}s combined using a logical "or".
         #
-        # @param [Array<String>] A list of paths.
+        # @param [Array<String>] paths A list of paths.
         # @return [PathNode, OrNode] the root of a tree of all the paths specified
         #   in +paths+. Each path will be wrapped in a {PathNode} and logically
         #   "or"ed together. If +paths+ only contains one path, then this method
@@ -169,9 +169,9 @@ module Rosette
           RegexNode.new(regex)
         end
 
-        # Creates a bunch of {RegexNodes} combined using a logical "or".
+        # Creates a bunch of {RegexNode}s combined using a logical "or".
         #
-        # @param [Array<Regexp>] A list of regular expressions.
+        # @param [Array<Regexp>] regexes A list of regular expressions.
         # @return [RegexNode, OrNode] the root of a tree of all the regexes specified
         #   in +regexes+. Each regex will be wrapped in a {RegexNode} and logically
         #   "or"ed together. If +regexes+ only contains one entry, then this method
@@ -250,6 +250,9 @@ module Rosette
           left.matches?(path) && right.matches?(path)
         end
 
+        # Generates a string representation of this node.
+        #
+        # @return [String]
         def to_s
           "(#{left.to_s} AND #{right.to_s})"
         end
@@ -267,6 +270,9 @@ module Rosette
           left.matches?(path) || right.matches?(path)
         end
 
+        # Generates a string representation of this node.
+        #
+        # @return [String]
         def to_s
           "(#{left.to_s} OR #{right.to_s})"
         end
@@ -283,6 +289,9 @@ module Rosette
           !child.matches?(path)
         end
 
+        # Generates a string representation of this node.
+        #
+        # @return [String]
         def to_s
           "(NOT #{child.to_s})"
         end
@@ -312,6 +321,9 @@ module Rosette
           path[-extension.size..-1] == extension
         end
 
+        # Generates a string representation of this node.
+        #
+        # @return [String]
         def to_s
           "has_file_extension('#{extension}')"
         end
@@ -343,6 +355,9 @@ module Rosette
           match_path[0...path.size] == path
         end
 
+        # Generates a string representation of this node.
+        #
+        # @return [String]
         def to_s
           "matches_path('#{path}')"
         end
@@ -370,6 +385,9 @@ module Rosette
           !!(path =~ regex)
         end
 
+        # Generates a string representation of this node.
+        #
+        # @return [String]
         def to_s
           "matches_regex(/#{regex.source}/)"
         end

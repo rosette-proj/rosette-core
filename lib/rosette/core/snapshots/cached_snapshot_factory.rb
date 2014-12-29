@@ -29,9 +29,9 @@ module Rosette
       # @param [RepoConfig] repo_config The repo config for the repo to take
       #   the snapshot for.
       # @param [String] commit_id The commit id to take the snapshot of.
-      # @param [Array<String>] The list of paths to include in the snapshot.
-      #   If +paths+ is empty, this method will return a snapshot that contains
-      #   all paths.
+      # @param [Array<String>] paths The list of paths to include in the
+      #   snapshot. If +paths+ is empty, this method will return a snapshot
+      #   that contains all paths.
       # @return [Hash<String, String>] The snapshot hash (path to commit id
       #   pairs).
       def take_snapshot(repo_config, commit_id, paths = [])

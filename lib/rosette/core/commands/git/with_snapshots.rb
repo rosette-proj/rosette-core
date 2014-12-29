@@ -19,7 +19,7 @@ module Rosette
       #   snap  # => { 'path/to/file.rb' => '67f0e9a60dfe39430b346086f965e6c94a8ddd24', ... }
       module WithSnapshots
         # Takes and returns a snapshot hash for the given repo and commit id. Limits
-        # the paths returned via the {paths} argument. If no paths are passed,
+        # the paths returned via the +paths+ argument. If no paths are passed,
         # {#take_snapshot} returns a snapshot containing all the paths in the repository.
         #
         # @param [Rosette::Core::RepoConfig] repo_config The repository configuration

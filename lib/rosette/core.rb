@@ -5,23 +5,43 @@ require 'rosette/core/errors'
 
 java_import java.lang.System
 
+# Rosette is a modular internationalization platform written in Ruby.
 module Rosette
+  # Get the current Rosette logger. Defaults to a logger that logs to STDOUT.
+  #
+  # @return [#info, #warning, #error] The current logger.
   def self.logger
     @logger ||= Logger.new(STDOUT)
   end
 
+  # Set the Rosette logger.
+  #
+  # @param [#info, #warning, #error] new_logger The new logger.
+  # @return [void]
   def self.logger=(new_logger)
     @logger = new_logger
   end
 
+  # Get the current Rosette environment name. Defaults to "development".
+  #
+  # @return [String] The current environment name.
   def self.env
     @env || 'development'
   end
 
+  # Set the Rosette environment name.
+  #
+  # @param [String] new_env The new environment name.
+  # @return [void]
   def self.env=(new_env)
     @env = new_env
   end
 
+  # Constructs a new Rosette configurator object and yields it to the block.
+  #
+  # @return [Configurator] The configurator object that was yielded.
+  # @yield [configuration]
+  # @yieldparam configuration [Configurator]
   def self.build_config
     configuration = Rosette::Core::Configurator.new
     yield configuration
@@ -29,7 +49,9 @@ module Rosette
     configuration
   end
 
+  # Namespace for all Rosette core classes.
   module Core
+    # The default encoding for all of Rosette.
     DEFAULT_ENCODING = Encoding::UTF_8
 
     autoload :Configurator,                  'rosette/core/configurator'

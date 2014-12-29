@@ -74,7 +74,7 @@ module Rosette
 
         # Creates a new command instance.
         #
-        # @param [Configurator] The Rosette configuration to use.
+        # @param [Configurator] configuration The Rosette configuration to use.
         def initialize(configuration)
           @configuration = configuration
         end
@@ -106,6 +106,7 @@ module Rosette
         end
       end
 
+      # Base class for all of Rosette's git-based commands.
       class GitCommand < Command
         # Returns true if the command's validators all pass, false otherwise.
         # After this method is finished executing, the +messages+ hash will

@@ -92,7 +92,7 @@ module Rosette
         # idea to only call one of {#set_head_commit_id} or {#set_head_ref} but
         # not both.
         #
-        # @param [String] head_commit_id The head commit id.
+        # @param [String] diff_point_commit_id The diff point commit id.
         # @return [self]
         def set_diff_point_commit_id(diff_point_commit_id)
           @diff_point_commit_str = diff_point_commit_id

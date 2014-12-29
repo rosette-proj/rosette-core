@@ -2,12 +2,21 @@
 
 module Rosette
   module DataStores
+
+    # Contains several constants indicating the translation status of a set
+    # of phrases. Generally attached to commit logs.
     module PhraseStatus
-
+      # Indicates the phrases have been imported but not submitted for
+      # translation.
       UNTRANSLATED = 'UNTRANSLATED'
-      PENDING = 'PENDING'
-      TRANSLATED = 'TRANSLATED'
 
+      # Indicates the phrases have been submitted for translation.
+      PENDING = 'PENDING'
+
+      # Indicates the phrases have all been translated into every supported
+      # locale.
+      TRANSLATED = 'TRANSLATED'
     end
+
   end
 end

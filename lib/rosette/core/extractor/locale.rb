@@ -16,6 +16,9 @@ module Rosette
     # @!attribute [r] territory
     #   @return [String] the locale's territory component.
     class Locale
+      # The default locale format. A locale format defines how a locale code
+      # should be formatted. There are a number of formats, including BCP-47,
+      # ISO-639-1, ISO-639-2, etc.
       DEFAULT_FORMAT = :bcp_47
 
       class << self
@@ -61,7 +64,7 @@ module Rosette
           downcase(other.territory) == downcase(territory)
       end
 
-      # A synonym for {#eql}.
+      # A synonym for {#eql?}.
       #
       # @param [Locale] other
       # @return [Boolean]

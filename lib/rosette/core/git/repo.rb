@@ -308,7 +308,7 @@ module Rosette
 
       # Get a list of commits for all the heads in the repo.
       #
-      # @param [Java::OrgEclipseJgitRevwalk::RevWalk] The walker to use.
+      # @param [Java::OrgEclipseJgitRevwalk::RevWalk] walker The walker to use.
       # @return [Array<Java::OrgEclipseJgitRevwalk::RevCommit>] A list of
       #   commits, one for each of the heads in the repo.
       def all_heads(walker = rev_walker)
