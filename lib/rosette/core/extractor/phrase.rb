@@ -28,7 +28,7 @@ module Rosette
       include PhraseToHash
 
       attr_reader :key, :meta_key
-      attr_accessor :file, :commit_id,
+      attr_accessor :file, :commit_id
       attr_accessor :author_name, :author_email
       attr_accessor :line_number
 

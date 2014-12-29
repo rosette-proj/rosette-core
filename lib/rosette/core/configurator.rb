@@ -5,11 +5,32 @@ require 'active_support'
 module Rosette
   module Core
 
+    # Builds Rosette configuration. Usually used via {Rosette#build_config}.
+    #
+    # @see Rosette
+    #
+    # @example
+    #   config = Rosette.build_config do |config|
+    #     config.add_repo do |repo_config|
+    #       ...
+    #     end
+    #   end
+    #
+    # @!attribute [r] repo_configs
+    #   @return [Array<RepoConfig>] The current array of configured repo
+    #     configs.
+    # @!attribute [r] datastore
+    #   @return [DataStore] The datastore to store phrases and translations in.
+    # @!attribute [r] cache
+    #   @return [#fetch] The cache instance to use (can be +nil+).
+    # @!attribute [r] error_reporter
+    #   @return [ErrorReporter] The error reporter to use if errors occur.
     class Configurator
       include Integrations::Integratable
 
       attr_reader :repo_configs, :datastore, :cache, :error_reporter
 
+      # Creates a new config object.
       def initialize
         @repo_configs = []
         @integrations = []
@@ -17,6 +38,9 @@ module Rosette
         @error_reporter ||= PrintingErrorReporter.new(Rosette.logger)
       end
 
+      # Adds a repo config.
+      #
+      # @param [String] name The semantic name of the repo.
       def add_repo(name)
         repo_configs << Rosette::Core::RepoConfig.new(name).tap do |repo_config|
           yield repo_config
@@ -24,10 +48,22 @@ module Rosette
         end
       end
 
+      # Retrieve a repo config by name.
+      #
+      # @param [String] name The semantic name of the repo to retrieve.
+      # @return [RepoConfig]
       def get_repo(name)
         repo_configs.find { |rc| rc.name == name }
       end
 
+      # Set the datastore to use to store phrases and translations.
+      #
+      # @param [Const, String] datastore The datastore to use. When this
+      #   parameter is a string, +use_datastore+ will try to look up the
+      #   corresponding constant with a "DataStore" suffix. If it's a constant
+      #   instead, the constant is used without modifications.
+      # @param [Hash] options A hash of options passed to the datastore's
+      #   constructor.
       def use_datastore(datastore, options = {})
         const = case datastore
           when String
@@ -46,10 +82,20 @@ module Rosette
         nil
       end
 
+      # Set the error reporter this config should use to report errors. The
+      # default error reporter is an instance of {PrintingErrorReporter}.
+      #
+      # @param [ErrorReporter] reporter The error reporter.
       def use_error_reporter(reporter)
         @error_reporter = reporter
       end
 
+      # Set the cache implementation. This must be one of the offerings in
+      # +ActiveSupport::Cache+:
+      # http://api.rubyonrails.org/classes/ActiveSupport/Cache.html
+      #
+      # @param [*] args The args to pass to ActiveSupport::Cache#lookup_store:
+      #   http://api.rubyonrails.org/classes/ActiveSupport/Cache.html#method-c-lookup_store
       def use_cache(*args)
         @cache = ActiveSupport::Cache.lookup_store(args)
       end

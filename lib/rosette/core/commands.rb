@@ -4,6 +4,8 @@ require 'digest/sha1'
 
 module Rosette
   module Core
+
+    # Namespace for all Rosette commands.
     module Commands
 
       autoload :Errors,                        'rosette/core/commands/errors'
@@ -27,14 +29,28 @@ module Rosette
       autoload :DiffEntry,                     'rosette/core/commands/git/diff_entry'
       autoload :WithLocale,                    'rosette/core/commands/translations/with_locale'
 
+      # Base class for all Rosette commands.
+      #
+      # @!attribute [r] configuration
+      #   @return [Configurator] Rosette configuration.
       class Command
         attr_reader :configuration
 
         class << self
+          # Validates a single field.
+          #
+          # @param [Symbol] field The field to validate.
+          # @param [Hash] validator_hash The hash of options for this
+          #   validation. For now, should just contain +:type+ which contains
+          #   to a symbol corresponding to the type of validator to use.
           def validate(field, validator_hash)
             validators[field] << instantiate_validator(validator_hash)
           end
 
+          # A hash of all the currently configured validators.
+          #
+          # @return [Hash<Symbol, Array<Validator>>] The hash of fields to
+          #   valdiator instances.
           def validators
             @validators ||= Hash.new { |hash, key| hash[key] = [] }
           end
@@ -56,14 +72,25 @@ module Rosette
           end
         end
 
+        # Creates a new command instance.
+        #
+        # @param [Configurator] The Rosette configuration to use.
         def initialize(configuration)
           @configuration = configuration
         end
 
+        # Gets the hash of current error messages.
+        #
+        # @return [Hash<Symbol, Array<String>>] The hash of current messages.
+        #   The hash's keys are field names and the values are arrays of error
+        #   messages for that field.
         def messages
           @messages ||= {}
         end
 
+        # Returns true if the command's validators all pass, false otherwise.
+        #
+        # @raise [NotImplementedError]
         def valid?
           raise NotImplementedError, 'please use a Command subclass.'
         end
@@ -80,6 +107,11 @@ module Rosette
       end
 
       class GitCommand < Command
+        # Returns true if the command's validators all pass, false otherwise.
+        # After this method is finished executing, the +messages+ hash will
+        # have been populated with error messages per field.
+        #
+        # @return [Boolean]
         def valid?
           self.class.validators.all? do |name, validators|
             validators.all? do |validator|
@@ -89,6 +121,8 @@ module Rosette
             end
           end
         end
+
+        protected
 
         def get_repo(name)
           configuration.get_repo(name)
