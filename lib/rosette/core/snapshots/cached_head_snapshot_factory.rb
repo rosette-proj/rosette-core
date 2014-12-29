@@ -5,9 +5,21 @@ require 'digest/sha1'
 module Rosette
   module Core
 
+    # Takes head snapshots and caches the results. Take a look at
+    # +ActiveSupport::Cache+ for a good set of cache stores that conform to the
+    # right interface.
+    #
+    # @see http://api.rubyonrails.org/classes/ActiveSupport/Cache.html
+    #
+    # @!attribute [r] cache
+    #   @return [#fetch] the cache store. This can be any object that responds
+    #     to +#fetch+ (and passes a block).
     class CachedHeadSnapshotFactory < HeadSnapshotFactory
       attr_reader :cache
 
+      # Creates a new cached head snapshot factory that uses the given cache.
+      #
+      # @param [#fetch] cache The cache to use.
       def initialize(cache)
         @cache = cache
       end

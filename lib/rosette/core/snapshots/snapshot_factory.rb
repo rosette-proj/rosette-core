@@ -10,26 +10,56 @@ java_import 'org.eclipse.jgit.treewalk.filter.TreeFilter'
 
 module Rosette
   module Core
-    class SnapshotFactory
 
+    # Takes snapshots of git repos. A snapshot is a simple key/value map (hash)
+    # of paths to commit ids. The commit id is the last time the file changed.
+    #
+    # @example
+    #   snapshot = SnapshotFactory.new
+    #     .set_repo(Repo.from_path(...))
+    #     .set_start_commit_id('73cd130a42017d794ffa86ef0d255541d518a7b3')
+    #     .take_snapshot
+    #
+    # @!attribute [r] repo
+    #   @return [Repo] the Rosette repo object to use.
+    # @!attribute [r] start_commit_id
+    #   @return [String] the git commit id to start at. File changes that
+    #     occurred more recently than this commit will not be reflected in
+    #     the snapshot.
+    class SnapshotFactory
       include SnapshotFilterable
 
       attr_reader :repo, :start_commit_id
 
+      # Creates a new factory.
       def initialize
         reset
       end
 
+      # Sets the Rosette repo object to use.
+      #
+      # @param [Repo] repo The Rosette repo object to use.
+      # @return [self]
       def set_repo(repo)
         @repo = repo
         self
       end
 
+      # Sets the starting commit id. File changes that occurred more recently
+      # than this commit will not be reflected in the snapshot. In other words,
+      # this is the commit id to take the snapshot of.
+      #
+      # @param [String] commit_id The starting commit id.
+      # @return [self]
       def set_start_commit_id(commit_id)
         @start_commit_id = commit_id
         self
       end
 
+      # Takes the snapshot.
+      #
+      # @return [Hash<String, String>] The snapshot hash (path to commit id
+      #   pairs).
       def take_snapshot
         build_hash.tap do
           reset
@@ -96,6 +126,7 @@ module Rosette
 
       def reset
         @repo = nil
+        @start_commit_id = nil
         @filter_strategy = :or
         @filters = []
       end
@@ -109,7 +140,7 @@ module Rosette
           to_enum(__method__, tree_walk)
         end
       end
-
     end
+
   end
 end
