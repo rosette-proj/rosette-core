@@ -44,6 +44,7 @@ module Rosette
       # in turn yield the configurator to you.
       #
       # @param [String] preprocessor_id The id of the preprocessor to add.
+      # @return [void]
       def add_preprocessor(preprocessor_id, &block)
         klass = PreprocessorId.resolve(preprocessor_id)
         preprocessors << klass.configure(&block)

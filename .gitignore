@@ -6,4 +6,5 @@ tester2.rb
 .DS_Store
 spec/fixtures/repos/bin
 .yardoc/
+doc/
 coverage/

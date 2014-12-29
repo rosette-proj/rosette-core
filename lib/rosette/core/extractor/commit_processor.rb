@@ -40,7 +40,7 @@ module Rosette
       # @param [String] commit_ref The git ref or commit id to extract
       #   translatable phrases from.
       # @raise [Java::OrgEclipseJgitErrors::MissingObjectException]
-      # @return [nil, Enumerator] either nil if a block is given or
+      # @return [void, Enumerator] either nothing if a block is given or
       #   an instance of +Enumerator+ if no block is given.
       # @yield [phrase] a single extracted phrase.
       # @yieldparam phrase [Phrase]

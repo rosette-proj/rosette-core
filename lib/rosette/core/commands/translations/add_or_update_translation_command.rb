@@ -62,15 +62,17 @@ module Rosette
 
         # Adds or updates the translation. If the corresponding phrase can be
         # identified using +key+ and/or +meta_key+, then the translation is
-        # considered associated with that phrase. If no associated phrase can,
-        # be found a {Rosette::DataStores::Errors::PhraseNotFoundError} is logged
+        # considered associated with that phrase. If no associated phrase can
+        # be found, a {Rosette::DataStores::Errors::PhraseNotFoundError} is logged
         # via Rosette's error reporter. Once the phrase has been identified,
         # +execute+ tries to find a translation with the same locale. If one can
         # be found, it updates the entry's translation text. If an existing
         # translation entry cannot be found, one is created with the given
         # locale and translation text and associated with the phrase.
         #
-        # @return [nil]
+        # @see Configurator#error_reporter
+        #
+        # @return [void]
         def execute
           datastore.add_or_update_translation(
             repo_name, {
@@ -81,8 +83,6 @@ module Rosette
               locale: locale
             }
           )
-
-          nil
         rescue Rosette::DataStores::Errors::PhraseNotFoundError => e
           configuration.error_reporter.report_warning(
             e, commit_id: commit_id, locale: locale, repo_name: repo_name

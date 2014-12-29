@@ -8,6 +8,8 @@ module Rosette
       # translations per locale as well as the state of the commit (pending,
       # untranslated, or translated).
       #
+      # @see Rosette::DataStores::PhraseStatus
+      #
       # @example
       #   cmd = StatusCommand.new(configuration)
       #     .set_repo_name('my_repo')
@@ -30,6 +32,8 @@ module Rosette
         include WithRef
 
         # Computes the status for the configured repository and git ref.
+        #
+        # @see Rosette::DataStores::PhraseStatus
         #
         # @return [Hash] a hash of status information for the commit:
         #   * +commit_id+: the commit id of the ref the status came from.

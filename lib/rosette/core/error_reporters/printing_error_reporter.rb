@@ -28,6 +28,7 @@ module Rosette
       # Print an error.
       #
       # @param [Exception] error The error to print.
+      # @return [void]
       def report_error(error)
         stream.write("#{error.message}\n")
 
@@ -41,6 +42,7 @@ module Rosette
       # Print a warning. Warnings are treated the same as errors.
       #
       # @param [Exception] error The error to print.
+      # @return [void]
       def report_warning(error)
         report_error(error)
       end

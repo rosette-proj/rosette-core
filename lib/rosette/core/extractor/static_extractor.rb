@@ -23,7 +23,7 @@ module Rosette
       #
       # @param [String] file_contents The flat file contents to extract
       #   phrases from.
-      # @return [nil, Enumerator] If passed a block, this method yields
+      # @return [void, Enumerator] If passed a block, this method yields
       #   each consecutive phrase found in +file_contents+. If no block is
       #   passed, it returns an +Enumerator+.
       # @yield [phrase] a single extracted phrase.

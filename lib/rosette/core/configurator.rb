@@ -41,6 +41,7 @@ module Rosette
       # Adds a repo config.
       #
       # @param [String] name The semantic name of the repo.
+      # @return [void]
       def add_repo(name)
         repo_configs << Rosette::Core::RepoConfig.new(name).tap do |repo_config|
           yield repo_config
@@ -64,6 +65,7 @@ module Rosette
       #   instead, the constant is used without modifications.
       # @param [Hash] options A hash of options passed to the datastore's
       #   constructor.
+      # @return [void]
       def use_datastore(datastore, options = {})
         const = case datastore
           when String
@@ -86,6 +88,7 @@ module Rosette
       # default error reporter is an instance of {PrintingErrorReporter}.
       #
       # @param [ErrorReporter] reporter The error reporter.
+      # @return [void]
       def use_error_reporter(reporter)
         @error_reporter = reporter
       end
@@ -96,6 +99,7 @@ module Rosette
       #
       # @param [*] args The args to pass to ActiveSupport::Cache#lookup_store:
       #   http://api.rubyonrails.org/classes/ActiveSupport/Cache.html#method-c-lookup_store
+      # @return [void]
       def use_cache(*args)
         @cache = ActiveSupport::Cache.lookup_store(args)
       end

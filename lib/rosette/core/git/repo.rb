@@ -140,7 +140,7 @@ module Rosette
 
       # Iterates over and yields each commit in the repo.
       #
-      # @return [nil, Enumerator] If no block is given, returns an
+      # @return [void, Enumerator] If no block is given, returns an
       #   +Enumerator+.
       # @yield [rev]
       # @yieldparam rev [Java::OrgEclipseJgitRevwalk::RevCommit]
@@ -162,7 +162,7 @@ module Rosette
       # or commit id.
       #
       # @param [String] start_ref The ref to start at.
-      # @return [nil, Enumerator] If no block is given, returns an
+      # @return [void, Enumerator] If no block is given, returns an
       #   +Enumerator+.
       def each_commit_starting_at(start_ref)
         if block_given?
@@ -182,7 +182,7 @@ module Rosette
       #
       # @param [String] start_ref The beginning of the commit range.
       # @param [String] end_ref The end of the commit range (inclusive).
-      # @return [nil, Enumerator] If no block is given, returns an
+      # @return [void, Enumerator] If no block is given, returns an
       #   +Enumerator+.
       def each_commit_in_range(start_ref, end_ref)
         if block_given?
@@ -219,6 +219,7 @@ module Rosette
       # Fetches the repository.
       #
       # @param [String] remote The remote to fetch from.
+      # @return [void]
       def fetch(remote = 'origin')
         @fetch_clone_mutex.synchronize do
           git.fetch.setRemote(remote).call
@@ -229,6 +230,7 @@ module Rosette
       #
       # @param [String] repo_uri The URI of the repo to be cloned.
       # @param [String] repo_dir The directory to store the local copy.
+      # @return [void]
       def self.clone(repo_uri, repo_dir)
         @fetch_clone_mutex.synchronize do
           CloneCommand.new

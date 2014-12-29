@@ -31,7 +31,7 @@ module Rosette
         # Executes the command. Causes phrases to be extracted from the given git ref or
         # commit id and written to the configured data store, triggering hooks in the process.
         #
-        # @return [nil]
+        # @return [void]
         def execute
           commit_processor.process_each_phrase(repo_name, commit_id) do |phrase|
             datastore.store_phrase(repo_name, phrase)
@@ -40,7 +40,6 @@ module Rosette
           rev_commit = get_repo(repo_name).repo.get_rev_commit(commit_id)
           datastore.add_or_update_commit_log(repo_name, commit_id, Time.at(rev_commit.getCommitTime))
           trigger_hooks(:after)
-          nil
         end
 
         private

@@ -43,6 +43,7 @@ module Rosette
           # @param [Hash] validator_hash The hash of options for this
           #   validation. For now, should just contain +:type+ which contains
           #   to a symbol corresponding to the type of validator to use.
+          # @return [void]
           def validate(field, validator_hash)
             validators[field] << instantiate_validator(validator_hash)
           end

@@ -127,6 +127,7 @@ module Rosette
       # Sets the path to the repository's .git directory.
       #
       # @param [String] path The path to the repository's .git directory.
+      # @return [void]
       def set_path(path)
         @repo = Repo.from_path(path)
       end
@@ -135,6 +136,7 @@ module Rosette
       # annotation purposes, the description isn't used by Rosette.
       #
       # @param [String] desc The description text.
+      # @return [void]
       def set_description(desc)
         @description = desc
       end
@@ -158,6 +160,7 @@ module Rosette
       #
       # @param [String] code The locale code.
       # @param [Symbol] format The format +locale+ is in.
+      # @return [void]
       def set_source_locale(code, format = Locale::DEFAULT_FORMAT)
         @source_locale = Locale.parse(code, format)
       end
@@ -167,6 +170,7 @@ module Rosette
       # @param [String] extractor_id The id of the extractor you'd like to add.
       # @yield [config] yields the extractor config
       # @yieldparam config [ExtractorConfig]
+      # @return [void]
       def add_extractor(extractor_id)
         klass = ExtractorId.resolve(extractor_id)
         config = ExtractorConfig.new(klass)
@@ -182,6 +186,7 @@ module Rosette
       #   * +format+: The id of the serializer, eg. "yaml/rails".
       # @yield [config] yields the serializer config
       # @yieldparam config [SerializerConfig]
+      # @return [void]
       def add_serializer(name, options = {})
         serializer_id = options[:format]
         klass = SerializerId.resolve(serializer_id)
@@ -194,6 +199,7 @@ module Rosette
       #
       # @param [String] locale_code The locale you'd like to add.
       # @param [Symbol] format The format of +locale_code+.
+      # @return [void]
       def add_locale(locale_code, format = Locale::DEFAULT_FORMAT)
         add_locales(locale_code)
       end
@@ -202,6 +208,7 @@ module Rosette
       #
       # @param [Array<String>] locale_codes The list of locales to add.
       # @param [Symbol] format The format of +locale_codes+.
+      # @return [void]
       def add_locales(locale_codes, format = Locale::DEFAULT_FORMAT)
         @locales += Array(locale_codes).map do |locale_code|
           Locale.parse(locale_code, format)
@@ -213,6 +220,7 @@ module Rosette
       #
       # @param [Symbol] action The action to hook. Currently the only
       #   supported action is +:commit+.
+      # @return [void]
       def after(action, &block)
         hooks[:after][action] << block
       end

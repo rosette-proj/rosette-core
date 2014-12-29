@@ -22,7 +22,7 @@ module Rosette
       DEFAULT_FORMAT = :bcp_47
 
       class << self
-        # Using the given format, separate the locale code into langauge and
+        # Using the given format, separate the locale code into language and
         # territory.
         #
         # @param [String] locale_code The locale code to parse.
@@ -99,6 +99,8 @@ module Rosette
         # Determines if the given locale code is a valid BCP-47 locale.
         #
         # @param [String] locale_code The locale code to validate.
+        # @return [Boolean] true if +locale_code+ is a valid BCP-47 locale,
+        #   false otherwise.
         def valid?(locale_code)
           !!(locale_code =~ /\A[a-zA-Z]{2,4}(?:[-_][a-zA-Z0-9]{2,5})?\z/)
         end

@@ -24,7 +24,7 @@ module Rosette
       #
       # @param [String] source_code The source code to extract phrases
       #   from.
-      # @return [nil, Enumerator] If passed a block, this method yields
+      # @return [void, Enumerator] If passed a block, this method yields
       #   each consecutive phrase found in +source_code+. If no block is
       #   passed, it returns an +Enumerator+.
       # @yield [phrase] a single extracted phrase.

@@ -19,28 +19,25 @@ module Rosette
       # Add an error object to the list of collected errors.
       #
       # @param [Exception] error The error object to add.
-      # @return [nil]
+      # @return [void]
       def report_error(error)
         errors << error
-        nil
       end
 
       # Add an error object to the list of collected warnings.
       #
       # @param [Exception] error The error object to add.
-      # @return [nil]
+      # @return [void]
       def report_warning(error)
         warnings << error
-        nil
       end
 
       # Clears all errors and warnings
       #
-      # @return [nil]
+      # @return [void]
       def reset
         @errors = []
         @warnings = []
-        nil
       end
 
       # Returns true if one or more errors has been added, false otherwise.
