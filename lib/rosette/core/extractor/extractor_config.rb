@@ -25,12 +25,14 @@ module Rosette
     #     conditions tree. Only files that are matched by the conditions in
     #     this tree will have their phrases extracted.
     class ExtractorConfig
-      attr_reader :extractor, :encoding, :root
+      attr_reader :extractor_id, :extractor, :encoding, :root
 
       # Creates a new extractor configuration.
       #
+      # @param [String] extractor_id The extractor id of +extractor_class+.
       # @param [Class] extractor_class The extractor to use.
-      def initialize(extractor_class)
+      def initialize(extractor_id, extractor_class)
+        @extractor_id = extractor_id
         @extractor = extractor_class.new(self)
         @root = ExtractorConfigurationFactory.create_root
         @encoding = Rosette::Core::DEFAULT_ENCODING

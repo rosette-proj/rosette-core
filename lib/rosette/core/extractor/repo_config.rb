@@ -173,7 +173,7 @@ module Rosette
       # @return [void]
       def add_extractor(extractor_id)
         klass = ExtractorId.resolve(extractor_id)
-        config = ExtractorConfig.new(klass)
+        config = ExtractorConfig.new(extractor_id, klass)
         yield config if block_given?
         extractor_configs << config
       end
@@ -233,6 +233,18 @@ module Rosette
       def get_extractor_configs(path)
         extractor_configs.select do |config|
           config.matches?(path)
+        end
+      end
+
+      # Retrieves the extractor config by either name or extractor id.
+      #
+      # @param [String] name_or_id The name or extractor id.
+      # @return [nil, ExtractorConfig] the first matching extractor config.
+      #   Potentially returns +nil+ if no matching extractor config can be
+      #   found.
+      def get_extractor_config(extractor_id)
+        extractor_configs.find do |config|
+          config.extractor_id == extractor_id
         end
       end
 
