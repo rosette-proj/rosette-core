@@ -89,6 +89,7 @@ module Rosette
     autoload :NilErrorReporter,              'rosette/core/error_reporters/nil_error_reporter'
     autoload :PrintingErrorReporter,         'rosette/core/error_reporters/printing_error_reporter'
     autoload :BufferedErrorReporter,         'rosette/core/error_reporters/buffered_error_reporter'
+    autoload :RaisingErrorReporter,          'rosette/core/error_reporters/raising_error_reporter'
 
     autoload :Validators,                    'rosette/core/validators'
 
