@@ -1,0 +1,6 @@
+language: ruby
+rvm:
+  - jruby-1.7.15
+env:
+  - GIT_BUNDLE=true
+script: 'bundle exec jbundle && bundle exec rspec'
