@@ -53,6 +53,7 @@ describe DiffCommand do
 
     describe '#execute' do
       let(:key) { 'Here is a test string' }
+
       context 'when a phrase is added to HEAD' do
         before do
           fixture.repo.create_file('test.txt') do |writer|
