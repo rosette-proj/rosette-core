@@ -50,7 +50,9 @@ describe CommitCommand do
           'Chatanooga Choo Choo',
           "Diamonds are a girl's best friend.",
           'Cash for the merchandise; cash for the fancy goods.',
-          "I'm in Spañish."
+          "I'm in Spañish.",
+          ' test string 1',
+          ' test string 2'
         ].sort)
       end
     end

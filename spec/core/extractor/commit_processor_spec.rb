@@ -20,7 +20,7 @@ describe CommitProcessor do
           expect(phrase_enum).to be_a(Enumerator)
 
           phrase_enum.to_a.tap do |phrases|
-            expect(phrases.size).to eq(6)
+            expect(phrases.size).to eq(8)
             phrases.each { |phrase| fixture_commit.remove(phrase) }
           end
         end
@@ -45,7 +45,7 @@ describe CommitProcessor do
         processor.process_each_phrase(repo_name, fixture_commit.sha).to_a
 
         error_reporter.errors.tap do |errors|
-          expect(errors.size).to eq(2)
+          expect(errors.size).to eq(3)
 
           errors.each do |error|
             expect(error.original_exception).to be_a(StandardError)
@@ -54,8 +54,11 @@ describe CommitProcessor do
             expect(error.commit_id).to eq(fixture_commit.sha)
           end
 
-          expect(errors.first.file).to eq('first_file.txt')
-          expect(errors.last.file).to eq('folder/second_file.txt')
+          expect(errors.map(&:file).sort).to eq([
+            'first_file.txt',
+            'folder/second_file.txt',
+            'folder/with_metakeys.txt'
+          ].sort)
         end
       end
     end

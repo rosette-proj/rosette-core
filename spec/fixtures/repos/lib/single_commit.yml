@@ -8,3 +8,6 @@
       - Diamonds are a girl's best friend.
       - Cash for the merchandise; cash for the fancy goods.
       - I'm in Spañish.
+    folder/with_metakeys.txt:
+      - " test string 1"
+      - " test string 2"
