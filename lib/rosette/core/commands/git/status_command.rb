@@ -53,9 +53,14 @@ module Rosette
         def execute
           repo_config = get_repo(repo_name)
           locales = repo_config.locales.map(&:code)
-          parent = repo_config.repo.find_first_non_merge_parent(commit_id)
+          rev_commit = repo_config.repo.get_rev_commit(commit_id)
+          parent_id = if rev_commit.getParentCount > 1
+            repo_config.repo.find_first_non_merge_parent(commit_id).getId.name
+          else
+            commit_id
+          end
 
-          datastore.commit_log_status(repo_name, parent.getId.name).tap do |status|
+          datastore.commit_log_status(repo_name, parent_id).tap do |status|
             if status
               status[:locales] = fill_in_missing_locales(locales, status)
             end
