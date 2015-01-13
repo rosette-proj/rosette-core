@@ -45,7 +45,6 @@ describe DiffCommand do
 
   context 'with valid options' do
     before(:each) do
-      fixture.repo.git('config core.sharedRepository group')
       diff_command.set_diff_point_ref(head_ref)
       diff_command.set_repo_name(repo_name)
       commit(fixture.config, repo_name, head_ref)
@@ -94,39 +93,91 @@ describe DiffCommand do
         end
       end
 
-      context 'when a phrase is modified on HEAD' do
-        let(:new_key) { 'Here is a new string' }
+      context 'with a file that contains metakeys' do
+        let(:file_path) { fixture.working_dir.join('folder/with_metakeys.txt') }
+        let(:phrases) { File.read(file_path).split("\n") }
 
-        before do
-          file_path = fixture.working_dir.join('folder/with_metakeys.txt')
-          phrases = File.read(file_path).split("\n")
-          first_phrase = phrases.first.split(':')
-          @meta_key = first_phrase[0]
-          first_phrase[1] = new_key
-          phrases[0] = first_phrase.join(':')
+        context 'when a phrase is modified on HEAD' do
+          let(:new_key) { 'Here is a new string' }
 
-          File.open(file_path, 'w+') do |f|
-            f.write(phrases.join("\n"))
+          before do
+            first_phrase = phrases.first.split(':')
+            @meta_key = first_phrase[0]
+            @old_key = first_phrase[1]
+            first_phrase[1] = new_key
+            phrases[0] = first_phrase.join(':')
+
+            File.open(file_path, 'w+') do |f|
+              f.write(phrases.join("\n"))
+            end
+
+            fixture.repo.add_all
+            fixture.repo.commit('Modified a string')
+
+            commit(fixture.config, repo_name, head_ref)
+            diff_command.set_head_ref(head_ref)
           end
 
-          fixture.repo.add_all
-          fixture.repo.commit('Modified a string')
-
-          commit(fixture.config, repo_name, head_ref)
-          diff_command.set_head_ref(head_ref)
+          it 'returns a diff that contains the modified phrase' do
+            modified_phrases = diff_command.execute[:modified]
+            expect(modified_phrases.size).to eq(1)
+            modified_phrase = modified_phrases.first.phrase
+            expect(modified_phrases.first.old_phrase.key).to eq(@old_key)
+            expect(modified_phrase.meta_key).to eq(@meta_key)
+            expect(modified_phrase.key).to eq(new_key)
+          end
         end
 
-        it 'returns a diff that contains the modified phrase' do
-          modified_phrases = diff_command.execute[:modified]
-          expect(modified_phrases.size).to eq(1)
-          modified_phrase = modified_phrases.first.phrase
-          expect(modified_phrase.meta_key).to eq(@meta_key)
-          expect(modified_phrase.key).to eq(new_key)
+        context 'when a phrase is add to HEAD' do
+          let(:new_meta_key) { 'cool.metakey' }
+          let(:new_key) { 'my new key' }
+
+          before do
+            phrases << new_meta_key + ':' + new_key
+            File.open(file_path, 'w+') do |f|
+              f.write(phrases.join("\n"))
+            end
+
+            fixture.repo.add_all
+            fixture.repo.commit('Added a string')
+
+            commit(fixture.config, repo_name, head_ref)
+            diff_command.set_head_ref(head_ref)
+          end
+
+          it 'returns a diff that contains the added phrase' do
+            added_phrases = diff_command.execute[:added]
+            expect(added_phrases.size).to eq(1)
+            expect(added_phrases.first.phrase.meta_key).to eq(new_meta_key)
+            expect(added_phrases.first.phrase.key).to eq(new_key)
+          end
         end
-      end
 
-      context 'when a phrase is modified on diff point' do
+        context 'when a phrase is removed on HEAD' do
+          before do
+            first_phrase = phrases.shift.split(':')
+            @meta_key = first_phrase[0]
+            @key = first_phrase[1]
 
+            File.open(file_path, 'w+') do |f|
+              f.write(phrases.join("\n"))
+            end
+
+            fixture.repo.add_all
+            fixture.repo.commit('Removed a string')
+
+            commit(fixture.config, repo_name, head_ref)
+            diff_command.set_head_ref(head_ref)
+          end
+
+          it 'returns a diff that contains the removed phrase' do
+            removed_phrases = diff_command.execute[:removed]
+            expect(removed_phrases.size).to eq(1)
+            expect(removed_phrases.first.phrase.meta_key).to eq(@meta_key)
+            expect(removed_phrases.first.phrase.key).to eq(@key)
+          end
+
+        end
       end
     end
   end
