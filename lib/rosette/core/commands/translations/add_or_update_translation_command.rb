@@ -83,13 +83,9 @@ module Rosette
               locale: locale
             }
           )
-        rescue Rosette::DataStores::Errors::PhraseNotFoundError => e
-          configuration.error_reporter.report_warning(
-            e, commit_id: commit_id, locale: locale, repo_name: repo_name
-          )
         end
-      end
 
+      end
     end
   end
 end
