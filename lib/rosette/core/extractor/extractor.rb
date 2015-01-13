@@ -33,7 +33,7 @@ module Rosette
         if block_given?
           each_function_call(source_code) do |node, line_number|
             if valid_name?(node) && valid_args?(node)
-              yield make_phrase(get_key(node)), line_number
+              yield make_phrase(get_key(node), get_meta_key(node)), line_number
             end
           end
         else
@@ -57,6 +57,10 @@ module Rosette
 
       def get_key(node)
         raise NotImplementedError, "#{__method__} must be implemented by derived classes."
+      end
+
+      def get_meta_key(node)
+        nil
       end
 
       def make_phrase(key, meta_key = nil, file = nil)
