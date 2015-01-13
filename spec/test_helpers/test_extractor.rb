@@ -27,7 +27,11 @@ module Rosette
         end
 
         def get_key(node)
-          node
+          node.include?(':') ? node.split(':').last : node
+        end
+
+        def get_meta_key(node)
+          node.include?(':') ? node.split(':').first : nil
         end
       end
     end
