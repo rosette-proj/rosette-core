@@ -14,7 +14,7 @@ describe DiffCommand do
     end
   end
 
-  let(:diff_command)   { DiffCommand.new(fixture.config) }
+  let(:diff_command) { DiffCommand.new(fixture.config) }
 
   context 'validation' do
     it 'requires a valid repo name' do
@@ -140,5 +140,4 @@ describe DiffCommand do
       .set_ref(ref)
       .execute
   end
-
 end
