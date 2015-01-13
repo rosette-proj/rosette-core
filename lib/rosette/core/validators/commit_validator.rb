@@ -25,8 +25,13 @@ module Rosette
         # @return [Boolean]
         def valid?(commit_str, repo_name, configuration)
           if repo_config = configuration.get_repo(repo_name)
-            commit = repo_config.repo.get_rev_commit(commit_str)
-            validate_commit(commit)
+            if commit_str
+              commit = repo_config.repo.get_rev_commit(commit_str)
+              validate_commit(commit)
+            else
+              messages << "Nil commit passed."
+              false
+            end
           else
             messages << "Unable to find repo #{repo_name}."
             false
