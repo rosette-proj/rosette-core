@@ -36,6 +36,7 @@ describe ShowCommand do
   context '#execute' do
     before do
       commit(fixture.config, repo_name, head_ref(fixture.repo))
+      command.set_repo_name(repo_name)
     end
 
     context 'when a phrase gets added' do
@@ -49,13 +50,31 @@ describe ShowCommand do
         fixture.repo.add_all
         fixture.repo.commit('Adding new_file.txt')
         commit(fixture.config, repo_name, head_ref(fixture.repo))
-        command.set_repo_name(repo_name)
       end
 
       it 'returns a diff that contains the added phrase' do
         show_hash = command.set_ref(head_ref(fixture.repo)).execute
         expect(show_hash[:added].size).to eq(1)
         expect(show_hash[:added].first.phrase.key).to eq(new_key)
+      end
+    end
+
+    context 'when a phrases gets removed' do
+      before do
+        fixture.repo.git('rm -f first_file.txt')
+        fixture.add_all
+        fixture.repo.commit('Remove file.txt')
+
+        commit(fixture.config, repo_name, head_ref(fixture.repo))
+      end
+
+      it 'returns a diff that contains the deleted phrases' do
+        show_hash = command.set_ref(head_ref(fixture.repo)).execute
+        expect(show_hash[:removed].size).to eq(2)
+        expect(show_hash[:removed].map { |entry| entry.phrase.key }.sort).to eq([
+          "I'm a little teapot",
+          "The green albatross flitters in the moonlight"
+        ])
       end
     end
   end

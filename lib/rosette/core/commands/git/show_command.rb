@@ -40,11 +40,10 @@ module Rosette
 
           child_snapshot = take_snapshot(repo_config, commit_id)
           child_phrases = datastore.phrases_by_commits(repo_name, child_snapshot).to_a
-          paths = child_phrases.map(&:file).uniq
           parent_commit = repo_config.repo.find_first_non_merge_parent(commit_id)
 
           parent_phrases = if parent_commit
-            parent_snapshot = take_snapshot(repo_config, parent_commit.getId.name, paths)
+            parent_snapshot = take_snapshot(repo_config, parent_commit.getId.name)
             datastore.phrases_by_commits(repo_name, parent_snapshot).to_a
           else
             []
