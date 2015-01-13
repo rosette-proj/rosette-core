@@ -5,7 +5,6 @@ require 'spec_helper'
 include Rosette::Core::Commands
 
 describe DiffCommand do
-  let(:klass) { DiffCommand }
   let(:repo_name) { 'single_commit' }
 
   let(:fixture) do
@@ -128,7 +127,7 @@ describe DiffCommand do
           end
         end
 
-        context 'when a phrase is add to HEAD' do
+        context 'when a phrase is added to HEAD' do
           let(:new_meta_key) { 'cool.metakey' }
           let(:new_key) { 'my new key' }
 
@@ -153,7 +152,7 @@ describe DiffCommand do
           end
         end
 
-        context 'when a phrase is removed on HEAD' do
+        context 'when a phrase is removed from HEAD' do
           before do
             first_phrase = phrases.shift.split(':')
             @meta_key = first_phrase[0]
