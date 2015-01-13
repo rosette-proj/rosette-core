@@ -6,7 +6,7 @@ include Rosette::Core::Commands
 
 describe DiffCommand do
   let(:klass) { DiffCommand }
-  let(:repo_name) { 'single_commit'}
+  let(:repo_name) { 'single_commit' }
 
   let(:fixture) do
     load_repo_fixture(repo_name) do |config, repo_config|
@@ -58,6 +58,7 @@ describe DiffCommand do
           fixture.repo.create_file('test.txt') do |writer|
             writer.write(key)
           end
+
           fixture.repo.add_all
           fixture.repo.commit('Commit message')
 
@@ -94,6 +95,7 @@ describe DiffCommand do
 
       context 'when a phrase is modified on HEAD' do
         let(:new_key) { 'Here is a new string' }
+
         before do
           file_path = fixture.working_dir.join('folder/with_metakeys.txt')
           phrases = File.read(file_path).split("\n")
@@ -101,6 +103,7 @@ describe DiffCommand do
           @meta_key = first_phrase[0]
           first_phrase[1] = new_key
           phrases[0] = first_phrase.join(':')
+
           File.open(file_path, 'w+') do |f|
             f.write(phrases.join("\n"))
           end
