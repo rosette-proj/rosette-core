@@ -1,0 +1,2 @@
+string1: test string 1
+string2: test string 2
