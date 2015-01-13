@@ -167,13 +167,12 @@ module Rosette
         def execute
           configuration.cache.fetch(cache_key) do
             repo_config = get_repo(repo_name)
-            entries = repo_config.repo.diff(head_commit_id, diff_point_commit_id, paths)
 
-            head_snapshot = take_snapshot(repo_config, head_commit_id, entries.map(&:getNewPath))
+            head_snapshot = take_snapshot(repo_config, head_commit_id)
             ensure_commits_have_been_processed(head_snapshot)
             head_phrases = datastore.phrases_by_commits(repo_name, head_snapshot)
 
-            diff_point_snapshot = take_snapshot(repo_config, diff_point_commit_id, entries.map(&:getOldPath))
+            diff_point_snapshot = take_snapshot(repo_config, diff_point_commit_id)
             ensure_commits_have_been_processed(diff_point_snapshot)
             diff_point_phrases = datastore.phrases_by_commits(repo_name, diff_point_snapshot)
 
