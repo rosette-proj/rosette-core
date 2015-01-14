@@ -7,7 +7,7 @@ include Rosette::Core::Commands
 describe StatusCommand do
   let(:repo_name) { 'single_commit' }
   let(:locales) { %w(es de-DE ja-JP) }
-  let(:translation_model) { Rosette::DataStores::InMemoryDataStore::Translation }
+  let(:phrase_model) { Rosette::DataStores::InMemoryDataStore::Phrase }
 
   let(:fixture) do
     load_repo_fixture(repo_name) do |config, repo_config|
@@ -48,6 +48,7 @@ describe StatusCommand do
   context '#execute' do
     let(:meta_key) { 'cool.meta_key' }
     let(:key) { 'cool key' }
+    let(:translation) { 'Llave padre' }
 
     before do
       command.set_repo_name(repo_name)
@@ -55,12 +56,31 @@ describe StatusCommand do
         .set_ref('HEAD')
         .set_key(key)
         .set_meta_key(meta_key)
+        .set_translation(translation)
+
+      @phrase = phrase_model.create({
+        commit_id: head_ref(fixture.repo),
+        key: key,
+        meta_key: meta_key,
+        file: 'first_file.txt',
+        repo_name: repo_name
+      })
     end
 
     it 'adds a translation to the datastore' do
+      expect(@phrase.translations.size).to eq(0)
+      command.execute
+      expect(@phrase.translations.size).to eq(1)
 
+      @phrase.translations.first.tap do |trans|
+        expect(trans.translation).to eq(translation)
+        expect(trans.phrase.key).to eq(key)
+        expect(trans.phrase.meta_key).to eq(meta_key)
+      end
     end
   end
 
-
+  def head_ref(repo)
+    repo.git('rev-parse HEAD').strip
+  end
 end
