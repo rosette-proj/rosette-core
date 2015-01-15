@@ -7,6 +7,7 @@ module Rosette
     module Validators
       autoload :Validator,           'rosette/core/validators/validator'
       autoload :CommitValidator,     'rosette/core/validators/commit_validator'
+      autoload :CommitsValidator,     'rosette/core/validators/commits_validator'
       autoload :RepoValidator,       'rosette/core/validators/repo_validator'
       autoload :SerializerValidator, 'rosette/core/validators/serializer_validator'
       autoload :LocaleValidator,     'rosette/core/validators/locale_validator'

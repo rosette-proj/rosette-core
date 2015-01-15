@@ -24,6 +24,7 @@ module Rosette
 
       autoload :WithRepoName,                  'rosette/core/commands/git/with_repo_name'
       autoload :WithRef,                       'rosette/core/commands/git/with_ref'
+      autoload :WithRefs,                      'rosette/core/commands/git/with_refs'
       autoload :WithNonMergeRef,               'rosette/core/commands/git/with_non_merge_ref'
       autoload :WithSnapshots,                 'rosette/core/commands/git/with_snapshots'
       autoload :DiffEntry,                     'rosette/core/commands/git/diff_entry'
