@@ -20,7 +20,7 @@ describe StatusCommand do
 
   context 'validations' do
     it 'requires a valid repo name' do
-      command.set_ref('HEAD')
+      command.set_refs(['HEAD'])
       command.set_locale(locales.first)
       expect(command).to_not be_valid
     end
@@ -33,14 +33,14 @@ describe StatusCommand do
 
     it 'requires a locale' do
       command.set_repo_name(repo_name)
-      command.set_ref('HEAD')
+      command.set_refs(['HEAD'])
       expect(command).to_not be_valid
     end
 
     it 'should be valid if the repo name, locale, and ref are set' do
       command.set_repo_name(repo_name)
       command.set_locale(locales.first)
-      command.set_ref('HEAD')
+      command.set_refs(['HEAD'])
       expect(command).to be_valid
     end
   end
@@ -53,7 +53,7 @@ describe StatusCommand do
     before do
       command.set_repo_name(repo_name)
         .set_locale(locales.first)
-        .set_ref('HEAD')
+        .set_refs(['HEAD'])
         .set_key(key)
         .set_meta_key(meta_key)
         .set_translation(translation)

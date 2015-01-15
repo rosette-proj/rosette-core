@@ -17,8 +17,12 @@ module Rosette
       #   v.messages  # => ["Unable to find commit 'non-existent-ref'."]
       class CommitsValidator < CommitValidator
         def valid?(commit_strs, repo_name, configuration)
-          commit_strs.all? do |commit_str|
-            super(commit_str, repo_name, configuration)
+          if commit_strs
+            commit_strs.all? do |commit_str|
+              super(commit_str, repo_name, configuration)
+            end
+          else
+            false
           end
         end
       end
