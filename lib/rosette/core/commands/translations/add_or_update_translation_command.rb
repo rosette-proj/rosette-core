@@ -30,7 +30,7 @@ module Rosette
         attr_reader :key, :meta_key, :translation, :locale
 
         include WithRepoName
-        include WithRef
+        include WithRefs
         include WithLocale
 
         # Sets the key used to identify the translation's phrase entry.
@@ -78,7 +78,7 @@ module Rosette
             repo_name, {
               key: key,
               meta_key: meta_key,
-              commit_id: commit_id,
+              commit_id: commit_ids,
               translation: translation,
               locale: locale
             }
