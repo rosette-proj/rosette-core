@@ -34,7 +34,11 @@ module Rosette
         # @return [void]
         def execute
           commit_processor.process_each_phrase(repo_name, commit_id) do |phrase|
-            datastore.store_phrase(repo_name, phrase)
+            begin
+              datastore.store_phrase(repo_name, phrase)
+            rescue ActiveRecord::RecordNotUnique => e
+              configuration.error_reporter.report_warning(e)
+            end
           end
 
           rev_commit = get_repo(repo_name).repo.get_rev_commit(commit_id)
@@ -45,7 +49,9 @@ module Rosette
         private
 
         def commit_processor
-          @commit_processor ||= Rosette::Core::CommitProcessor.new(configuration)
+          @commit_processor ||= Rosette::Core::CommitProcessor.new(
+            configuration, configuration.error_reporter
+          )
         end
 
         def trigger_hooks(stage)
