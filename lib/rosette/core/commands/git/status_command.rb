@@ -37,10 +37,6 @@ module Rosette
         #
         # @return [Hash] a hash of status information for the commit:
         #   * +commit_id+: the commit id of the ref the status came from.
-        #     This may or may not be the ref or commit id set via {#set_ref}
-        #     or {#set_commit_id}, since Rosette does not process merge refs.
-        #     If the configured ref or commit id is a merge ref, the status
-        #     for the most recent non-merge parent is returned instead.
         #   * +status+: One of +"PENDING"+, +"UNTRANSLATED"+, or +"TRANSLATED"+.
         #   * +phrase_count+: The number of phrases found in the commit.
         #   * +locales+: An array of locale statuses having these entries:
@@ -54,13 +50,8 @@ module Rosette
           repo_config = get_repo(repo_name)
           locales = repo_config.locales.map(&:code)
           rev_commit = repo_config.repo.get_rev_commit(commit_id)
-          parent_id = if rev_commit.getParentCount > 1
-            repo_config.repo.find_first_non_merge_parent(commit_id).getId.name
-          else
-            commit_id
-          end
 
-          datastore.commit_log_status(repo_name, parent_id).tap do |status|
+          datastore.commit_log_status(repo_name, commit_id).tap do |status|
             if status
               status[:locales] = fill_in_missing_locales(locales, status)
             end

@@ -26,7 +26,7 @@ module Rosette
       #     .execute
       class CommitCommand < GitCommand
         include WithRepoName
-        include WithNonMergeRef
+        include WithRef
 
         # Executes the command. Causes phrases to be extracted from the given git ref or
         # commit id and written to the configured data store, triggering hooks in the process.
