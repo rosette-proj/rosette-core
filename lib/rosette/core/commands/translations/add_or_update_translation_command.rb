@@ -72,7 +72,10 @@ module Rosette
         #
         # @see Configurator#error_reporter
         #
-        # @return [void]
+        # @return [Array<Hash>] a list of translations and their statuses.
+        #   Each status is a hash containing the following entries:
+        #   * +translation+: The {Rosette::Core::Translation} object.
+        #   * +status+: One of +:created+, +:changed+, or +:unchanged+.
         def execute
           datastore.add_or_update_translation(
             repo_name, {

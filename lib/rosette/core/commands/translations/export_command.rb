@@ -2,6 +2,7 @@
 
 require 'stringio'
 require 'base64'
+require 'digest/md5'
 
 module Rosette
   module Core
@@ -33,6 +34,9 @@ module Rosette
       # @!attribute [r] include_snapshot
       #   @return [Boolean] whether or not the snapshot used to identify
       #     translations is returned alongside the serialized phrases.
+      # @!attribute [r] include_checksum
+      #   @return [Boolean] whether or not the checksum of translations
+      #     is returned alongside the serialized phrases.
       #
       # @example
       #   cmd = ExportCommand.new(configuration)
@@ -55,7 +59,7 @@ module Rosette
       #   # }
       class ExportCommand < GitCommand
         attr_reader :locale, :serializer, :base_64_encode
-        attr_reader :encoding, :include_snapshot
+        attr_reader :encoding, :include_snapshot, :include_checksum
 
         include WithRepoName
         include WithRef
@@ -108,6 +112,17 @@ module Rosette
           self
         end
 
+        # Sets whether or not to include a checksum of the phrases in the
+        # return value.
+        #
+        # @param [Boolean] should_include_checksum whether or not to include
+        #   the checksum.
+        # @return [self]
+        def set_include_checksum(should_include_checksum)
+          @include_checksum = should_include_checksum
+          self
+        end
+
         # Perform the export.
         #
         # @return [Hash] containing the following attributes:
@@ -126,6 +141,7 @@ module Rosette
           serializer_instance = serializer_config.klass.new(stream, locale_obj, encoding)
           snapshot = take_snapshot(repo_config, commit_id)
           translation_count = 0
+          checksum_list = []
 
           each_translation(repo_config, snapshot) do |trans|
             trans = apply_preprocessors(trans, serializer_config)
@@ -135,6 +151,10 @@ module Rosette
             )
 
             translation_count += 1
+
+            if include_checksum
+              checksum_list << "#{trans.phrase.index_value}#{trans.translation}"
+            end
           end
 
           serializer_instance.flush
@@ -151,10 +171,18 @@ module Rosette
             params.merge!(snapshot: snapshot)
           end
 
+          if include_checksum
+            params.merge!(checksum: checksum_for(checksum_list))
+          end
+
           params
         end
 
         private
+
+        def checksum_for(list)
+          Digest::MD5.hexdigest(list.sort.join)
+        end
 
         def locale_obj
           @locale_obj ||= get_repo(repo_name).get_locale(locale)
