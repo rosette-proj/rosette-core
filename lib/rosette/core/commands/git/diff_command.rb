@@ -169,11 +169,11 @@ module Rosette
             repo_config = get_repo(repo_name)
 
             head_snapshot = take_snapshot(repo_config, head_commit_id, paths)
-            ensure_commits_have_been_processed(head_snapshot)
+            ensure_commits_have_been_processed(head_snapshot.values)
             head_phrases = datastore.phrases_by_commits(repo_name, head_snapshot)
 
             diff_point_snapshot = take_snapshot(repo_config, diff_point_commit_id, paths)
-            ensure_commits_have_been_processed(diff_point_snapshot)
+            ensure_commits_have_been_processed(diff_point_snapshot.values)
             diff_point_phrases = datastore.phrases_by_commits(repo_name, diff_point_snapshot)
 
             compare(head_phrases, diff_point_phrases)
