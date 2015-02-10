@@ -79,9 +79,7 @@ module Rosette
           end
 
           tree_walk = TreeWalk.new(repo.jgit_repo)
-
           rev_walk.markStart(rev_commit)
-          rev_walk.setRevFilter(RevFilter::NO_MERGES)
 
           while cur_commit = rev_walk.next
             cur_commit_id = cur_commit.getId.name
@@ -89,8 +87,8 @@ module Rosette
             tree_walk.reset
             tree_walk.addTree(cur_commit.getTree)
 
-            if cur_commit.getParentCount > 0
-              tree_walk.addTree(cur_commit.getParent(0).getTree)
+            cur_commit.getParentCount.times do |i|
+              tree_walk.addTree(cur_commit.getParent(i).getTree)
             end
 
             tree_walk.setFilter(tree_filter)
