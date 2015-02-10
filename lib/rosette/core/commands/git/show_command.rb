@@ -37,19 +37,38 @@ module Rosette
         #   representation of the diff hash.
         def execute
           repo_config = get_repo(repo_name)
-
           repo = repo_config.repo
+          diff = repo.ref_diff_with_parent(commit_id)
           rev = repo.get_rev_commit(commit_id)
           parent_commit_ids = repo.parent_ids_of(rev)
 
-          child_snapshot = take_snapshot(repo_config, commit_id)
+          child_snapshot = {}
+          child_paths = []
+
+          diff.each do |diff_entry|
+            path = diff_entry.getNewPath
+            child_snapshot[path] = commit_id
+            child_paths << (path == '/dev/null' ? diff_entry.getOldPath : path)
+          end
+
           child_phrases = datastore.phrases_by_commits(repo_name, child_snapshot).to_a
 
           parent_phrases = parent_commit_ids.flat_map do |parent_commit_id|
-            datastore.phrases_by_commits(repo_name, take_snapshot(repo_config, parent_commit_id)).to_a
+            parent_snapshot = take_snapshot(repo_config, parent_commit_id, child_paths)
+            ensure_commits_have_been_processed(parent_snapshot.values)
+            datastore.phrases_by_commits(repo_name, parent_snapshot).to_a
           end
 
-          compare(child_phrases, parent_phrases)
+          diff = compare(child_phrases, parent_phrases)
+
+          diff.each_with_object({}) do |(state, diff_entries), ret|
+            ret[state] = diff_entries.select do |diff_entry|
+              diff_entry.phrase.commit_id == commit_id || (
+                diff_entry.state == :removed &&
+                  parent_commit_ids.include?(diff_entry.phrase.commit_id)
+              )
+            end
+          end
         end
       end
 
