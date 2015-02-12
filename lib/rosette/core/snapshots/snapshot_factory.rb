@@ -109,9 +109,14 @@ module Rosette
       end
 
       def make_path_hash(rev_commit)
-        each_file_in(make_path_gatherer(rev_commit)).each_with_object({}) do |walker, ret|
+        path_gatherer = make_path_gatherer(rev_commit)
+
+        files = each_file_in(path_gatherer).each_with_object({}) do |walker, ret|
           ret[walker.getPathString] = nil
         end
+
+        path_gatherer.release
+        files
       end
 
       def make_path_gatherer(rev_commit)
