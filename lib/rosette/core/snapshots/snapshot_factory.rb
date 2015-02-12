@@ -118,6 +118,7 @@ module Rosette
         path_gatherer = make_path_gatherer(rev_commit.getId.name)
 
         files = each_file_in(path_gatherer).each_with_object({}) do |walker, ret|
+          Rosette.logger.info(walker.getPathString)
           ret[walker.getPathString] = nil
         end
 
