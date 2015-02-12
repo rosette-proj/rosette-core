@@ -75,7 +75,7 @@ module Rosette
 
         make_path_hash(rev_commit).tap do |path_hash|
           tree_filter = if path_hash.size > 0
-            path_filter = PathFilterGroup.createFromStrings(path_hash.keys)
+            path_filter = PathFilterGroup.createFromStrings(path_hash.keys.select { |k| k.include?('en.yml') })
             AndTreeFilter.create(path_filter, TreeFilter::ANY_DIFF)
           end
 
