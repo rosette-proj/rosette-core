@@ -109,8 +109,8 @@ module Rosette
             end
           end
 
-          rev_walk.dispose
-          tree_walk.release
+          # rev_walk.dispose
+          # tree_walk.release
         end
       end
 
@@ -122,7 +122,7 @@ module Rosette
           ret[walker.getPathString] = nil
         end
 
-        path_gatherer.release
+        # path_gatherer.release
         files
       end
 
@@ -136,7 +136,7 @@ module Rosette
           walker.setRecursive(true)
         end
 
-        rev_walk.dispose
+        # rev_walk.dispose
         tree_walk
       end
 
