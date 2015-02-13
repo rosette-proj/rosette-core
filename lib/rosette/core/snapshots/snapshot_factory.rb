@@ -109,28 +109,35 @@ module Rosette
             end
           end
 
-          rev_walk.dispose
-          tree_walk.release
+          # rev_walk.dispose
+          # tree_walk.release
         end
       end
 
       def make_path_hash(rev_commit)
-        path_gatherer = make_path_gatherer(rev_commit)
+        path_gatherer = make_path_gatherer(rev_commit.getId.name)
 
         files = each_file_in(path_gatherer).each_with_object({}) do |walker, ret|
+          Rosette.logger.info(walker.getPathString)
           ret[walker.getPathString] = nil
         end
 
-        path_gatherer.release
+        # path_gatherer.release
         files
       end
 
-      def make_path_gatherer(rev_commit)
-        TreeWalk.new(repo.jgit_repo).tap do |walker|
+      def make_path_gatherer(commit_id)
+        rev_walk = RevWalk.new(repo.jgit_repo)
+        rev_commit = repo.get_rev_commit(commit_id, rev_walk)
+
+        tree_walk = TreeWalk.new(repo.jgit_repo).tap do |walker|
           walker.addTree(rev_commit.getTree)
           walker.setFilter(compile_filter)
           walker.setRecursive(true)
         end
+
+        # rev_walk.dispose
+        tree_walk
       end
 
       def reset
