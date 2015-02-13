@@ -38,13 +38,19 @@ module Rosette
         paths = Array(paths)
         cache_key = snapshot_cache_key(repo_config.name, commit_id, paths)
 
-        cache.fetch(cache_key) do
+        # avoid using the block form of #fetch b/c it causes havoc with jgit
+        # (maybe objects get retained somehow?)
+        if snapshot = cache.fetch(cache_key)
+          snapshot
+        else
           factory = snapshot_factory.new
             .set_repo(repo_config.repo)
             .set_start_commit_id(commit_id)
 
           factory.filter_by_paths(paths) if paths.size > 0
-          factory.take_snapshot
+          snapshot = factory.take_snapshot
+          cache.write(cache_key, snapshot)
+          snapshot
         end
       end
 
