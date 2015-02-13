@@ -79,14 +79,13 @@ module Rosette
             AndTreeFilter.create(path_filter, TreeFilter::ANY_DIFF)
           end
 
-          # tree_walk = TreeWalk.new(repo.jgit_repo)
+          tree_walk = TreeWalk.new(repo.jgit_repo)
           rev_walk.markStart(rev_commit)
 
           while cur_commit = rev_walk.next
             cur_commit_id = cur_commit.getId.name
 
-            # tree_walk.reset
-            tree_walk = TreeWalk.new(repo.jgit_repo)
+            tree_walk.reset
             parent_count = cur_commit.getParentCount
 
             if parent_count == 0

@@ -29,15 +29,19 @@ module Rosette
         #   Only those paths included in this list will appear in the snapshot hash.
         # @return [Hash] the snapshot hash (path to commit id pairs).
         def take_snapshot(repo_config, commit_id, paths = [])
-          __snapshot_factory__.take_snapshot(repo_config, commit_id, paths)
+          # __snapshot_factory__.take_snapshot(repo_config, commit_id, paths)
+          factory = Rosette::Core::SnapshotFactory.new
+            .set_repo(repo_config.repo)
+            .set_start_commit_id(commit_id)
+            .take_snapshot
         end
 
-        private
+        # private
 
-        def __snapshot_factory__
-          @@__snapshot_factory__ ||=
-            CachedSnapshotFactory.new(configuration.cache)
-        end
+        # def __snapshot_factory__
+        #   @@__snapshot_factory__ ||=
+        #     CachedSnapshotFactory.new(configuration.cache)
+        # end
       end
 
     end
