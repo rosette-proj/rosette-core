@@ -9,6 +9,8 @@ java_import 'org.eclipse.jgit.treewalk.filter.PathFilter'
 java_import 'org.eclipse.jgit.treewalk.filter.PathFilterGroup'
 java_import 'org.eclipse.jgit.treewalk.filter.TreeFilter'
 
+require 'set'
+
 module Rosette
   module Core
 
@@ -72,13 +74,14 @@ module Rosette
       def build_hash
         rev_walk = RevWalk.new(repo.jgit_repo)
         rev_commit = repo.get_rev_commit(start_commit_id, rev_walk)
+        paths = make_path_set(rev_commit).to_a
 
-        make_path_hash(rev_commit).tap do |path_hash|
-          tree_filter = if path_hash.size > 0
-            path_filter = PathFilterGroup.createFromStrings(path_hash.keys)
-            AndTreeFilter.create(path_filter, TreeFilter::ANY_DIFF)
-          end
+        tree_filter = if paths.size > 0
+          path_filter = PathFilterGroup.createFromStrings(paths)
+          AndTreeFilter.create(path_filter, TreeFilter::ANY_DIFF)
+        end
 
+        {}.tap do |path_hash|
           tree_walk = TreeWalk.new(repo.jgit_repo)
           rev_walk.markStart(rev_commit)
 
@@ -114,11 +117,11 @@ module Rosette
         end
       end
 
-      def make_path_hash(rev_commit)
+      def make_path_set(rev_commit)
         path_gatherer = make_path_gatherer(rev_commit)
 
-        files = each_file_in(path_gatherer).each_with_object({}) do |walker, ret|
-          ret[walker.getPathString] = nil
+        files = each_file_in(path_gatherer).each_with_object(Set.new) do |walker, ret|
+          ret << walker.getPathString
         end
 
         path_gatherer.release
