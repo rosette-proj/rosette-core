@@ -3,4 +3,4 @@ rvm:
   - jruby-1.7.15
 env:
   - GIT_BUNDLE=true JRUBY_OPTS="--2.0"
-script: 'bundle exec jbundle && bundle exec rspec'
+script: 'mkdir -p pkg && touch pkg/dependencies.txt && bundle exec jbundle && bundle exec rspec'
