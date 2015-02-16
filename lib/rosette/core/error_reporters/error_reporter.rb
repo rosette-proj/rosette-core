@@ -8,14 +8,14 @@ module Rosette
       # Report an error.
       #
       # @raise [NotImplementedError]
-      def report_error(error)
+      def report_error(error, options = {})
         raise NotImplementedError, 'Please use a derived class.'
       end
 
       # Report a warning.
       #
       # @raise [NotImplementedError]
-      def report_warning(error)
+      def report_warning(error, options = {})
         raise NotImplementedError, 'Please use a derived class.'
       end
     end
