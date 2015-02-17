@@ -19,6 +19,12 @@ end
 
 group :test do
   gem 'simplecov'
-  gem 'jbundler', '0.7.1'
   gem 'rspec'
+
+  # lock all jbundler dependencies to specific versions
+  # because later versions were causing errors
+  gem 'jbundler', '0.7.1'
+  gem 'jar-dependencies', '0.1.7'
+  gem 'maven-tools', '1.0.7'
+  gem 'ruby-maven', '3.1.1.0.9'
 end
