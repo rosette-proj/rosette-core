@@ -27,10 +27,11 @@ describe PrintingErrorReporter do
 
   let(:collector) { Collector.new }
   let(:reporter) { PrintingErrorReporter.new(collector) }
+  let(:options) { { foo: 'bar' } }
 
   describe '#report_error' do
     it 'prints the error message' do
-      reporter.report_error(error)
+      reporter.report_error(error, options)
       expect(collector.messages.size).to eq(1)
       expect(collector.messages).to include("jelly beans\n")
     end
@@ -43,8 +44,9 @@ describe PrintingErrorReporter do
       end
 
       it 'prints a stack trace along with the error message' do
-        reporter.report_error(error)
+        reporter.report_error(error, options)
         expect(collector.messages).to include("jelly beans\n")
+        expect(collector.messages).to include(options.inspect)
         expect(collector.messages.size).to be > 1
 
         trace_message = collector.messages.find do |message|

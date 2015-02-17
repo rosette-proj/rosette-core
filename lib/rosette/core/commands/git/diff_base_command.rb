@@ -10,11 +10,13 @@ module Rosette
 
         include WithSnapshots
 
-        def ensure_commits_have_been_processed(snapshot)
-          snapshot.each_pair do |file, commit_id|
-            unless datastore.commit_log_exists?(repo_name, commit_id)
-              raise Errors::UnprocessedCommitError,
-                "Commit #{commit_id} has not been processed yet."
+        def ensure_commits_have_been_processed(commits)
+          commits.uniq.each do |commit_id|
+            if commit_id
+              unless datastore.commit_log_exists?(repo_name, commit_id)
+                raise Errors::UnprocessedCommitError,
+                  "Commit #{commit_id} has not been processed yet."
+              end
             end
           end
         end

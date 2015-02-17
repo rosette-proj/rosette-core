@@ -14,11 +14,11 @@ module Rosette
 
       # Does nothing.
       # @return [nil]
-      def report_error(error); end
+      def report_error(error, options = {}); end
 
       # Does nothing.
       # @return [nil]
-      def report_warning(error); end
+      def report_warning(error, options = {}); end
     end
 
   end

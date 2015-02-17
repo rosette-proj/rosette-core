@@ -19,6 +19,6 @@ end
 
 group :test do
   gem 'simplecov'
-  gem 'jbundler'
+  gem 'jbundler', '0.7.1'
   gem 'rspec'
 end

@@ -8,16 +8,19 @@ module Rosette
       # Raises an error.
       #
       # @param [Exception] error The error to raise.
+      # @param [Hash] options A hash of associated options.
       # @return [void]
-      def report_error(error)
+      def report_error(error, options = {})
+        puts options.inspect
         raise error
       end
 
       # Does nothing.
       #
       # @param [Exception] error An error, but nothing is done with it.
+      # @param [Hash] options A hash of associated options.
       # @return [void]
-      def report_warning(error)
+      def report_warning(error, options = {})
       end
     end
 

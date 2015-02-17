@@ -28,23 +28,29 @@ module Rosette
       # Print an error.
       #
       # @param [Exception] error The error to print.
+      # @param [Hash] options A hash of associated options (will also be
+      #   printed)
       # @return [void]
-      def report_error(error)
+      def report_error(error, options = {})
         stream.write("#{error.message}\n")
 
         if print_stack_trace?
           Array(error.backtrace).each do |line|
             stream.write("#{line}\n")
           end
+
+          stream.write(options.inspect)
         end
       end
 
       # Print a warning. Warnings are treated the same as errors.
       #
       # @param [Exception] error The error to print.
+      # @param [Hash] options A hash of associated options (will also be
+      #   printed)
       # @return [void]
-      def report_warning(error)
-        report_error(error)
+      def report_warning(error, options = {})
+        report_error(error, options)
       end
     end
 

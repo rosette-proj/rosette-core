@@ -48,13 +48,15 @@ describe CommitProcessor do
           expect(errors.size).to eq(3)
 
           errors.each do |error|
-            expect(error.original_exception).to be_a(StandardError)
-            expect(error.message).to eq("nope (txt): error (txt) in #{error.file} at #{fixture_commit.sha}")
-            expect(error.language).to eq(:txt)
-            expect(error.commit_id).to eq(fixture_commit.sha)
+            expect(error[:error].original_exception).to be_a(StandardError)
+            expect(error[:error].message).to eq(
+              "nope (txt): error (txt) in #{error[:error].file} at #{fixture_commit.sha}"
+            )
+            expect(error[:error].language).to eq(:txt)
+            expect(error[:error].commit_id).to eq(fixture_commit.sha)
           end
 
-          expect(errors.map(&:file).sort).to eq([
+          expect(errors.map { |e| e[:error].file }.sort).to eq([
             'first_file.txt',
             'folder/second_file.txt',
             'folder/with_metakeys.txt'
