@@ -16,6 +16,10 @@ module Rosette
       # Indicates the phrases have all been translated into every supported
       # locale.
       TRANSLATED = 'TRANSLATED'
+
+      # Indicates that the commit no longer exists, i.e. the associated branch
+      # was deleted or was force-pushed over.
+      MISSING = 'MISSING'
     end
 
   end
