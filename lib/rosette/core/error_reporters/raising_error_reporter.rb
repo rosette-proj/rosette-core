@@ -11,7 +11,6 @@ module Rosette
       # @param [Hash] options A hash of associated options.
       # @return [void]
       def report_error(error, options = {})
-        puts options.inspect
         raise error
       end
 
