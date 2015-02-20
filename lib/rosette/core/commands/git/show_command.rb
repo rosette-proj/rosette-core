@@ -43,7 +43,7 @@ module Rosette
           diff_finder = DiffFinder.new(repo_config.repo.jgit_repo, rev_walker)
 
           repo = repo_config.repo
-          diff = repo.ref_diff_with_parent(commit_id, finder)
+          diff = repo.ref_diff_with_parent(commit_id, diff_finder)
           rev = repo.get_rev_commit(commit_id, rev_walker)
           parent_commit_ids = repo.parent_ids_of(rev)
 
