@@ -1,5 +1,7 @@
 # encoding: UTF-8
 
+java_import 'org.eclipse.jgit.revwalk.RevWalk'
+
 module Rosette
   module Core
     module Commands
@@ -36,10 +38,13 @@ module Rosette
         #   contains the previous key of the phrase. See the example above for a visual
         #   representation of the diff hash.
         def execute
+          rev_walker = RevWalk.new(repo_config.repo.jgit_repo)
+          diff_finder = DiffFinder.new(repo_config.repo.jgit_repo, rev_walker)
+
           repo_config = get_repo(repo_name)
           repo = repo_config.repo
-          diff = repo.ref_diff_with_parent(commit_id)
-          rev = repo.get_rev_commit(commit_id)
+          diff = repo.ref_diff_with_parent(commit_id, finder)
+          rev = repo.get_rev_commit(commit_id, rev_walker)
           parent_commit_ids = repo.parent_ids_of(rev)
 
           child_snapshot = {}

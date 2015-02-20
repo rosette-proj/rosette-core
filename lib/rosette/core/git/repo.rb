@@ -87,17 +87,21 @@ module Rosette
       # Calculates a diff for the given ref against its parent.
       #
       # @param [String] ref The ref to diff with.
+      # @param [DiffFinder] finder The diff finder to use when calculating
+      #   diffs in a multi-threaded environment
       # @return [Array<Java::OrgEclipseJgitDiff::DiffEntry>]
-      def ref_diff_with_parent(ref)
-        rev_diff_with_parent(get_rev_commit(ref))
+      def ref_diff_with_parent(ref, finder = diff_finder)
+        rev_diff_with_parent(get_rev_commit(ref), finder)
       end
 
       # Calculates a diff for the given rev against its parent.
       #
       # @param [Java::OrgEclipseJgitRevwalk::RevCommit] rev The rev to diff with.
+      # @param [DiffFinder] finder The diff finder to use when calculating
+      #   diffs in a multi-threaded environment.
       # @return [Array<Java::OrgEclipseJgitDiff::DiffEntry>]
-      def rev_diff_with_parent(rev)
-        diff_finder.diff_with_parent(rev)
+      def rev_diff_with_parent(rev, finder = diff_finder)
+        finder.diff_with_parent(rev)
       end
 
       # Retrieves the parent commits for the given rev.
