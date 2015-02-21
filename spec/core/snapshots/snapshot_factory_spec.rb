@@ -6,18 +6,28 @@ include Rosette::Core
 
 describe SnapshotFactory do
   let(:factory_class) { SnapshotFactory }
-  let(:repo_class) { Repo }
   let(:repo_name) { 'fake_app' }
   let(:fixture) { load_repo_fixture(repo_name) }
-  let(:repo) { repo_class.from_path(fixture.working_dir.join('.git').to_s) }
   let(:commits) do
     fixture.git('rev-list --all').split("\n").reverse
+  end
+
+  let(:rosette_config) do
+    Rosette.build_config do |config|
+      config.add_repo(repo_name) do |repo_config|
+        repo_config.set_path(fixture.working_dir.join('.git').to_s)
+      end
+    end
+  end
+
+  let(:repo_config) do
+    rosette_config.get_repo(repo_name)
   end
 
   describe '#take_snapshot' do
     it 'returns the correct snapshot for the first commit' do
       factory = factory_class.new
-        .set_repo(repo)
+        .set_repo_config(repo_config)
         .set_start_commit_id(commits.first)
 
       factory.take_snapshot.tap do |snapshot|
@@ -34,16 +44,18 @@ describe SnapshotFactory do
       reporter = ::ProgressReporters::ProgressReporter.new
 
       factory = factory_class.new
-        .set_repo(repo)
+        .set_repo_config(repo_config)
         .set_start_commit_id(commits.first)
 
-      expect(lambda { factory.take_snapshot(reporter) }).to raise_error(ArgumentError)
+      expect(lambda { factory.take_snapshot(reporter) }).to(
+        raise_error(ArgumentError)
+      )
     end
 
     context 'with a factory pointed at the last commit' do
       let(:factory) do
         factory_class.new
-          .set_repo(repo)
+          .set_repo_config(repo_config)
           .set_start_commit_id(commits.last)
       end
 
@@ -63,8 +75,13 @@ describe SnapshotFactory do
         end
       end
 
-      it 'only includes files with matching file extensions when the file extension filter is enabled' do
-        factory.filter_by_extensions(['.other'])
+      it 'only includes files with matching file extensions when asked' do
+        repo_config.add_extractor('test/test') do |extractor_config|
+          extractor_config.set_conditions do |conditions|
+            conditions.match_file_extension('.other')
+          end
+        end
+
         factory.take_snapshot.tap do |snapshot|
           expect(snapshot).to eq(
             'app/controllers/file.other' => commits.first,
@@ -73,8 +90,13 @@ describe SnapshotFactory do
         end
       end
 
-      it 'only includes files matching the given paths when a path filter is enabled' do
-        factory.filter_by_paths(['app/controllers'])
+      it 'only includes files with matching paths when asked' do
+        repo_config.add_extractor('test/test') do |extractor_config|
+          extractor_config.set_conditions do |conditions|
+            conditions.match_path('app/controllers')
+          end
+        end
+
         factory.take_snapshot.tap do |snapshot|
           expect(snapshot).to eq(
             'app/controllers/product_controller.txt' => commits.first,
@@ -84,10 +106,14 @@ describe SnapshotFactory do
         end
       end
 
-      it 'combines multiple filters with a logical OR' do
-        factory
-          .filter_by_extensions(['.other'])
-          .filter_by_paths(['app/controllers'])
+      it 'supports combining multiple filters with a logical OR' do
+        repo_config.add_extractor('test/test') do |extractor_config|
+          extractor_config.set_conditions do |conditions|
+            conditions.match_path('app/controllers').or(
+              conditions.match_file_extension('.other')
+            )
+          end
+        end
 
         factory.take_snapshot.tap do |snapshot|
           expect(snapshot).to eq(
@@ -99,11 +125,14 @@ describe SnapshotFactory do
         end
       end
 
-      it 'combines multiple filters with a logical AND when the filter strategy is appropriately set' do
-        factory
-          .filter_by_extensions(['.other'])
-          .filter_by_paths(['app/controllers'])
-          .set_filter_strategy(:and)
+      it 'supports combining multiple filters with a logical AND' do
+        repo_config.add_extractor('test/test') do |extractor_config|
+          extractor_config.set_conditions do |conditions|
+            conditions.match_path('app/controllers').and(
+              conditions.match_file_extension('.other')
+            )
+          end
+        end
 
         factory.take_snapshot.tap do |snapshot|
           expect(snapshot).to eq(

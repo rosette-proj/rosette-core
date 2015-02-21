@@ -19,20 +19,18 @@ module Rosette
     #
     # @example
     #   snapshot = SnapshotFactory.new
-    #     .set_repo(Repo.from_path(...))
+    #     .set_repo_config(repo_config)
     #     .set_start_commit_id('73cd130a42017d794ffa86ef0d255541d518a7b3')
     #     .take_snapshot
     #
-    # @!attribute [r] repo
-    #   @return [Repo] the Rosette repo object to use.
+    # @!attribute [r] repo_config
+    #   @return [Repo] the +RepoConfig+ object to use when filtering paths, etc.
     # @!attribute [r] start_commit_id
     #   @return [String] the git commit id to start at. File changes that
     #     occurred more recently than this commit will not be reflected in
     #     the snapshot.
     class SnapshotFactory
-      include SnapshotFilterable
-
-      attr_reader :repo, :start_commit_id
+      attr_reader :repo_config, :start_commit_id
 
       # Creates a new factory.
       def initialize
@@ -43,8 +41,8 @@ module Rosette
       #
       # @param [Repo] repo The Rosette repo object to use.
       # @return [self]
-      def set_repo(repo)
-        @repo = repo
+      def set_repo_config(repo_config)
+        @repo_config = repo_config
         self
       end
 
@@ -72,12 +70,19 @@ module Rosette
       private
 
       def build_hash
+        repo = repo_config.repo
         rev_walk = RevWalk.new(repo.jgit_repo)
         rev_commit = repo.get_rev_commit(start_commit_id, rev_walk)
         paths = make_path_set(rev_commit).to_a
+        num_replacements = 0
 
         tree_filter = if paths.size > 0
-          path_filter = PathFilterGroup.createFromStrings(paths)
+          path_filter = if repo_config
+            RepoConfigPathFilter.create(repo_config)
+          else
+            PathFilterGroup.createFromStrings(paths)
+          end
+
           AndTreeFilter.create(path_filter, TreeFilter::ANY_DIFF)
         end
 
@@ -108,7 +113,12 @@ module Rosette
 
               unless path_hash[path]
                 path_hash[path] = cur_commit_id
+                num_replacements += 1
               end
+            end
+
+            if num_replacements > path_hash.size
+              break
             end
           end
 
@@ -129,18 +139,21 @@ module Rosette
       end
 
       def make_path_gatherer(rev_commit)
-        TreeWalk.new(repo.jgit_repo).tap do |walker|
+        TreeWalk.new(repo_config.repo.jgit_repo).tap do |walker|
           walker.addTree(rev_commit.getTree)
-          walker.setFilter(compile_filter)
           walker.setRecursive(true)
+
+          if repo_config
+            walker.setFilter(
+              RepoConfigPathFilter.create(repo_config)
+            )
+          end
         end
       end
 
       def reset
-        @repo = nil
+        @repo_config = nil
         @start_commit_id = nil
-        @filter_strategy = :or
-        @filters = []
       end
 
       def each_file_in(tree_walk)

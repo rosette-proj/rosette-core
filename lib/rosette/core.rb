@@ -67,7 +67,7 @@ module Rosette
     autoload :HeadSnapshotFactory,           'rosette/core/snapshots/head_snapshot_factory'
     autoload :CachedHeadSnapshotFactory,     'rosette/core/snapshots/cached_head_snapshot_factory'
     autoload :SnapshotFilterable,            'rosette/core/snapshots/snapshot_filterable'
-    autoload :FileTypeFilter,                'rosette/core/snapshots/file_type_filter'
+    autoload :RepoConfigPathFilter,          'rosette/core/snapshots/repo_config_path_filter'
 
     autoload :Extractor,                     'rosette/core/extractor/extractor'
     autoload :StaticExtractor,               'rosette/core/extractor/static_extractor'
