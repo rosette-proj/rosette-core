@@ -30,7 +30,7 @@ module Rosette
     #     occurred more recently than this commit will not be reflected in
     #     the snapshot.
     class SnapshotFactory
-      attr_reader :repo_config, :start_commit_id
+      attr_reader :repo_config, :start_commit_id, :paths
 
       # Creates a new factory.
       def initialize
@@ -57,6 +57,15 @@ module Rosette
         self
       end
 
+      # Set the paths that will be included in the snapshot.
+      #
+      # @param [Array] paths The paths to include in the snapshot.
+      # @return [self]
+      def set_paths(paths)
+        @paths = paths
+        self
+      end
+
       # Takes the snapshot.
       #
       # @return [Hash<String, String>] The snapshot hash (path to commit id
@@ -77,7 +86,7 @@ module Rosette
         num_replacements = 0
 
         tree_filter = if paths.size > 0
-          path_filter = if repo_config
+          path_filter = if repo_config && paths.empty?
             RepoConfigPathFilter.create(repo_config)
           else
             PathFilterGroup.createFromStrings(paths)
@@ -143,17 +152,21 @@ module Rosette
           walker.addTree(rev_commit.getTree)
           walker.setRecursive(true)
 
-          if repo_config
-            walker.setFilter(
-              RepoConfigPathFilter.create(repo_config)
-            )
+          # explicit paths take precedence over repo config ones
+          filter = if paths.size > 0
+            PathFilterGroup.createFromStrings(paths)
+          elsif repo_config
+            RepoConfigPathFilter.create(repo_config)
           end
+
+          walker.setFilter(filter) if filter
         end
       end
 
       def reset
         @repo_config = nil
         @start_commit_id = nil
+        @paths = []
       end
 
       def each_file_in(tree_walk)

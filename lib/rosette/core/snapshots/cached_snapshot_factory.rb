@@ -42,7 +42,9 @@ module Rosette
           factory = snapshot_factory.new
             .set_repo_config(repo_config)
             .set_start_commit_id(commit_id)
-            .take_snapshot
+
+          factory.set_paths(paths) if paths.size > 0
+          factory.take_snapshot
         end
       end
 
