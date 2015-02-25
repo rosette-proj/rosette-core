@@ -40,10 +40,10 @@ module Rosette
 
         cache.fetch(cache_key) do
           factory = snapshot_factory.new
-            .set_repo(repo_config.repo)
+            .set_repo_config(repo_config)
             .set_start_commit_id(commit_id)
 
-          factory.filter_by_paths(paths) if paths.size > 0
+          factory.set_paths(paths) if paths.size > 0
           factory.take_snapshot
         end
       end
