@@ -73,6 +73,7 @@ module Rosette
     autoload :StaticExtractor,               'rosette/core/extractor/static_extractor'
     autoload :Phrase,                        'rosette/core/extractor/phrase'
     autoload :Translation,                   'rosette/core/extractor/translation'
+    autoload :CommitLogStatus,               'rosette/core/extractor/commit_log_status'
     autoload :ExtractorConfig,               'rosette/core/extractor/extractor_config'
     autoload :ExtractorConfigurationFactory, 'rosette/core/extractor/extractor_config'
     autoload :RepoConfig,                    'rosette/core/extractor/repo_config'
