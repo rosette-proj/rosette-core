@@ -13,8 +13,11 @@ module Rosette
       # Indicates the phrases have been submitted for translation.
       PENDING = 'PENDING'
 
-      # Indicates the phrases have been pulled at least once, but have not yet
-      # been fully translated.
+      # Indicates the phrases have been pulled at least once, but not all
+      # translations were included.
+      PULLING = 'PULLING'
+
+      # Indicates all translations have been downloaded and catalogued.
       PULLED = 'PULLED'
 
       # Indicates the phrases have all been translated into every supported
