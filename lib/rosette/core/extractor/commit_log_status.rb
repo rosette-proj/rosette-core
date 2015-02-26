@@ -24,15 +24,14 @@ module Rosette
 
             # called on every complete
             event :complete do
-              transition [PENDING, PULLING] => PULLING
-              transition TRANSLATED => TRANSLATED
-              transition PULLED => PULLED
+              transition PULLING => PULLED
+              transition [PULLED, TRANSLATED] => TRANSLATED
             end
 
-            # called by completer when phrases are fully translated
+            # handles the zero phrases case (commit bypasses pulling
+            # state if it introduces no new/changed phrases)
             event :translate do
-              transition [PULLING, PULLED] => PULLED
-              transition TRANSLATED => TRANSLATED
+              transition all => TRANSLATED
             end
 
             # called when jgit can't find the commit

@@ -45,9 +45,9 @@ describe CommitLogStatus do
     end
 
     describe 'on translate' do
-      it 'returns false and has no effect' do
-        expect(instance.translate).to be_falsy
-        expect(instance.status).to eq(PhraseStatus::UNTRANSLATED)
+      it 'transitions to TRANSLATED' do
+        expect(instance.translate).to be_truthy
+        expect(instance.status).to eq(PhraseStatus::TRANSLATED)
       end
     end
 
@@ -77,16 +77,16 @@ describe CommitLogStatus do
     end
 
     describe 'on complete' do
-      it 'transitions to PULLED' do
-        expect(instance.complete).to be_truthy
-        expect(instance.status).to eq(PhraseStatus::PULLING)
+      it 'returns false and has no effect' do
+        expect(instance.complete).to be_falsy
+        expect(instance.status).to eq(PhraseStatus::PENDING)
       end
     end
 
     describe 'on translate' do
-      it 'returns false and has no effect' do
-        expect(instance.translate).to be_falsy
-        expect(instance.status).to eq(PhraseStatus::PENDING)
+      it 'transitions to TRANSLATED' do
+        expect(instance.translate).to be_truthy
+        expect(instance.status).to eq(PhraseStatus::TRANSLATED)
       end
     end
 
@@ -116,16 +116,16 @@ describe CommitLogStatus do
     end
 
     describe 'on complete' do
-      it 'stays PULLING' do
+      it 'transitions to PULLED' do
         expect(instance.complete).to be_truthy
-        expect(instance.status).to eq(PhraseStatus::PULLING)
+        expect(instance.status).to eq(PhraseStatus::PULLED)
       end
     end
 
     describe 'on translate' do
-      it 'transitions to PULLED' do
+      it 'transitions to TRANSLATED' do
         expect(instance.translate).to be_truthy
-        expect(instance.status).to eq(PhraseStatus::PULLED)
+        expect(instance.status).to eq(PhraseStatus::TRANSLATED)
       end
     end
 
@@ -155,16 +155,16 @@ describe CommitLogStatus do
     end
 
     describe 'on complete' do
-      it 'stays PULLED' do
+      it 'transitions to TRANSLATED' do
         expect(instance.complete).to be_truthy
-        expect(instance.status).to eq(PhraseStatus::PULLED)
+        expect(instance.status).to eq(PhraseStatus::TRANSLATED)
       end
     end
 
     describe 'on translate' do
-      it 'stays PULLED' do
+      it 'transitions to TRANSLATED' do
         expect(instance.translate).to be_truthy
-        expect(instance.status).to eq(PhraseStatus::PULLED)
+        expect(instance.status).to eq(PhraseStatus::TRANSLATED)
       end
     end
 
@@ -201,7 +201,7 @@ describe CommitLogStatus do
     end
 
     describe 'on translate' do
-      it 'stays TRANSLATED' do
+      it 'transitions to TRANSLATED' do
         expect(instance.translate).to be_truthy
         expect(instance.status).to eq(PhraseStatus::TRANSLATED)
       end
