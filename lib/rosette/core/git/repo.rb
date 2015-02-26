@@ -321,6 +321,15 @@ module Rosette
         all_head_refs.map { |ref| get_rev_commit(ref, walker) }
       end
 
+      def remote_refs_for_commit(commit_id_or_ref, walker = rev_walker)
+        commit = get_rev_commit(commit_id_or_ref, walker)
+
+        jgit_repo.refDatabase.getRefs(RefDatabase::ALL).each_with_object([]) do |(_, ref), ret|
+          head_commit = walker.parseCommit(ref.getObjectId)
+          ret << ref if walker.isMergedInto(commit, head_commit)
+        end
+      end
+
       private
 
       def git
