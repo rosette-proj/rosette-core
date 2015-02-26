@@ -116,9 +116,9 @@ describe CommitLogStatus do
     end
 
     describe 'on complete' do
-      it 'transitions to PULLED' do
+      it 'stays PULLING' do
         expect(instance.complete).to be_truthy
-        expect(instance.status).to eq(PhraseStatus::PULLED)
+        expect(instance.status).to eq(PhraseStatus::PULLING)
       end
     end
 

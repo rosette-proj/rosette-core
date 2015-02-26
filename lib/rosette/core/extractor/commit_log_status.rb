@@ -28,7 +28,7 @@ module Rosette
 
             # called on every complete
             event :complete do
-              transition PULLING => PULLED
+              transition PULLING => PULLING
               transition [PULLED, TRANSLATED] => TRANSLATED
             end
 
