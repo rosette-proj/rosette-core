@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'progress-reporters', '~> 1.0.0'
   s.add_dependency 'activesupport', '~> 3.2.0'
-  s.add_dependency 'state_machine', '~> 1.2.0'
+  s.add_dependency 'aasm', '~> 4.1.0'
   s.requirements << "jar 'org.eclipse.jgit:org.eclipse.jgit', '3.4.1.201406201815-r'"
 
   s.require_path = 'lib'

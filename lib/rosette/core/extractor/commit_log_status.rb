@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
-require 'state_machine'
+require 'aasm'
+require 'forwardable'
 
 module Rosette
   module Core
@@ -8,59 +9,84 @@ module Rosette
     # Provides a state machine for transitioning between the possible states of
     # a commit log.
     module CommitLogStatus
-      include Rosette::DataStores::PhraseStatus
-
       def self.included(base)
         base.class_eval do
-          class_initialize = instance_method(:initialize)
+          extend Forwardable
 
-          state_machine :status, initial: UNTRANSLATED do
-            # called on every push
-            event :push do
-              transition [UNTRANSLATED, PENDING] => PENDING
-            end
+          def_delegators :state_machine,
+            *(CommitLogStateMachine.instance_methods - Object.instance_methods)
 
-            # called on every pull
-            event :pull do
-              transition [PENDING, PULLING] => PULLING
-              transition PULLED => TRANSLATED
-            end
-
-            # called on every complete
-            event :complete do
-              transition PULLING => PULLING
-              transition [PULLED, TRANSLATED] => TRANSLATED
-            end
-
-            # handles the zero phrases case (commit bypasses pulling
-            # state if it introduces no new/changed phrases)
-            event :translate do
-              transition all => TRANSLATED
-            end
-
-            # called when jgit can't find the commit
-            event :missing do
-              transition all => MISSING
-            end
+          def status
+            state_machine.aasm.current_state.to_s
           end
 
-          state_machine_initialize = instance_method(:initialize)
+          def status=(new_status)
+            state_machine.aasm.current_state = new_status.to_sym
+          end
 
-          # state_machine overrides base's initializer, which can be bad.
-          # For example, if base's initializer sets up the initial state of
-          # the state machine (eg. @state = 'foo'), the fact that the state
-          # machine's initializer gets called first means @state doesn't get
-          # set and therefore isn't available to the state machine (the
-          # initial state will be nil). By grabbing references to both
-          # initialize methods, we can re-define initialize to call them in
-          # the right order.
-          define_method(:initialize) do |*args, &block|
-            class_initialize.bind(self).call(*args, &block)
-            state_machine_initialize.bind(self).call(*args, &block)
+          private
+
+          def state_machine
+            @state_machine ||= CommitLogStateMachine.new(@status)
           end
         end
       end
     end
 
+    class CommitLogStateMachine
+      include AASM
+
+      # aasm requires all states to be symbols
+      Rosette::DataStores::PhraseStatus.all.each do |status|
+        self.const_set(status, status.to_sym)
+      end
+
+      def initialize(status)
+        aasm.instance_variable_set(
+          '@current_state', status ? status.to_sym : nil
+        )
+      end
+
+      aasm do
+        Rosette::DataStores::PhraseStatus.all.each do |status|
+          state status.to_sym
+        end
+
+        attribute_name :status
+        initial_state UNTRANSLATED
+
+        # called on every push
+        event :push do
+          transitions from: [UNTRANSLATED, PENDING], to: PENDING
+        end
+
+        # called on every pull
+        event :pull do
+          transitions from: [PENDING, PULLING], to: PULLING
+          transitions from: PULLED, to: TRANSLATED
+        end
+
+        # called on every complete
+        event :complete do
+          transitions from: PULLING, to: PULLED, if: (lambda do |options = {}|
+            !!options.fetch(:fully_translated, false)
+          end)
+          transitions from: PULLING, to: PULLING
+          transitions from: [PULLED, TRANSLATED], to: TRANSLATED
+        end
+
+        # handles the zero phrases case (commit bypasses pulling
+        # state if it introduces no new/changed phrases)
+        event :translate do
+          transitions from: PhraseStatus.statuses, to: TRANSLATED
+        end
+
+        # called when jgit can't find the commit
+        event :missing do
+          transitions from: PhraseStatus.statuses, to: MISSING
+        end
+      end
+
+    end
   end
 end
