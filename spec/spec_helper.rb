@@ -70,6 +70,10 @@ RSpec.configure do |config|
   config.after(:each) do
     TestHelpers::Fixtures.cleanup
   end
+
+  config.after(:each) do
+    Rosette::DataStores::InMemoryDataStore.all_entries.clear
+  end
 end
 
 TestPhrase = Struct.new(:key, :meta_key, :file, :commit_id) do
