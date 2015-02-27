@@ -61,8 +61,18 @@ module Rosette
           phrase_count = derive_phrase_count_from(commit_logs)
           locale_statuses = derive_locale_statuses_from(commit_logs)
 
+          rev_walk.dispose
+
+          locale_statuses.each_pair do |locale, locale_status|
+            locale_status[:percent_translated] = percentage(
+              locale_status.fetch(:translated_count, 0) || 0,
+              phrase_count || 0
+            )
+          end
+
           {
             status: status,
+            commit_id: commit_id,
             phrase_count: phrase_count,
             locales: fill_in_missing_locales(
               repo_config.locales, locale_statuses
@@ -75,7 +85,15 @@ module Rosette
         def derive_status_from(commit_logs)
           ps = Rosette::DataStores::PhraseStatus
           entry = commit_logs.min_by { |entry| ps.index(entry.status) }
-          entry.status if entry
+
+          if entry
+            entry.status
+          else
+            # since TRANSLATED commit_logs aren't considered, the absence of
+            # any commit logs (i.e. a nil entry) indicates the branch is
+            # fully translated
+            Rosette::DataStores::PhraseStatus::TRANSLATED
+          end
         end
 
         def derive_phrase_count_from(commit_logs)
@@ -90,10 +108,6 @@ module Rosette
 
               ret[locale_entry.locale].tap do |locale_hash|
                 locale_hash[:translated_count] += locale_entry.translated_count
-                locale_hash[:percent_translated] = percentage(
-                  commit_log.phrase_count || 0,
-                  locale_hash.fetch(:translated_count, 0) || 0
-                )
               end
             end
           end
@@ -120,7 +134,6 @@ module Rosette
               ret[locale.code] = found_locale_status
             else
               ret[locale.code] = {
-                locale: locale.code,
                 percent_translated: 0.0,
                 translated_count: 0
               }
