@@ -180,5 +180,14 @@ describe Repo do
         expect(repo.commit_count).to eq(3)
       end
     end
+
+    describe '#refs_containing' do
+      it 'returns the refs that contain the given commit' do
+        refs = repo.refs_containing(commits.last.getId.name)
+        expect(refs.map(&:getName)).to eq([
+          "HEAD", "refs/heads/master", "refs/heads/mybranch"
+        ])
+      end
+    end
   end
 end

@@ -118,7 +118,7 @@ module Rosette
           commit_logs = datastore.each_commit_log_with_status(repo_name, statuses)
 
           commit_logs.each_with_object([]) do |commit_log, ret|
-            refs = repo_config.repo.remote_refs_for_commit(
+            refs = repo_config.repo.refs_containing(
               commit_log.commit_id, rev_walk
             )
 

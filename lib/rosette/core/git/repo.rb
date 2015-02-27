@@ -321,7 +321,14 @@ module Rosette
         all_head_refs.map { |ref| get_rev_commit(ref, walker) }
       end
 
-      def remote_refs_for_commit(commit_id_or_ref, walker = rev_walker)
+      # Get a list of refs (i.e. branches) that contain the given commit id.
+      #
+      # @param [String] commit_id_or_ref The git commit id or ref to get refs
+      #   for. This method returns all the refs that contain this commit.
+      # @param [Java::OrgEclipseJgitRevwalk::RevWalk] walker The walker to use.
+      # @return [Array<Java::OrgEclipseJgitLib::Ref>] The list of refs that
+      #   contain +commit_id_or_ref+.
+      def refs_containing(commit_id_or_ref, walker = rev_walker)
         commit = get_rev_commit(commit_id_or_ref, walker)
 
         jgit_repo.refDatabase.getRefs(RefDatabase::ALL).each_with_object([]) do |(_, ref), ret|
