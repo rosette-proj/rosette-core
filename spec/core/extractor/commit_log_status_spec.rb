@@ -8,8 +8,6 @@ include Rosette::DataStores
 class CommitLogStatusTester
   include CommitLogStatus
 
-  attr_accessor :state
-
   def initialize(status)
     @status = status
   end
@@ -31,16 +29,14 @@ describe CommitLogStatus do
     end
 
     describe 'on pull' do
-      it 'returns false and has no effect' do
-        expect(instance.pull).to be_falsy
-        expect(instance.status).to eq(PhraseStatus::UNTRANSLATED)
+      it 'raises an error' do
+        expect { instance.pull }.to raise_error(AASM::InvalidTransition)
       end
     end
 
     describe 'on complete' do
-      it 'returns false and has no effect' do
-        expect(instance.complete).to be_falsy
-        expect(instance.status).to eq(PhraseStatus::UNTRANSLATED)
+      it 'raises an error' do
+        expect { instance.complete }.to raise_error(AASM::InvalidTransition)
       end
     end
 
@@ -77,9 +73,8 @@ describe CommitLogStatus do
     end
 
     describe 'on complete' do
-      it 'returns false and has no effect' do
-        expect(instance.complete).to be_falsy
-        expect(instance.status).to eq(PhraseStatus::PENDING)
+      it 'raises an error' do
+        expect { instance.complete }.to raise_error(AASM::InvalidTransition)
       end
     end
 
@@ -102,9 +97,8 @@ describe CommitLogStatus do
     let(:status) { PhraseStatus::PULLING }
 
     describe 'on push' do
-      it 'returns false and has no effect' do
-        expect(instance.push).to be_falsy
-        expect(instance.status).to eq(PhraseStatus::PULLING)
+      it 'raises an error' do
+        expect { instance.push }.to raise_error(AASM::InvalidTransition)
       end
     end
 
@@ -119,6 +113,11 @@ describe CommitLogStatus do
       it 'stays PULLING' do
         expect(instance.complete).to be_truthy
         expect(instance.status).to eq(PhraseStatus::PULLING)
+      end
+
+      it 'transitions to PULLED if the fully_translated option is passed' do
+        expect(instance.complete(fully_translated: true)).to be_truthy
+        expect(instance.status).to eq(PhraseStatus::PULLED)
       end
     end
 
@@ -141,9 +140,8 @@ describe CommitLogStatus do
     let(:status) { PhraseStatus::PULLED }
 
     describe 'on push' do
-      it 'returns false and has no effect' do
-        expect(instance.push).to be_falsy
-        expect(instance.status).to eq(PhraseStatus::PULLED)
+      it 'raises an error' do
+        expect { instance.push }.to raise_error(AASM::InvalidTransition)
       end
     end
 
@@ -180,16 +178,14 @@ describe CommitLogStatus do
     let(:status) { PhraseStatus::TRANSLATED }
 
     describe 'on push' do
-      it 'returns false and has no effect' do
-        expect(instance.push).to be_falsy
-        expect(instance.status).to eq(PhraseStatus::TRANSLATED)
+      it 'raises an error' do
+        expect { instance.push }.to raise_error(AASM::InvalidTransition)
       end
     end
 
     describe 'on pull' do
-      it 'returns false and has no effect' do
-        expect(instance.pull).to be_falsy
-        expect(instance.status).to eq(PhraseStatus::TRANSLATED)
+      it 'raises an error' do
+        expect { instance.pull }.to raise_error(AASM::InvalidTransition)
       end
     end
 
