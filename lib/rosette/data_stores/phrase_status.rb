@@ -41,7 +41,7 @@ module Rosette
       end
 
       def self.incomplete
-        @statuses ||= [
+        @incomplete ||= [
           UNTRANSLATED, PENDING, PULLING, PULLED
         ]
       end
