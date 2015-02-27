@@ -52,7 +52,7 @@ module Rosette
         def execute
           repo_config = get_repo(repo_name)
           rev_walk = RevWalk.new(repo_config.repo.jgit_repo)
-          refs = repo_config.repo.remote_refs_for_commit(
+          refs = repo_config.repo.refs_containing(
             commit_id, rev_walk
           )
 
