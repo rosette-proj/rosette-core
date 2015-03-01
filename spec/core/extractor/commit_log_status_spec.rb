@@ -8,8 +8,9 @@ include Rosette::DataStores
 class CommitLogStatusTester
   include CommitLogStatus
 
-  def initialize(status)
-    @status = status
+  def initialize(initial_status)
+    @status = initial_status
+    write_status(initial_status)
   end
 end
 
