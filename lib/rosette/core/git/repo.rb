@@ -49,7 +49,11 @@ module Rosette
         @fetch_clone_mutex = Mutex.new
       end
 
-      # Retrieves a jgit commit object for the given ref or commit id.
+      # Retrieves a jgit commit object for the given ref or commit id. If
+      # +ref_or_commit_id+ cannot be directly looked up as a commit id or ref,
+      # heads are searched as a fallback. If no head ref can be found, remotes
+      # are searched as a secondary fallback. If no remote can be found, an
+      # error is raised.
       #
       # @param [String] ref_or_commit_id The git ref (i.e. a branch name) or
       #   git commit id of the commit to retrieve.
@@ -60,13 +64,26 @@ module Rosette
       # @return [Java::OrgEclipseJgitRevwalk::RevCommit] The identified
       #   +RevCommit+.
       def get_rev_commit(ref_or_commit_id, walker = rev_walker)
-        if ref = get_ref(ref_or_commit_id)
-          walker.parseCommit(ref.getObjectId)
-        else
-          walker.parseCommit(
-            ObjectId.fromString(ref_or_commit_id)
-          )
+        walker.parseCommit(
+          ObjectId.fromString(ref_or_commit_id)
+        )
+      rescue Java::JavaLang::IllegalArgumentException => e
+        found_ref = get_ref(ref_or_commit_id)
+
+        unless found_ref
+          [Constants::R_HEADS, Constants::R_REMOTES + 'origin/'].each do |prefix|
+            ref_candidates = jgit_repo.getRefDatabase.getRefs(prefix)
+
+            found_ref_name, found_ref = ref_candidates.find do |ref_name, ref|
+              ref_name == ref_or_commit_id
+            end
+
+            break if found_ref
+          end
         end
+
+        raise e unless found_ref
+        walker.parseCommit(found_ref.getObjectId)
       end
 
       # Calculates a diff between two git refs or commit ids.

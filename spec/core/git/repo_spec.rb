@@ -38,6 +38,24 @@ describe Repo do
         commit = repo.get_rev_commit(commits.last.getName)
         expect(commit.getName).to eq(commits.last.getName)
       end
+
+      it "falls back to remotes if the branch hasn't been checked out locally" do
+        branch_name = 'my_remote_branch'
+
+        remote_repo = TmpRepo.new.tap do |r|
+          r.create_branch(branch_name)
+          r.create_file('foo.txt') { |f| f.write('foo') }
+          r.add_all
+          r.commit('Initial commit')
+        end
+
+        fixture.repo.git("remote add origin file://#{remote_repo.working_dir}")
+        fixture.repo.git('fetch')
+
+        remote_commit_id = remote_repo.git('rev-parse HEAD').strip
+        commit = repo.get_rev_commit(branch_name)
+        expect(commit.getName).to eq(remote_commit_id)
+      end
     end
 
     describe '#diff' do
