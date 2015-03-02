@@ -60,13 +60,20 @@ module Rosette
       # @return [Java::OrgEclipseJgitRevwalk::RevCommit] The identified
       #   +RevCommit+.
       def get_rev_commit(ref_or_commit_id, walker = rev_walker)
-        if ref = get_ref(ref_or_commit_id)
-          walker.parseCommit(ref.getObjectId)
-        else
-          walker.parseCommit(
-            ObjectId.fromString(ref_or_commit_id)
-          )
-        end
+        walker.parseCommit(
+          ObjectId.fromString(ref_or_commit_id)
+        )
+
+      rescue Java::JavaLang::IllegalArgumentException => e
+        ref = jgit_repo.getRefDatabase.getRefs(Constants::R_REMOTES + 'origin/')
+          .find { |ref_name, ref| ref_name == ref_or_commit_id }
+
+        ref ||= jgit_repo.getRefDatabase.getRefs(Constants::R_HEADS)
+          .find { |ref_name, ref| ref_name == ref_or_commit_id }
+
+        raise e unless ref
+
+        walker.parseCommit(ref.getObjectId)
       end
 
       # Calculates a diff between two git refs or commit ids.
