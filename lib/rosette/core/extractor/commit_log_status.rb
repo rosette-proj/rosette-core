@@ -17,28 +17,6 @@ module Rosette
         base.class_eval do
           include AASM
 
-          def status
-            ((super rescue nil) || read_status).to_s
-          end
-
-          def status=(new_status)
-            write_status(new_status)
-          end
-
-          private
-
-          def read_status
-            aasm.current_state.to_s
-          end
-
-          def write_status(new_status)
-            if new_status
-              aasm.set_current_state_with_persistence(
-                new_status.to_sym
-              )
-            end
-          end
-
           aasm do
             # define states from PhraseStatus constants
             Rosette::DataStores::PhraseStatus.all.each do |status|

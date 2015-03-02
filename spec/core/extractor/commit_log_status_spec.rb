@@ -9,8 +9,21 @@ class CommitLogStatusTester
   include CommitLogStatus
 
   def initialize(initial_status)
-    @status = initial_status
-    write_status(initial_status)
+    send('status=', initial_status)
+  end
+
+  def status=(new_status)
+    if new_status
+      @status = new_status
+
+      aasm.set_current_state_with_persistence(
+        new_status.to_sym
+      )
+    end
+  end
+
+  def status
+    aasm.current_state.to_s
   end
 end
 
