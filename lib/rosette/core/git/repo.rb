@@ -71,7 +71,7 @@ module Rosette
         found_ref = get_ref(ref_or_commit_id)
 
         unless found_ref
-          [Constants::R_REMOTES + 'origin/', Constants::R_HEADS].each do |prefix|
+          [Constants::R_HEADS, Constants::R_REMOTES + 'origin/'].each do |prefix|
             ref_candidates = jgit_repo.getRefDatabase.getRefs(prefix)
 
             found_ref_name, found_ref = ref_candidates.find do |ref_name, ref|
