@@ -13,6 +13,7 @@ java_import 'org.eclipse.jgit.lib.ObjectId'
 java_import 'org.eclipse.jgit.lib.RefDatabase'
 java_import 'org.eclipse.jgit.revwalk.RevSort'
 java_import 'org.eclipse.jgit.revwalk.RevWalk'
+java_import 'org.eclipse.jgit.revwalk.RevWalkUtils'
 
 module Rosette
   module Core
@@ -330,11 +331,9 @@ module Rosette
       #   contain +commit_id_or_ref+.
       def refs_containing(commit_id_or_ref, walker = rev_walker)
         commit = get_rev_commit(commit_id_or_ref, walker)
-
-        jgit_repo.refDatabase.getRefs(RefDatabase::ALL).each_with_object([]) do |(_, ref), ret|
-          head_commit = walker.parseCommit(ref.getObjectId)
-          ret << ref if walker.isMergedInto(commit, head_commit)
-        end
+        RevWalkUtils.findBranchesReachableFrom(
+          commit, walker, jgit_repo.refDatabase.getRefs(RefDatabase::ALL).values
+        )
       end
 
       private
