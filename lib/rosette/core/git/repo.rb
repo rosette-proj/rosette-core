@@ -13,6 +13,7 @@ java_import 'org.eclipse.jgit.lib.ObjectId'
 java_import 'org.eclipse.jgit.lib.RefDatabase'
 java_import 'org.eclipse.jgit.revwalk.RevSort'
 java_import 'org.eclipse.jgit.revwalk.RevWalk'
+java_import 'org.eclipse.jgit.revwalk.RevWalkUtils'
 
 module Rosette
   module Core
@@ -319,6 +320,20 @@ module Rosette
       #   commits, one for each of the heads in the repo.
       def all_heads(walker = rev_walker)
         all_head_refs.map { |ref| get_rev_commit(ref, walker) }
+      end
+
+      # Get a list of refs (i.e. branches) that contain the given commit id.
+      #
+      # @param [String] commit_id_or_ref The git commit id or ref to get refs
+      #   for. This method returns all the refs that contain this commit.
+      # @param [Java::OrgEclipseJgitRevwalk::RevWalk] walker The walker to use.
+      # @return [Array<Java::OrgEclipseJgitLib::Ref>] The list of refs that
+      #   contain +commit_id_or_ref+.
+      def refs_containing(commit_id_or_ref, walker = rev_walker)
+        commit = get_rev_commit(commit_id_or_ref, walker)
+        RevWalkUtils.findBranchesReachableFrom(
+          commit, walker, jgit_repo.refDatabase.getRefs(RefDatabase::ALL).values
+        )
       end
 
       private

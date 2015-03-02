@@ -27,6 +27,30 @@ module Rosette
       # Indicates that the commit no longer exists, i.e. the associated branch
       # was deleted or was force-pushed over.
       MISSING = 'MISSING'
+
+      def self.all
+        @all ||= [
+          UNTRANSLATED, PENDING, PULLING, PULLED, TRANSLATED, MISSING
+        ]
+      end
+
+      def self.statuses
+        @statuses ||= [
+          UNTRANSLATED, PENDING, PULLING, PULLED, TRANSLATED
+        ]
+      end
+
+      def self.incomplete
+        @incomplete ||= [
+          UNTRANSLATED, PENDING, PULLING, PULLED
+        ]
+      end
+
+      def self.index(status)
+        (@status_index ||= {}).fetch(status) do
+          statuses.index(status)
+        end
+      end
     end
 
   end

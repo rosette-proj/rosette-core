@@ -5,9 +5,11 @@ require 'spec_helper'
 include Rosette::Core::Commands
 
 describe StatusCommand do
-  let(:repo_name) { 'single_commit' }
+  let(:repo_name) { 'double_commit' }
   let(:locales) { %w(es de-DE ja-JP) }
-  let(:commit_log_locale_model) { Rosette::DataStores::InMemoryDataStore::CommitLogLocale }
+  let(:commit_log_locale_model) do
+    Rosette::DataStores::InMemoryDataStore::CommitLogLocale
+  end
 
   let(:fixture) do
     load_repo_fixture(repo_name) do |config, repo_config|
@@ -16,6 +18,7 @@ describe StatusCommand do
     end
   end
 
+  let(:repo_config) { fixture.config.get_repo(repo_name) }
   let(:command) { StatusCommand.new(fixture.config) }
 
   context 'validations' do
@@ -39,21 +42,26 @@ describe StatusCommand do
   context '#execute' do
     let(:translated_count) { 6 }
     let(:phrase_count) { 8 }
+    let(:status) { Rosette::DataStores::PhraseStatus::UNTRANSLATED }
 
     before do
       commit(fixture.config, repo_name, head_ref(fixture.repo))
       command.set_ref('HEAD')
       command.set_repo_name(repo_name)
-      fixture.config.datastore.add_or_update_commit_log(
-        repo_name,
-        head_ref(fixture.repo),
-        nil,
-        Rosette::DataStores::PhraseStatus::UNTRANSLATED,
-        phrase_count
-      )
 
-      locales.each do |locale|
-        fixture.config.datastore.add_or_update_commit_log_locale(head_ref(fixture.repo), locale, translated_count)
+      repo_config.repo.each_commit do |rev_commit|
+        fixture.config.datastore.add_or_update_commit_log(
+          repo_name,
+          rev_commit.getId.name,
+          nil, status,
+          phrase_count
+        )
+
+        locales.each do |locale|
+          fixture.config.datastore.add_or_update_commit_log_locale(
+            rev_commit.getId.name, locale, translated_count
+          )
+        end
       end
     end
 
@@ -61,37 +69,58 @@ describe StatusCommand do
       status_result = command.execute
       expect(status_result[:commit_id]).to eq(head_ref(fixture.repo))
       expect(status_result[:status]).to eq(Rosette::DataStores::PhraseStatus::UNTRANSLATED)
-      expect(status_result[:phrase_count]).to eq(phrase_count)
+      expect(status_result[:phrase_count]).to eq(phrase_count * 2)
 
-      locales_result = locales.map do |locale|
-        {}.tap do |h|
-          h[:locale] = locale
-          h[:percent_translated] = (translated_count.to_f / phrase_count).round(2)
-          h[:translated_count] = translated_count
-        end
+      locales_result = locales.each_with_object({}) do |locale, ret|
+        ret[locale] = {
+          percent_translated: (translated_count.to_f / phrase_count).round(2),
+          translated_count: translated_count * 2
+        }
       end
 
-      expect(sort_by_locale(status_result[:locales]) ).to eq(sort_by_locale(locales_result))
+      expect(status_result[:locales]).to eq(locales_result)
     end
 
     it 'fills in translation data for missing locales' do
-      index_to_delete = commit_log_locale_model.find_index do |commit_log|
+      index_to_delete = commit_log_locale_model.entries.delete_if do |commit_log|
         commit_log.locale == locales.first
       end
 
-      commit_log_locale_model.entries.delete_at(index_to_delete)
       status_result = command.execute
-      untranslated_locale = status_result[:locales].find do |locale_status|
-        locale_status[:locale] == locales.first
-      end
+      untranslated_locale = status_result[:locales][locales.first]
 
       expect(untranslated_locale).to eq({
-        locale: locales.first,
         percent_translated: 0.0,
         translated_count: 0
       })
     end
 
+    context 'with TRANSLATED commit logs' do
+      let(:status) { Rosette::DataStores::PhraseStatus::TRANSLATED }
+
+      it 'returns a TRANSLATED status' do
+        expect(command.execute[:status]).to eq(
+          Rosette::DataStores::PhraseStatus::TRANSLATED
+        )
+      end
+    end
+
+    context 'with one UNTRANSLATED commit and one PULLED commit' do
+      before do
+        fixture.config.datastore.add_or_update_commit_log(
+          repo_name,
+          head_ref(fixture.repo),
+          nil, Rosette::DataStores::PhraseStatus::PULLED,
+          phrase_count
+        )
+      end
+
+      it 'returns an UNTRANSLATED status' do
+        expect(command.execute[:status]).to eq(
+          Rosette::DataStores::PhraseStatus::UNTRANSLATED
+        )
+      end
+    end
   end
 
   def head_ref(repo)
@@ -103,9 +132,5 @@ describe StatusCommand do
       .set_repo_name(repo_name)
       .set_ref(ref)
       .execute
-  end
-
-  def sort_by_locale(locales_array)
-    locales_array.sort { |a,b| a[:locale] <=> b[:locale] }
   end
 end
