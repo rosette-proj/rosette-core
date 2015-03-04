@@ -31,4 +31,17 @@ describe ExtractorConfig do
       end
     end
   end
+
+  describe '#matches?' do
+    let(:config) { ExtractorConfig.new(extractor_id, extractor_class) }
+
+    it 'delegates #matches? to root' do
+      config.set_conditions do |cond|
+        cond.match_regex(/values-(ja|de)/)
+      end
+
+      expect(config.matches?('MyProject/stuff/values-ja')).to be_truthy
+      expect(config.matches?('MyProject/stuff/values-pt')).to be_falsey
+    end
+  end
 end

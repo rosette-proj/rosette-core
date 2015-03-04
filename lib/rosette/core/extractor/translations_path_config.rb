@@ -50,7 +50,7 @@ module Rosette
       # @yield [root] the root of the conditions tree
       # @yieldparam root [PathMatcherFactory::Node]
       def set_conditions
-        tap { yield root }
+        tap { @root = yield root }
       end
     end
   end
