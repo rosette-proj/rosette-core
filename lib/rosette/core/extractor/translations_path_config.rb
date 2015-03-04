@@ -33,13 +33,8 @@ module Rosette
         tap { @encoding = new_encoding }
       end
 
-      # Determines if the given path matches all the conditions in the
-      # conditions tree.
-      #
-      # @param [String] path The path to match.
-      # @return [Boolean] true if the path matches, false otherwise.
-      def matches?(path)
-        root.matches?(path)
+      def locale_from_path(&block)
+        tap { @locale_from_path_proc = block }
       end
 
       # Creates and yields a node that represents the root of a conditions
@@ -51,6 +46,19 @@ module Rosette
       # @yieldparam root [PathMatcherFactory::Node]
       def set_conditions
         tap { @root = yield root }
+      end
+
+      # Determines if the given path matches all the conditions in the
+      # conditions tree.
+      #
+      # @param [String] path The path to match.
+      # @return [Boolean] true if the path matches, false otherwise.
+      def matches?(path)
+        root.matches?(path)
+      end
+
+      def deduce_locale_from_path(path)
+        @locale_from_path_proc.call(path)
       end
     end
   end

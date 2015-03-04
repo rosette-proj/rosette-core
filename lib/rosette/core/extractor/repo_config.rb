@@ -281,7 +281,12 @@ module Rosette
           yield tpconfig if block_given?
         end
       end
-    end
 
+      def get_translation_path_matcher(path)
+        translation_path_matchers.detect do |config|
+          config.matches?(path)
+        end
+      end
+    end
   end
 end
