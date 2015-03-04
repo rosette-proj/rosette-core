@@ -105,7 +105,7 @@ module Rosette
       include Integrations::Integratable
 
       attr_reader :name, :repo, :locales, :hooks, :description
-      attr_reader :extractor_configs, :serializer_configs
+      attr_reader :extractor_configs, :serializer_configs, :translation_path_matchers
 
       # Creates a new repo config object.
       #
@@ -116,6 +116,7 @@ module Rosette
         @extractor_configs = []
         @serializer_configs = []
         @locales = []
+        @translation_path_matchers = []
 
         @hooks = Hash.new do |h, key|
           h[key] = Hash.new do |h2, key2|
@@ -173,9 +174,9 @@ module Rosette
       # @return [void]
       def add_extractor(extractor_id)
         klass = ExtractorId.resolve(extractor_id)
-        config = ExtractorConfig.new(extractor_id, klass)
-        yield config if block_given?
-        extractor_configs << config
+        extractor_configs << ExtractorConfig.new(extractor_id, klass).tap do |config|
+          yield config if block_given?
+        end
       end
 
       # Adds a serializer to this repo.
@@ -190,9 +191,9 @@ module Rosette
       def add_serializer(name, options = {})
         serializer_id = options[:format]
         klass = SerializerId.resolve(serializer_id)
-        config = SerializerConfig.new(name, klass, serializer_id)
-        yield config if block_given?
-        serializer_configs << config
+        serializer_configs << SerializerConfig.new(name, klass, serializer_id).tap do |config|
+          yield config if block_given?
+        end
       end
 
       # Adds a locale to the list of locales this repo supports.
@@ -273,6 +274,12 @@ module Rosette
       def get_locale(code, format = Locale::DEFAULT_FORMAT)
         locale_to_find = Locale.parse(code, format)
         locales.find { |locale| locale == locale_to_find }
+      end
+
+      def add_translation_path_matchers
+        translation_path_matchers << TranslationsPathConfig.new.tap do |tpconfig|
+          yield tpconfig if block_given?
+        end
       end
     end
 
