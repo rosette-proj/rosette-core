@@ -122,4 +122,11 @@ describe RepoConfig do
       end
     end
   end
+
+  describe '#add_translation_path_matcher' do
+    it 'adds a translation path matcher' do
+      config.add_translation_path_matcher
+      expect(config.translation_path_matchers.size).to eq(1)
+    end
+  end
 end

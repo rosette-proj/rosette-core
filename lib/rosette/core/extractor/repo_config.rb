@@ -276,7 +276,7 @@ module Rosette
         locales.find { |locale| locale == locale_to_find }
       end
 
-      def add_translation_path_matchers
+      def add_translation_path_matcher
         translation_path_matchers << TranslationsPathConfig.new.tap do |tpconfig|
           yield tpconfig if block_given?
         end
