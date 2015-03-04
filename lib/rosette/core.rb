@@ -75,7 +75,7 @@ module Rosette
     autoload :Translation,                   'rosette/core/extractor/translation'
     autoload :CommitLogStatus,               'rosette/core/extractor/commit_log_status'
     autoload :ExtractorConfig,               'rosette/core/extractor/extractor_config'
-    autoload :ExtractorConfigurationFactory, 'rosette/core/extractor/extractor_config'
+    autoload :PathMatcherFactory,            'rosette/core/path_matcher_factory'
     autoload :RepoConfig,                    'rosette/core/extractor/repo_config'
     autoload :SerializerConfig,              'rosette/core/extractor/serializer_config'
     autoload :CommitProcessor,               'rosette/core/extractor/commit_processor'
