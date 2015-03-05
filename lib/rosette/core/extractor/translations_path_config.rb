@@ -33,8 +33,15 @@ module Rosette
         tap { @encoding = new_encoding }
       end
 
+      # Provides a user-defined way of determining the locale a file is written
+      # in. In a Rails app for example, config/locales/es.yml is written in the
+      # "es" locale. If no block is given, this method does nothing.
+      #
+      # @param [Proc] block The block/proc that encapsulates the locale-deducing
+      #   logic.
+      # @return [self]
       def locale_from_path(&block)
-        tap { @locale_from_path_proc = block }
+        tap { @locale_from_path_proc = block if block_given? }
       end
 
       # Creates and yields a node that represents the root of a conditions
@@ -57,6 +64,13 @@ module Rosette
         root.matches?(path)
       end
 
+      # Figures out the locale a file is written in based on its path. For
+      # example, in a Rails application, Spanish translations are stored in
+      # config/locales/es.yml. In the case of Rails, each .yml file carries
+      # the locale the file is written in, so this method would return "es".
+      #
+      # @param [String] path The path to examine.
+      # @return [String] The locale detected in +path+.
       def deduce_locale_from_path(path)
         @locale_from_path_proc.call(path)
       end

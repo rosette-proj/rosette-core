@@ -328,4 +328,3 @@ module Rosette
     end
   end
 end
-

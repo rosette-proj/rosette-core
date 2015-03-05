@@ -276,18 +276,38 @@ module Rosette
         locales.find { |locale| locale == locale_to_find }
       end
 
+      # Adds a translation path matcher to this config. Translation path
+      # matchers are used primarily when building history for a repository.
+      # They help identify which files on disk contain translations, and which
+      # language they're written in.
+      #
+      # @yield [config] yields the translation path matcher config instance
+      # @yieldparam config [TranslationsPathConfig]
       def add_translation_path_matcher
         translation_path_matchers << TranslationsPathConfig.new.tap do |tpconfig|
           yield tpconfig if block_given?
         end
       end
 
+      # Figures out the locale a file is written in based on its path. For
+      # example, in a Rails application, Spanish translations are stored in
+      # config/locales/es.yml. In the case of Rails, each .yml file carries
+      # the locale the file is written in, so this method would return "es".
+      #
+      # @param [String] path The path to examine.
+      # @return [String] The locale detected in +path+.
       def deduce_locale_from_path(path)
         if path_matcher = get_translation_path_matcher(path)
           path_matcher.deduce_locale_from_path(path)
         end
       end
 
+      # Returns the translation path config instance that matches the given
+      # path. If no matcher instance matches, +nil+ is returned.
+      #
+      # @param [String] path The path to get the matcher config for.
+      # @return [nil, TranslationsPathConfig] The first path matcher instance
+      #   that was found to match +path+.
       def get_translation_path_matcher(path)
         translation_path_matchers.detect do |config|
           config.matches?(path)
