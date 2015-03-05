@@ -282,6 +282,12 @@ module Rosette
         end
       end
 
+      def deduce_locale_from_path(path)
+        if path_matcher = get_translation_path_matcher(path)
+          path_matcher.deduce_locale_from_path(path)
+        end
+      end
+
       def get_translation_path_matcher(path)
         translation_path_matchers.detect do |config|
           config.matches?(path)
