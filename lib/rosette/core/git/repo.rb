@@ -67,7 +67,7 @@ module Rosette
         walker.parseCommit(
           ObjectId.fromString(ref_or_commit_id)
         )
-      rescue Java::JavaLang::IllegalArgumentException => e
+      rescue Java::OrgEclipseJgitErrors::MissingObjectException, Java::JavaLang::IllegalArgumentException => e
         found_ref = get_ref(ref_or_commit_id)
 
         unless found_ref
@@ -82,8 +82,9 @@ module Rosette
           end
         end
 
-        raise e unless found_ref
-        walker.parseCommit(found_ref.getObjectId)
+        if found_ref
+          walker.parseCommit(found_ref.getObjectId)
+        end
       end
 
       # Calculates a diff between two git refs or commit ids.
@@ -347,10 +348,13 @@ module Rosette
       # @return [Array<Java::OrgEclipseJgitLib::Ref>] The list of refs that
       #   contain +commit_id_or_ref+.
       def refs_containing(commit_id_or_ref, walker = rev_walker)
-        commit = get_rev_commit(commit_id_or_ref, walker)
-        RevWalkUtils.findBranchesReachableFrom(
-          commit, walker, jgit_repo.refDatabase.getRefs(RefDatabase::ALL).values
-        )
+        if commit = get_rev_commit(commit_id_or_ref, walker)
+          RevWalkUtils.findBranchesReachableFrom(
+            commit, walker, jgit_repo.refDatabase.getRefs(RefDatabase::ALL).values
+          )
+        else
+          []
+        end
       end
 
       private
