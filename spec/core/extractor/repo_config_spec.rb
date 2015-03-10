@@ -122,4 +122,23 @@ describe RepoConfig do
       end
     end
   end
+
+  describe '#add_translation_path_matcher' do
+    it 'adds a translation path matcher' do
+      config.add_translation_path_matcher
+      expect(config.translation_path_matchers.size).to eq(1)
+    end
+  end
+
+  describe '#get_translation_path_matcher' do
+    it 'gets the translation path matcher for the given path' do
+      config.add_translation_path_matcher do |tr|
+        tr.set_conditions { |c| c.match_regex(/ja|de/) }
+      end
+
+      expect(config.get_translation_path_matcher('myconfig/values-ja')).to eq(
+        config.translation_path_matchers.first
+      )
+    end
+  end
 end
