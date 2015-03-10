@@ -84,6 +84,8 @@ module Rosette
 
         if found_ref
           walker.parseCommit(found_ref.getObjectId)
+        else
+          raise e
         end
       end
 
@@ -348,13 +350,12 @@ module Rosette
       # @return [Array<Java::OrgEclipseJgitLib::Ref>] The list of refs that
       #   contain +commit_id_or_ref+.
       def refs_containing(commit_id_or_ref, walker = rev_walker)
-        if commit = get_rev_commit(commit_id_or_ref, walker)
-          RevWalkUtils.findBranchesReachableFrom(
-            commit, walker, jgit_repo.refDatabase.getRefs(RefDatabase::ALL).values
-          )
-        else
-          []
-        end
+        commit = get_rev_commit(commit_id_or_ref, walker)
+        RevWalkUtils.findBranchesReachableFrom(
+          commit, walker, jgit_repo.refDatabase.getRefs(RefDatabase::ALL).values
+        )
+      rescue Java::OrgEclipseJgitErrors::MissingObjectException
+        []
       end
 
       private
