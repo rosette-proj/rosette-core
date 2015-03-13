@@ -105,7 +105,7 @@ module Rosette
       include Integrations::Integratable
 
       attr_reader :name, :repo, :locales, :hooks, :description
-      attr_reader :extractor_configs, :serializer_configs,
+      attr_reader :extractor_configs, :serializer_configs
       attr_reader :translation_path_matchers, :placeholder_regexes
 
       # Creates a new repo config object.
