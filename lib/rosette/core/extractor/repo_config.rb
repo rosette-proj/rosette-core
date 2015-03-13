@@ -105,7 +105,8 @@ module Rosette
       include Integrations::Integratable
 
       attr_reader :name, :repo, :locales, :hooks, :description
-      attr_reader :extractor_configs, :serializer_configs, :translation_path_matchers
+      attr_reader :extractor_configs, :serializer_configs,
+      attr_reader :translation_path_matchers, :placeholder_regexes
 
       # Creates a new repo config object.
       #
@@ -117,6 +118,7 @@ module Rosette
         @serializer_configs = []
         @locales = []
         @translation_path_matchers = []
+        @placeholder_regexes = []
 
         @hooks = Hash.new do |h, key|
           h[key] = Hash.new do |h2, key2|
@@ -312,6 +314,17 @@ module Rosette
         translation_path_matchers.detect do |config|
           config.matches?(path)
         end
+      end
+
+      # Adds a regex that matches a placeholder in translation text. For
+      # example, Ruby placeholders often look like this "Hello %{name}!".
+      # Some integrations rely on these regexes to detect and format
+      # placeholders correctly.
+      #
+      # @param [Regexp] placeholder_regex The regex to add.
+      # @return [void]
+      def add_placeholder_regex(placeholder_regex)
+        placeholder_regexes << placeholder_regex
       end
     end
   end
