@@ -97,8 +97,8 @@ module Rosette
       # @param [Array<String>] paths The paths to include in the diff. If an
       #   empty array is given, returns a diff for all paths.
       # @return [Array<Java::OrgEclipseJgitDiff::DiffEntry>]
-      def diff(ref_parent, ref_child, paths = [])
-        diff_finder.diff(
+      def diff(ref_parent, ref_child, paths = [], finder = diff_finder)
+        finder.diff(
           get_rev_commit(ref_parent),
           get_rev_commit(ref_child),
           paths

@@ -10,6 +10,11 @@ describe ShowCommand do
   let(:fixture) do
     load_repo_fixture(repo_name) do |config, repo_config|
       config.use_datastore('in-memory')
+      repo_config.add_extractor('test/test') do |extractor_config|
+        extractor_config.set_conditions do |conditions|
+          conditions.match_regex(//)
+        end
+      end
     end
   end
 

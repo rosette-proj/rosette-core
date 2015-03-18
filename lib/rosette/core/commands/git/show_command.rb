@@ -52,8 +52,10 @@ module Rosette
 
           diff.each do |diff_entry|
             path = diff_entry.getNewPath
-            child_snapshot[path] = commit_id
-            child_paths << (path == '/dev/null' ? diff_entry.getOldPath : path)
+            if repo_config.extractor_configs.any? { |ext| ext.matches?(path) }
+              child_snapshot[path] = commit_id
+              child_paths << (path == '/dev/null' ? diff_entry.getOldPath : path)
+            end
           end
 
           child_phrases = datastore.phrases_by_commits(repo_name, child_snapshot).to_a

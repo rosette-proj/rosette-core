@@ -52,8 +52,10 @@ module Rosette
           commit = repo_config.repo.get_rev_commit(commit_ref, rev_walk)
 
           diff_finder.diff_with_parent(commit).each do |diff_entry|
-            process_diff_entry(diff_entry, repo_config, commit) do |phrase|
-              yield phrase
+            if diff_entry.getNewPath != '/dev/null'
+              process_diff_entry(diff_entry, repo_config, commit) do |phrase|
+                yield phrase
+              end
             end
           end
         else

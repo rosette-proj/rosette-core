@@ -165,19 +165,32 @@ module Rosette
         #   contains the previous key of the phrase. See the example above for a visual
         #   representation of the diff hash.
         def execute
-          configuration.cache.fetch(cache_key) do
-            repo_config = get_repo(repo_name)
+          ensure_commits_have_been_processed([head_commit_id, diff_point_commit_id])
+          repo_config = get_repo(repo_name)
+          rev_walker = RevWalk.new(repo_config.repo.jgit_repo)
+          diff_finder = DiffFinder.new(repo_config.repo.jgit_repo, rev_walker)
 
-            head_snapshot = take_snapshot(repo_config, head_commit_id, paths)
-            ensure_commits_have_been_processed(head_snapshot.values)
-            head_phrases = datastore.phrases_by_commits(repo_name, head_snapshot)
+          repo = repo_config.repo
+          diff = repo.diff(head_commit_id, diff_point_commit_id, [], diff_finder)
+          head = repo.get_rev_commit(head_commit_id, rev_walker)
 
-            diff_point_snapshot = take_snapshot(repo_config, diff_point_commit_id, paths)
-            ensure_commits_have_been_processed(diff_point_snapshot.values)
-            diff_point_phrases = datastore.phrases_by_commits(repo_name, diff_point_snapshot)
+          head_snapshot = {}
+          head_paths = []
 
-            compare(head_phrases, diff_point_phrases)
+          diff.each do |diff_entry|
+            path = diff_entry.getNewPath
+            if repo_config.extractor_configs.any? { |ext| ext.matches?(path) }
+              head_snapshot[path] = head_commit_id
+              head_paths << (path == '/dev/null' ? diff_entry.getOldPath : path)
+            end
           end
+
+          head_phrases = datastore.phrases_by_commits(repo_name, head_snapshot).to_a
+          diff_point_snapshot = take_snapshot(repo_config, diff_point_commit_id, head_paths)
+          ensure_commits_have_been_processed(diff_point_snapshot.values)
+          diff_point_phrases = datastore.phrases_by_commits(repo_name, diff_point_snapshot).to_a
+
+          diff = compare(head_phrases, diff_point_phrases)
         end
 
         private
