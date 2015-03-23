@@ -171,7 +171,7 @@ module Rosette
           diff_finder = DiffFinder.new(repo_config.repo.jgit_repo, rev_walker)
 
           repo = repo_config.repo
-          diff = repo.diff(head_commit_id, diff_point_commit_id, [], diff_finder)
+          diff = repo.diff(diff_point_commit_id, head_commit_id, [], diff_finder)
           head = repo.get_rev_commit(head_commit_id, rev_walker)
 
           head_snapshot = {}
