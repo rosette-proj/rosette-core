@@ -102,5 +102,7 @@ module Rosette
     autoload :PreprocessorId,                'rosette/core/resolvers/preprocessor_id'
 
     autoload :Commands,                      'rosette/core/commands'
+
+    autoload :BranchUtils,                   'rosette/core/branch_utils'
   end
 end
