@@ -6,6 +6,5 @@ env:
 before_install:
   - rvm gemset create rosette-core
   - rvm use jruby-1.7.15@rosette-core
-  - gem uninstall -a bundler
   - gem install bundler -v1.8.5  # newer versions break jbundler
 script: 'bundle -v && git config --global user.name "Fake User" && git config --global user.email "fake@user.com" && bundle exec jbundle && bundle exec rspec'
