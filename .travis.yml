@@ -3,8 +3,4 @@ rvm:
   - jruby-1.7.15
 env:
   - GIT_BUNDLE=true JRUBY_OPTS="--2.0"
-before_install:
-  - rvm gemset create rosette-core
-  - rvm use jruby-1.7.15@rosette-core
-  - gem install bundler -v1.8.5  # newer versions break jbundler
-script: 'bundle -v && git config --global user.name "Fake User" && git config --global user.email "fake@user.com" && bundle exec jbundle && bundle exec rspec'
+script: 'git config --global user.name "Fake User" && git config --global user.email "fake@user.com" && bundle exec jbundle && bundle exec rspec'

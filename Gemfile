@@ -20,11 +20,5 @@ end
 group :test do
   gem 'simplecov'
   gem 'rspec'
-
-  # lock all jbundler dependencies to specific versions
-  # because later versions were causing errors
-  gem 'jbundler', '0.7.1'
-  gem 'jar-dependencies', '0.1.7'
-  gem 'maven-tools', '1.0.7'
-  gem 'ruby-maven', '3.1.1.0.9'
+  gem 'jbundler', github: 'camertron/jbundler', branch: 'fix_thor_inheritance'
 end
