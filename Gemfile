@@ -20,5 +20,5 @@ end
 group :test do
   gem 'simplecov'
   gem 'rspec'
-  gem 'jbundler', github: 'camertron/jbundler', branch: 'fix_thor_inheritance'
+  gem 'jbundler', github: 'mkristian/jbundler'
 end
