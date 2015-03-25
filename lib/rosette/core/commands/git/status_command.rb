@@ -52,11 +52,15 @@ module Rosette
         def execute
           repo_config = get_repo(repo_name)
           rev_walk = RevWalk.new(repo_config.repo.jgit_repo)
+          all_refs = repo_config.repo.all_refs.values
           refs = repo_config.repo.refs_containing(
-            commit_id, rev_walk
+            commit_id, rev_walk, all_refs
           )
 
-          commit_logs = commit_logs_for(refs.map(&:getName), repo_config, rev_walk)
+          commit_logs = commit_logs_for(
+            refs.map(&:getName), repo_config, rev_walk, all_refs
+          )
+
           status = BranchUtils.derive_status_from(commit_logs)
           phrase_count = BranchUtils.derive_phrase_count_from(commit_logs)
           locale_statuses = BranchUtils.derive_locale_statuses_from(
@@ -77,13 +81,13 @@ module Rosette
 
         protected
 
-        def commit_logs_for(branch_names, repo_config, rev_walk)
+        def commit_logs_for(branch_names, repo_config, rev_walk, refs)
           statuses = Rosette::DataStores::PhraseStatus.incomplete
           commit_logs = datastore.each_commit_log_with_status(repo_name, statuses)
 
           commit_logs.each_with_object([]) do |commit_log, ret|
             refs = repo_config.repo.refs_containing(
-              commit_log.commit_id, rev_walk
+              commit_log.commit_id, rev_walk, refs
             )
 
             if refs.any? { |ref| branch_names.include?(ref.getName) }

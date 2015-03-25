@@ -349,11 +349,10 @@ module Rosette
       # @param [Java::OrgEclipseJgitRevwalk::RevWalk] walker The walker to use.
       # @return [Array<Java::OrgEclipseJgitLib::Ref>] The list of refs that
       #   contain +commit_id_or_ref+.
-      def refs_containing(commit_id_or_ref, walker = rev_walker)
+      def refs_containing(commit_id_or_ref, walker = rev_walker, refs = nil)
+        refs ||= jgit_repo.refDatabase.getRefs(RefDatabase::ALL).values
         commit = get_rev_commit(commit_id_or_ref, walker)
-        RevWalkUtils.findBranchesReachableFrom(
-          commit, walker, jgit_repo.refDatabase.getRefs(RefDatabase::ALL).values
-        )
+        RevWalkUtils.findBranchesReachableFrom(commit, walker, refs)
       rescue Java::OrgEclipseJgitErrors::MissingObjectException
         []
       end
