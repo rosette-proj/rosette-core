@@ -1,4 +1,6 @@
 language: ruby
+cache:
+  - bundler
 rvm:
   - jruby-1.7.15
 env:
