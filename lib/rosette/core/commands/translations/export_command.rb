@@ -37,6 +37,10 @@ module Rosette
       # @!attribute [r] include_checksum
       #   @return [Boolean] whether or not the checksum of translations
       #     is returned alongside the serialized phrases.
+      # @!attribute [r] paths
+      #   @return [Array<String>] the list of paths to export translations
+      #     for. Any translations that belong to phrases that did not come
+      #     from a path in this list will not be included in the export.
       #
       # @example
       #   cmd = ExportCommand.new(configuration)
@@ -60,6 +64,7 @@ module Rosette
       class ExportCommand < GitCommand
         attr_reader :locale, :serializer, :base_64_encode
         attr_reader :encoding, :include_snapshot, :include_checksum
+        attr_reader :paths
 
         include WithRepoName
         include WithRef
@@ -123,6 +128,13 @@ module Rosette
           self
         end
 
+        # A list of files or paths to filter translations by. Only translations
+        # matching these paths will be included in the export payload.
+        def set_paths(paths)
+          @paths = paths
+          self
+        end
+
         # Perform the export.
         #
         # @return [Hash] containing the following attributes:
@@ -139,7 +151,7 @@ module Rosette
           repo_config = get_repo(repo_name)
           serializer_config = get_serializer_config(repo_config)
           serializer_instance = serializer_config.klass.new(stream, locale_obj, encoding)
-          snapshot = take_snapshot(repo_config, commit_id)
+          snapshot = take_snapshot(repo_config, commit_id, Array(paths))
           translation_count = 0
           checksum_list = []
 
@@ -164,7 +176,8 @@ module Rosette
             encoding: serializer_instance.encoding.to_s,
             translation_count: translation_count,
             base_64_encoded: base_64_encode,
-            locale: locale
+            locale: locale,
+            paths: paths
           }
 
           if include_snapshot
