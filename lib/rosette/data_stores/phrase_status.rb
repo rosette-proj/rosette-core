@@ -28,6 +28,9 @@ module Rosette
       # was deleted or was force-pushed over.
       MISSING = 'MISSING'
 
+      # Indicates one or all of the commits have not been detected or processed.
+      NOT_FOUND = 'NOT_FOUND'
+
       def self.all
         @all ||= [
           UNTRANSLATED, PENDING, PULLING, PULLED, TRANSLATED, MISSING

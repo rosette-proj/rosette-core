@@ -7,8 +7,13 @@ include Rosette::Core::Commands
 describe StatusCommand do
   let(:repo_name) { 'double_commit' }
   let(:locales) { %w(es de-DE ja-JP) }
+
   let(:commit_log_locale_model) do
     Rosette::DataStores::InMemoryDataStore::CommitLogLocale
+  end
+
+  let(:commit_log_model) do
+    Rosette::DataStores::InMemoryDataStore::CommitLog
   end
 
   let(:fixture) do
@@ -118,6 +123,19 @@ describe StatusCommand do
       it 'returns an UNTRANSLATED status' do
         expect(command.execute[:status]).to eq(
           Rosette::DataStores::PhraseStatus::UNTRANSLATED
+        )
+      end
+    end
+
+    context 'with an unprocessed commit' do
+      before do
+        commit_log_locale_model.entries.clear
+        commit_log_model.entries.clear
+      end
+
+      it 'returns a NOT_FOUND status' do
+        expect(command.execute[:status]).to eq(
+          Rosette::DataStores::PhraseStatus::NOT_FOUND
         )
       end
     end

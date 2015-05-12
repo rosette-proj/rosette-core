@@ -61,10 +61,8 @@ module Rosette
             refs.map(&:getName), repo_config, rev_walk, all_refs
           )
 
-          status = BranchUtils.derive_status_from(commit_logs)
-          phrase_count = BranchUtils.derive_phrase_count_from(commit_logs)
-          locale_statuses = BranchUtils.derive_locale_statuses_from(
-            commit_logs, repo_name, datastore, phrase_count
+          status, phrase_count, locale_statuses = derive(
+            refs, commit_logs, repo_config
           )
 
           rev_walk.dispose
@@ -73,13 +71,40 @@ module Rosette
             status: status,
             commit_id: commit_id,
             phrase_count: phrase_count,
-            locales: BranchUtils.fill_in_missing_locales(
-              repo_config.locales, locale_statuses
-            )
+            locales: locale_statuses
           }
         end
 
         protected
+
+        def derive(refs, commit_logs, repo_config)
+          status = derive_status(refs, commit_logs)
+          phrase_count = BranchUtils.derive_phrase_count_from(commit_logs)
+          locale_statuses = BranchUtils.derive_locale_statuses_from(
+            commit_logs, repo_name, datastore, phrase_count
+          )
+
+          [
+            status, phrase_count,
+            BranchUtils.fill_in_missing_locales(
+              repo_config.locales, locale_statuses
+            )
+          ]
+        end
+
+        def derive_status(refs, commit_logs)
+          if all_refs_exist?(refs)
+            BranchUtils.derive_status_from(commit_logs)
+          else
+            Rosette::DataStores::PhraseStatus::NOT_FOUND
+          end
+        end
+
+        def all_refs_exist?(refs)
+          refs.all? do |ref|
+            datastore.commit_log_exists?(repo_name, ref.getObjectId.name)
+          end
+        end
 
         def commit_logs_for(branch_names, repo_config, rev_walk, refs)
           statuses = Rosette::DataStores::PhraseStatus.incomplete
