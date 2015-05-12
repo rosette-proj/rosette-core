@@ -131,7 +131,7 @@ module Rosette
         # A list of files or paths to filter translations by. Only translations
         # matching these paths will be included in the export payload.
         def set_paths(paths)
-          @paths = paths
+          @paths = Array(paths)
           self
         end
 
@@ -151,11 +151,12 @@ module Rosette
           repo_config = get_repo(repo_name)
           serializer_config = get_serializer_config(repo_config)
           serializer_instance = serializer_config.klass.new(stream, locale_obj, encoding)
-          snapshot = take_snapshot(repo_config, commit_id, Array(paths))
+          snapshot = take_snapshot(repo_config, commit_id, paths)
           translation_count = 0
           checksum_list = []
 
           each_translation(repo_config, snapshot) do |trans|
+            next unless include_trans?(trans)
             trans = apply_preprocessors(trans, serializer_config)
 
             serializer_instance.write_key_value(
@@ -192,6 +193,10 @@ module Rosette
         end
 
         private
+
+        def include_trans?(trans)
+          paths.size == 0 || paths.include?(trans.phrase.file)
+        end
 
         def checksum_for(list)
           Digest::MD5.hexdigest(list.sort.join)
