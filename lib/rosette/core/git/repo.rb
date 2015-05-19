@@ -89,20 +89,23 @@ module Rosette
         end
       end
 
-      # Calculates a diff between two git refs or commit ids.
+      # Calculates a diff between two git refs or commit ids. Returns a hash of
+      # commit ids to +DiffEntry+ objects.
       #
       # @see DiffFinder
       # @param [String] ref_parent The parent git ref or commit id.
       # @param [String] ref_child The child git ref or commit id.
       # @param [Array<String>] paths The paths to include in the diff. If an
       #   empty array is given, returns a diff for all paths.
-      # @return [Array<Java::OrgEclipseJgitDiff::DiffEntry>]
-      def diff(ref_parent, ref_child, paths = [], finder = diff_finder)
-        finder.diff(
-          get_rev_commit(ref_parent),
-          get_rev_commit(ref_child),
-          paths
-        )
+      # @return [Hash<String, Java::OrgEclipseJgitDiff::DiffEntry>]
+      def diff(ref_parents, ref_child, paths = [], finder = diff_finder)
+        rev_child = get_rev_commit(ref_child, finder.rev_walker)
+
+        rev_parents = Array(ref_parents).map do |ref_parent|
+          get_rev_commit(ref_parent, finder.rev_walker)
+        end
+
+        finder.diff(rev_parents, rev_child, paths)
       end
 
       # Calculates a diff for the given ref against its parent.
@@ -111,8 +114,8 @@ module Rosette
       # @param [DiffFinder] finder The diff finder to use when calculating
       #   diffs in a multi-threaded environment
       # @return [Array<Java::OrgEclipseJgitDiff::DiffEntry>]
-      def ref_diff_with_parent(ref, finder = diff_finder)
-        rev_diff_with_parent(get_rev_commit(ref), finder)
+      def ref_diff_with_parents(ref, finder = diff_finder)
+        rev_diff_with_parents(get_rev_commit(ref), finder)
       end
 
       # Calculates a diff for the given rev against its parent.
@@ -121,8 +124,8 @@ module Rosette
       # @param [DiffFinder] finder The diff finder to use when calculating
       #   diffs in a multi-threaded environment.
       # @return [Array<Java::OrgEclipseJgitDiff::DiffEntry>]
-      def rev_diff_with_parent(rev, finder = diff_finder)
-        finder.diff_with_parent(rev)
+      def rev_diff_with_parents(rev, finder = diff_finder)
+        finder.diff_with_parents(rev)
       end
 
       # Retrieves the parent commits for the given rev.

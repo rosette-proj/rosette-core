@@ -5,7 +5,7 @@ require 'spec_helper'
 include Rosette::Core::Commands
 
 describe ShowCommand do
-  let(:repo_name) { 'single_commit' }
+  let(:repo_name) { 'four_commits' }
 
   let(:fixture) do
     load_repo_fixture(repo_name) do |config, repo_config|
@@ -40,7 +40,10 @@ describe ShowCommand do
 
   context '#execute' do
     before do
-      commit(fixture.config, repo_name, head_ref(fixture.repo))
+      fixture.each_commit do |fixture_commit|
+        commit(fixture.config, repo_name, fixture_commit.sha)
+      end
+
       command.set_repo_name(repo_name)
     end
 
@@ -64,11 +67,12 @@ describe ShowCommand do
       end
     end
 
-    context 'when a phrases gets removed' do
+    context 'when phrases get removed' do
       before do
-        fixture.repo.git('rm -f first_file.txt')
+        fixture.repo.git('rm -f file1.txt')
+        fixture.repo.git('rm -f file2.txt')
         fixture.add_all
-        fixture.repo.commit('Remove file.txt')
+        fixture.repo.commit('Remove file1.txt and file2.txt')
 
         commit(fixture.config, repo_name, head_ref(fixture.repo))
       end
@@ -77,8 +81,31 @@ describe ShowCommand do
         show_hash = command.set_ref(head_ref(fixture.repo)).execute
         expect(show_hash[:removed].size).to eq(2)
         expect(show_hash[:removed].map { |entry| entry.phrase.key }.sort).to eq([
-          "I'm a little teapot",
-          "The green albatross flitters in the moonlight"
+          'bar', 'foo'
+        ])
+      end
+    end
+
+    context "when the parent hasn't been processed yet" do
+      before do
+        command.set_ref(head_ref(fixture.repo))
+        parent_commit_id = fixture.repo.git('rev-parse HEAD~1').strip
+
+        Rosette::DataStores::InMemoryDataStore::CommitLog.entries.reject! do |entry|
+          entry.commit_id == parent_commit_id
+        end
+      end
+
+      it 'raises an error in strict mode' do
+        expect { command.execute }.to raise_error(
+          Rosette::Core::Commands::Errors::UnprocessedCommitError
+        )
+      end
+
+      it 'uses the most recently processed commit in non-strict mode' do
+        show_hash = command.set_strict(false).execute
+        expect(show_hash[:added].map { |entry| entry.phrase.key}.sort).to eq([
+          'goo'
         ])
       end
     end

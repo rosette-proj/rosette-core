@@ -1,0 +1,25 @@
+:phrases:
+  HEAD~3:
+    file1.txt:
+      - foo
+  HEAD~2:
+    file1.txt:
+      - foo
+    file2.txt:
+      - bar
+  HEAD~1:
+    file1.txt:
+      - foo
+    file2.txt:
+      - bar
+    file3.txt:
+      - baz
+  HEAD:
+    file1.txt:
+      - foo
+    file2.txt:
+      - bar
+    file3.txt:
+      - baz
+    file4.txt:
+      - goo
