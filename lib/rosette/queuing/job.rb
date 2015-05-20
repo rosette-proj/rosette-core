@@ -8,28 +8,24 @@ module Rosette
       # The name of the queue to use when no custom queue name is specified.
       DEFAULT_QUEUE_NAME = 'default'
 
-      def self.inherited(subclass)
-        subclass.class_eval do
-          class << self
-            # Returns the name of the queue this job will be run in. For
-            # implementations that don't offer named queues, this value should be
-            # ignored.
-            #
-            # @return [String] The name of the queue.
-            def queue_name
-              @queue_name || DEFAULT_QUEUE_NAME
-            end
+      class << self
+        # Returns the name of the queue this job will be run in. For
+        # implementations that don't offer named queues, this value should be
+        # ignored.
+        #
+        # @return [String] The name of the queue.
+        def queue_name
+          @queue_name || DEFAULT_QUEUE_NAME
+        end
 
-            # Sets the name of the queue this job will be run in. Implementations
-            # that don't offer named queues shouldn't need to call this method,
-            # although nothing bad will happen if they do.
-            #
-            # @param [String] queue_name The name of the queue to run the job in.
-            # @return [void]
-            def set_queue_name(queue_name)
-              @queue_name = queue_name
-            end
-          end
+        # Sets the name of the queue this job will be run in. Implementations
+        # that don't offer named queues shouldn't need to call this method,
+        # although nothing bad will happen if they do.
+        #
+        # @param [String] queue_name The name of the queue to run the job in.
+        # @return [void]
+        def set_queue_name(queue_name)
+          @queue_name = queue_name
         end
       end
 
