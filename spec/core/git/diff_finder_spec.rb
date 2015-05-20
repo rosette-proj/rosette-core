@@ -34,28 +34,40 @@ describe DiffFinder do
 
   describe '#diff' do
     it 'returns the diff between the first two commits' do
+      commit_id = revs.first.getName
+
       diff_finder.diff(revs.first, revs.last).tap do |diff|
         expect(diff.size).to eq(1)
-        expect(diff.first.getNewPath).to eq('second_file.txt')
-        expect(diff_finder.read_new_entry(diff.first)).to eq(second_file_contents)
+        expect(diff[commit_id].first.getNewPath).to eq('second_file.txt')
+        expect(diff_finder.read_new_entry(diff[commit_id].first)).to(
+          eq(second_file_contents)
+        )
       end
     end
   end
 
   describe '#diff_with_parent' do
     it 'returns the diff between the first two commits (just as a regular diff would do)' do
-      diff_finder.diff_with_parent(revs.last).tap do |diff|
+      commit_id = revs.first.getName
+
+      diff_finder.diff_with_parents(revs.last).tap do |diff|
         expect(diff.size).to eq(1)
-        expect(diff.first.getNewPath).to eq('second_file.txt')
-        expect(diff_finder.read_new_entry(diff.first)).to eq(second_file_contents)
+        expect(diff[revs.first.getName].first.getNewPath).to eq('second_file.txt')
+        expect(diff_finder.read_new_entry(diff[revs.first.getName].first)).to(
+          eq(second_file_contents)
+        )
       end
     end
 
     it "returns the diff successfully if the rev doesn't have a parent" do
-      diff_finder.diff_with_parent(revs.first).tap do |diff|
+      commit_id = revs.first.getName
+
+      diff_finder.diff_with_parents(revs.first).tap do |diff|
         expect(diff.size).to eq(1)
-        expect(diff.first.getNewPath).to eq('first_file.txt')
-        expect(diff_finder.read_new_entry(diff.first)).to eq(first_file_contents)
+        expect(diff[commit_id].first.getNewPath).to eq('first_file.txt')
+        expect(diff_finder.read_new_entry(diff[commit_id].first)).to(
+          eq(first_file_contents)
+        )
       end
     end
   end

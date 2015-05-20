@@ -82,14 +82,14 @@ module Rosette
         repo = repo_config.repo
         rev_walk = RevWalk.new(repo.jgit_repo)
         rev_commit = repo.get_rev_commit(start_commit_id, rev_walk)
-        paths = make_path_set(rev_commit).to_a
+        path_set = (make_path_set(rev_commit) + paths).to_a
         num_replacements = 0
 
-        tree_filter = if paths.size > 0
-          path_filter = if repo_config && paths.empty?
+        tree_filter = if path_set.size > 0
+          path_filter = if repo_config && path_set.empty?
             RepoConfigPathFilter.create(repo_config)
           else
-            PathFilterGroup.createFromStrings(paths)
+            PathFilterGroup.createFromStrings(path_set)
           end
 
           AndTreeFilter.create(path_filter, TreeFilter::ANY_DIFF)

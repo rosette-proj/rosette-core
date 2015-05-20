@@ -51,10 +51,12 @@ module Rosette
           diff_finder = DiffFinder.new(repo_config.repo.jgit_repo, rev_walk)
           commit = repo_config.repo.get_rev_commit(commit_ref, rev_walk)
 
-          diff_finder.diff_with_parent(commit).each do |diff_entry|
-            if diff_entry.getNewPath != '/dev/null'
-              process_diff_entry(diff_entry, repo_config, commit) do |phrase|
-                yield phrase
+          diff_finder.diff_with_parents(commit).each_pair do |_, diff_entries|
+            diff_entries.each do |diff_entry|
+              if diff_entry.getNewPath != '/dev/null'
+                process_diff_entry(diff_entry, repo_config, commit) do |phrase|
+                  yield phrase
+                end
               end
             end
           end

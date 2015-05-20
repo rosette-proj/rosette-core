@@ -60,34 +60,39 @@ describe Repo do
 
     describe '#diff' do
       it 'returns the diff when a symbolic ref is involved' do
-        repo.diff(commits.first.getName, 'HEAD').tap do |diff|
+        commit_id = commits.first.getName
+        repo.diff(commit_id, 'HEAD').tap do |diff|
           expect(diff.size).to eq(1)
-          expect(diff.first.getNewPath).to eq('second_file.txt')
+          expect(diff[commit_id].first.getNewPath).to eq('second_file.txt')
         end
       end
 
       it 'returns the diff between two shas' do
-        repo.diff(commits.first.getName, commits.last.getName).tap do |diff|
+        first_commit_id = commits.first.getName
+        second_commit_id = commits.last.getName
+        repo.diff(first_commit_id, second_commit_id).tap do |diff|
           expect(diff.size).to eq(1)
-          expect(diff.first.getNewPath).to eq('second_file.txt')
+          expect(diff[first_commit_id].first.getNewPath).to eq('second_file.txt')
         end
       end
     end
 
-    describe '#ref_diff_with_parent' do
+    describe '#ref_diff_with_parents' do
       it 'returns the correct diff' do
-        repo.ref_diff_with_parent('HEAD').tap do |diff|
+        commit_id = commits.first.getName
+        repo.ref_diff_with_parents('HEAD').tap do |diff|
           expect(diff.size).to eq(1)
-          expect(diff.first.getNewPath).to eq('second_file.txt')
+          expect(diff[commit_id].first.getNewPath).to eq('second_file.txt')
         end
       end
     end
 
-    describe '#rev_diff_with_parent' do
+    describe '#rev_diff_with_parents' do
       it 'returns the correct diff' do
-        repo.rev_diff_with_parent(repo.get_rev_commit('HEAD')).tap do |diff|
+        commit_id = commits.first.getName
+        repo.rev_diff_with_parents(repo.get_rev_commit('HEAD')).tap do |diff|
           expect(diff.size).to eq(1)
-          expect(diff.first.getNewPath).to eq('second_file.txt')
+          expect(diff[commit_id].first.getNewPath).to eq('second_file.txt')
         end
       end
     end

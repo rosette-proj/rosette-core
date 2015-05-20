@@ -34,41 +34,54 @@ module Rosette
 
       # Computes a diff between two revs.
       #
-      # @param [Java::OrgEclipseJgitRevwalk::RevCommit] rev_parent The first
-      #   commit to use in the diff (the parent).
+      # @param [Java::OrgEclipseJgitRevwalk::RevCommit] rev_parents The first
+      #   commit or commits to use in the diff (the parent, i.e. the commit that
+      #   occurred earlier in time).
       # @param [Java::OrgEclipseJgitRevwalk::RevCommit] rev_child The second
-      #   commit to use in the diff (the child).
+      #   commit to use in the diff (the child of the parent, i.e. the commit
+      #   that occurred later in time).
       # @param [Array<String>] paths The paths to include in the diff. If given
       #   an empty array, this method will return a diff for all paths.
-      # @return [Array<Java::OrgEclipseJgitDiff::DiffEntry>] A list of diff
-      #   entries for the diff between +rev_parent+ and +rev_child+. There will
-      #   be one diff entry for each file that changed.
-      def diff(rev_parent, rev_child, paths = [])
+      # @return [Hash<String, Java::OrgEclipseJgitDiff::DiffEntry>] A hash of
+      #   commit ids to diff entries for the diff between +rev_parents+ and
+      #   +rev_child+. There will be one diff entry for each file that changed.
+      def diff(rev_parents, rev_child, paths = [])
+        rev_parents = Array(rev_parents)
         diff_formatter.setPathFilter(construct_filter(Array(paths)))
-        diff_formatter.scan(rev_parent.getTree, rev_child.getTree)
+
+        rev_parents.each_with_object({}) do |rev_parent, ret|
+          ret[rev_parent.getId.name] = diff_formatter.scan(
+            rev_walker.parseCommit(rev_parent.getId).getTree,
+            rev_child.getTree
+          )
+        end
       end
 
       # Computes a diff between a rev and its parent.
       #
       # @param [Java::OrgEclipseJgitRevwalk::RevCommit] rev The rev to use.
-      # @return [Array<Java::OrgEclipseJgitDiff::DiffEntry>] A list of diff
-      #   entries for the diff between +rev+ and its parent. There will be
-      #   one diff entry for each file that changed.
-      def diff_with_parent(rev)
+      # @return [Hash<String, Java::OrgEclipseJgitDiff::DiffEntry>] A hash of
+      #   commit ids to diff entries for the diff between +rev+ and its parents.
+      #   There will be one diff entry for each file that changed.
+      def diff_with_parents(rev)
         if rev.getParentCount > 0
-          rev.getParentCount.times.flat_map do |i|
-            diff_formatter.scan(
-              rev_walker.parseCommit(rev.getParent(i).getId).getTree,
+          rev.getParentCount.times.each_with_object({}) do |i, ret|
+            parent = rev.getParent(i)
+
+            ret[parent.getId.name] = diff_formatter.scan(
+              rev_walker.parseCommit(parent.getId).getTree,
               rev.getTree
             )
           end
         else
-          diff_formatter.scan(
-            EmptyTreeIterator.new,
-            CanonicalTreeParser.new(
-              nil, rev_walker.getObjectReader, rev.getTree
+          {
+            rev.getId.name => diff_formatter.scan(
+              EmptyTreeIterator.new,
+              CanonicalTreeParser.new(
+                nil, rev_walker.getObjectReader, rev.getTree
+              )
             )
-          )
+          }
         end
       end
 
