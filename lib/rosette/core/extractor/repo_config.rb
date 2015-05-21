@@ -102,7 +102,8 @@ module Rosette
     #   @return [Array<SerializerConfig>] a list of the currently configured
     #     serializers.
     # @!attribute [r] tms
-    #   @return [Rosette::Tms] the translation management system to use.
+    #   @return [Rosette::Tms::Repository] a repository instance from the chosen
+    #     translation management system.
     class RepoConfig
       include Integrations::Integratable
 
