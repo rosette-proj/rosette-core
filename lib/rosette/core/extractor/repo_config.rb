@@ -171,13 +171,15 @@ module Rosette
         @source_locale = Locale.parse(code, format)
       end
 
-      # Set the TMS (translation management system). TMSs must implement the
-      # [Rosette::Tms] interface.
+      # Set the TMS (translation management system). TMSs must contain a class
+      # named +Repository+ that implements the [Rosette::Tms::Repository]
+      # interface.
       #
       # @param [Const, String] tms The TMS to use. When this parameter is a
-      #   string, +use_tms+ will try to look up the corresponding constant with
-      #   a "Tms" suffix. If it's a constant instead, the constant is used
-      #   without modifications.
+      #   string, +use_tms+ will try to look up the corresponding +Tms+
+      #   constant. If a constant is given instead, it's used without
+      #   modifications. In both cases, the +Tms+ constant will have +configure+
+      #   called on it and is expected to yield a configuration object.
       # @param [Hash] options A hash of options passed to the TMS's
       #   constructor.
       # @return [void]
