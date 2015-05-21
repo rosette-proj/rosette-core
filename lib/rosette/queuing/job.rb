@@ -8,6 +8,9 @@ module Rosette
       # The name of the queue to use when no custom queue name is specified.
       DEFAULT_QUEUE_NAME = 'default'
 
+      # The default minimum number of seconds to wait before executing each job.
+      DEFAULT_DELAY = 0
+
       class << self
         # Returns the name of the queue this job will be run in. For
         # implementations that don't offer named queues, this value should be
@@ -48,6 +51,22 @@ module Rosette
       def to_args
         raise NotImplementedError,
           'expected to be implemented in derived classes'
+      end
+
+      # Returns the minimum number of seconds to wait before executing this job.
+      #
+      # @return [Fixnum]
+      def delay
+        @delay || DEFAULT_DELAY
+      end
+
+      # Sets the amount of time to wait before executing this job.
+      #
+      # @param [Fixnum] delay The minimum amount of time in seconds to wait
+      #   before executing this job.
+      # @return [void]
+      def set_delay(delay)
+        @delay = delay
       end
     end
 
