@@ -57,6 +57,13 @@ module Rosette
         locale_counts[locale_code]
       end
 
+      # Retrieves a list of all the added locales.
+      #
+      # @return [Array<String>]
+      def locales
+        locale_counts.keys
+      end
+
       # Calculates a translated percentage for the given locale.
       #
       # @param [String] locale_code
