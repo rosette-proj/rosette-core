@@ -191,10 +191,10 @@ module Rosette
             else
               raise ArgumentError, "'#{tms}' couldn't be found."
             end
-          when Class
+          when Class, Module
             tms
           else
-            raise ArgumentError, "'#{tms}' must be a String or Class."
+            raise ArgumentError, "'#{tms}' must be a String, Class, or Module."
         end
 
         @tms = const.configure(rosette_config, self) do |configurator|
