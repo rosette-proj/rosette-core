@@ -101,11 +101,13 @@ module Rosette
     # @!attribute [r] serializer_configs
     #   @return [Array<SerializerConfig>] a list of the currently configured
     #     serializers.
+    # @!attribute [r] tms
+    #   @return [Rosette::Tms] the translation management system to use.
     class RepoConfig
       include Integrations::Integratable
 
-      attr_reader :extractor_configs, :serializer_configs
       attr_reader :name, :rosette_config, :repo, :locales, :hooks, :description
+      attr_reader :extractor_configs, :serializer_configs, :tms
       attr_reader :translation_path_matchers, :placeholder_regexes
 
       # Creates a new repo config object.
@@ -167,6 +169,37 @@ module Rosette
       # @return [void]
       def set_source_locale(code, format = Locale::DEFAULT_FORMAT)
         @source_locale = Locale.parse(code, format)
+      end
+
+      # Set the TMS (translation management system). TMSs must implement the
+      # [Rosette::Tms] interface.
+      #
+      # @param [Const, String] tms The TMS to use. When this parameter is a
+      #   string, +use_tms+ will try to look up the corresponding constant with
+      #   a "Tms" suffix. If it's a constant instead, the constant is used
+      #   without modifications.
+      # @param [Hash] options A hash of options passed to the TMS's
+      #   constructor.
+      # @return [void]
+      def use_tms(tms, options = {})
+        const = case tms
+          when String
+            if const = find_tms_const(tms)
+              const
+            else
+              raise ArgumentError, "'#{tms}' couldn't be found."
+            end
+          when Class
+            tms
+          else
+            raise ArgumentError, "'#{tms}' must be a String or Class."
+        end
+
+        @tms = const.configure(rosette_config, self) do |configurator|
+          yield configurator if block_given?
+        end
+
+        nil
       end
 
       # Adds an extractor to this repo.
@@ -326,6 +359,16 @@ module Rosette
       # @return [void]
       def add_placeholder_regex(placeholder_regex)
         placeholder_regexes << placeholder_regex
+      end
+
+      protected
+
+      def find_tms_const(name)
+        const_str = "#{Rosette::Core::StringUtils.camelize(name)}Tms"
+
+        if Rosette::Tms.const_defined?(const_str)
+          Rosette::Tms.const_get(const_str)
+        end
       end
     end
   end
