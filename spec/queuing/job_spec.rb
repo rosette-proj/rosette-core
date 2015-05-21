@@ -16,9 +16,5 @@ describe Job do
       job_class.set_queue_name('foobar')
       expect(job_class.queue_name).to eq('foobar')
     end
-
-    it 'raises an error if called on Job directly' do
-      expect { Job.queue_name }.to raise_error(NoMethodError)
-    end
   end
 end
