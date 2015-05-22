@@ -60,7 +60,9 @@ module Rosette
         # @return [CommitJob]
         def to_job
           super.tap do |job|
-            job.set_delay(CONSECUTIVE_PULL_DELAY)
+            if commit_log.status == PhraseStatus::PULLING
+              job.set_delay(CONSECUTIVE_PULL_DELAY)
+            end
           end
         end
 

@@ -36,8 +36,13 @@ describe PullStage do
   end
 
   describe '#to_job' do
-    it 'creates a commit job with a delay' do
+    it 'creates a commit job with a delay when the new status is PULLING' do
+      commit_log.status = PhraseStatus::PULLING
       expect(stage.to_job.delay).to be > 0
+    end
+
+    it 'creates a commit job without a delay when the new status is not PULLING' do
+      expect(stage.to_job.delay).to eq(0)
     end
   end
 
