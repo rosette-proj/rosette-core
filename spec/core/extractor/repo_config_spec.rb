@@ -142,4 +142,25 @@ describe RepoConfig do
       )
     end
   end
+
+  describe '#use_tms' do
+    it 'looks the tms constant up by string' do
+      config.use_tms('test')
+      expect(config.tms).to be_a(Rosette::Tms::TestTms::Repository)
+    end
+
+    it 'accepts a constant instead of a string' do
+      config.use_tms(Rosette::Tms::TestTms)
+      expect(config.tms).to be_a(Rosette::Tms::TestTms::Repository)
+    end
+
+    it 'yields a configuration object' do
+      config.use_tms('test') do |configurator|
+        expect(configurator).to be_a(Rosette::Tms::TestTms::Configurator)
+        configurator.set_test_value('foobar')
+      end
+
+      expect(config.tms.configurator.test_value).to eq('foobar')
+    end
+  end
 end

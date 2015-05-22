@@ -73,6 +73,7 @@ module Rosette
     autoload :StaticExtractor,               'rosette/core/extractor/static_extractor'
     autoload :Phrase,                        'rosette/core/extractor/phrase'
     autoload :Translation,                   'rosette/core/extractor/translation'
+    autoload :CommitLog,                     'rosette/core/extractor/commit_log'
     autoload :CommitLogStatus,               'rosette/core/extractor/commit_log_status'
     autoload :ExtractorConfig,               'rosette/core/extractor/extractor_config'
     autoload :PathMatcherFactory,            'rosette/core/path_matcher_factory'
@@ -102,7 +103,7 @@ module Rosette
     autoload :PreprocessorId,                'rosette/core/resolvers/preprocessor_id'
 
     autoload :Commands,                      'rosette/core/commands'
-
     autoload :BranchUtils,                   'rosette/core/branch_utils'
+    autoload :TranslationStatus,             'rosette/core/translation_status'
   end
 end
