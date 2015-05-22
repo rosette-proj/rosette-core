@@ -72,8 +72,8 @@ module Rosette
       # @return [Float] the translation percentage, rounded to +precision+
       #   decimal places.
       def percent_translated(locale_code, precision = 2)
-        pct = locale_counts[locale_code].to_f / phrase_count.to_f
-        pct > 1.0 ? 1.0 : pct.round(precision)
+        pct = locale_counts[locale_code] / phrase_count.to_f
+        [1.0, pct.round(precision)].min
       end
     end
 
