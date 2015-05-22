@@ -39,7 +39,7 @@ module Rosette
       # @param [String] locale_code
       # @return [Boolean]
       def fully_translated_in?(locale_code)
-        locale_counts[locale_code] >= phrase_count
+        (locale_counts[locale_code] || -1) >= phrase_count
       end
 
       # Returns true if every locale is fully translated, false otherwise.

@@ -195,5 +195,9 @@ describe DiffCommand do
       .set_repo_name(repo_name)
       .set_ref(ref)
       .execute
+
+    fixture.config.datastore.add_or_update_commit_log(
+      repo_name, ref, nil
+    )
   end
 end

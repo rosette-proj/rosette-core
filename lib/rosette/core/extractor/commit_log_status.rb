@@ -24,24 +24,29 @@ module Rosette
             end
 
             attribute_name :status
-            initial_state UNTRANSLATED
+            initial_state NOT_SEEN
 
-            # called on every push
+            event :fetch do
+              transitions from: NOT_SEEN, to: FETCHED
+            end
+
+            event :extract do
+              transitions from: FETCHED, to: UNTRANSLATED
+            end
+
             event :push do
               transitions from: [UNTRANSLATED, PENDING], to: PENDING
             end
 
-            # called on every pull
             event :pull do
+              transitions from: PULLING, to: PULLED, if: (lambda do |options = {}|
+                !!options.fetch(:fully_translated, false)
+              end)
               transitions from: [PENDING, PULLING], to: PULLING
               transitions from: PULLED, to: TRANSLATED
             end
 
-            # called on every complete
-            event :complete do
-              transitions from: PULLING, to: PULLED, if: (lambda do |options = {}|
-                !!options.fetch(:fully_translated, false)
-              end)
+            event :finalize do
               transitions from: PULLING, to: PULLING
               transitions from: [PULLED, TRANSLATED], to: TRANSLATED
             end

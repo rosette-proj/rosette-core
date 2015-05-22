@@ -6,6 +6,14 @@ module Rosette
     # Contains several constants indicating the translation status of a set
     # of phrases. Generally attached to commit logs.
     module PhraseStatus
+      # The commit has not even been seen yet, i.e. this is the first time
+      # Rosette has ever encountered it.
+      NOT_SEEN = 'NOT_SEEN'
+
+      # The repository that contains this commit has been fetched in preparation
+      # for processing it.
+      FETCHED = 'FETCHED'
+
       # Indicates the phrases have been imported but not submitted for
       # translation.
       UNTRANSLATED = 'UNTRANSLATED'
@@ -28,24 +36,25 @@ module Rosette
       # was deleted or was force-pushed over.
       MISSING = 'MISSING'
 
-      # Indicates one or all of the commits have not been detected or processed.
+      # Indicates one or all of the commits have not been processed.
       NOT_FOUND = 'NOT_FOUND'
 
       def self.all
         @all ||= [
-          UNTRANSLATED, PENDING, PULLING, PULLED, TRANSLATED, MISSING
+          NOT_SEEN, FETCHED, UNTRANSLATED, PENDING, PULLING, PULLED, TRANSLATED,
+          MISSING, NOT_FOUND
         ]
       end
 
       def self.statuses
         @statuses ||= [
-          UNTRANSLATED, PENDING, PULLING, PULLED, TRANSLATED
+          NOT_SEEN, UNTRANSLATED, PENDING, PULLING, PULLED, TRANSLATED
         ]
       end
 
       def self.incomplete
         @incomplete ||= [
-          UNTRANSLATED, PENDING, PULLING, PULLED
+          NOT_SEEN, UNTRANSLATED, PENDING, PULLING, PULLED, NOT_FOUND
         ]
       end
 

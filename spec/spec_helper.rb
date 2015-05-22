@@ -71,10 +71,8 @@ RSpec.configure do |config|
 
   config.after(:each) do
     TestHelpers::Fixtures.cleanup
-  end
-
-  config.after(:each) do
     Rosette::DataStores::InMemoryDataStore.all_entries.clear
+    Rosette::Queuing::TestQueue::Queue.clear
   end
 end
 

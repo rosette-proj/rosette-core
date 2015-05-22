@@ -17,6 +17,7 @@ module Rosette
       # raises +NotImplementedError+.
       #
       # @param [Job] job The job to enqueue.
+      # @param [Hash] options A hash of options to pass to the implementation.
       # @return [void]
       def enqueue(job)
         raise NotImplementedError,

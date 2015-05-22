@@ -48,9 +48,9 @@ describe CommitLogStatus do
       end
     end
 
-    describe 'on complete' do
+    describe 'on finalize' do
       it 'raises an error' do
-        expect { instance.complete }.to raise_error(AASM::InvalidTransition)
+        expect { instance.finalize }.to raise_error(AASM::InvalidTransition)
       end
     end
 
@@ -86,9 +86,9 @@ describe CommitLogStatus do
       end
     end
 
-    describe 'on complete' do
+    describe 'on finalize' do
       it 'raises an error' do
-        expect { instance.complete }.to raise_error(AASM::InvalidTransition)
+        expect { instance.finalize }.to raise_error(AASM::InvalidTransition)
       end
     end
 
@@ -121,17 +121,17 @@ describe CommitLogStatus do
         expect(instance.pull).to be_truthy
         expect(instance.status).to eq(PhraseStatus::PULLING)
       end
-    end
-
-    describe 'on complete' do
-      it 'stays PULLING' do
-        expect(instance.complete).to be_truthy
-        expect(instance.status).to eq(PhraseStatus::PULLING)
-      end
 
       it 'transitions to PULLED if the fully_translated option is passed' do
-        expect(instance.complete(fully_translated: true)).to be_truthy
+        expect(instance.pull(fully_translated: true)).to be_truthy
         expect(instance.status).to eq(PhraseStatus::PULLED)
+      end
+    end
+
+    describe 'on finalize' do
+      it 'stays PULLING' do
+        expect(instance.finalize).to be_truthy
+        expect(instance.status).to eq(PhraseStatus::PULLING)
       end
     end
 
@@ -166,9 +166,9 @@ describe CommitLogStatus do
       end
     end
 
-    describe 'on complete' do
+    describe 'on finalize' do
       it 'transitions to TRANSLATED' do
-        expect(instance.complete).to be_truthy
+        expect(instance.finalize).to be_truthy
         expect(instance.status).to eq(PhraseStatus::TRANSLATED)
       end
     end
@@ -203,9 +203,9 @@ describe CommitLogStatus do
       end
     end
 
-    describe 'on complete' do
+    describe 'on finalize' do
       it 'stays TRANSLATED' do
-        expect(instance.complete).to be_truthy
+        expect(instance.finalize).to be_truthy
         expect(instance.status).to eq(PhraseStatus::TRANSLATED)
       end
     end

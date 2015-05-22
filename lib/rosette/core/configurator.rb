@@ -37,7 +37,7 @@ module Rosette
         @repo_configs = []
         @integrations = []
         @cache = ActiveSupport::Cache.lookup_store
-        @error_reporter ||= PrintingErrorReporter.new(Rosette.logger)
+        @error_reporter ||= PrintingErrorReporter.new(STDOUT)
       end
 
       # Adds a repo config.

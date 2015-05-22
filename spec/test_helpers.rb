@@ -4,7 +4,10 @@ require 'spec/test_helpers/test_extractor'
 require 'spec/test_helpers/test_serializer'
 require 'spec/test_helpers/test_integration'
 require 'spec/test_helpers/test_data_store'
+require 'spec/test_helpers/test_queue'
 require 'spec/test_helpers/test_tms'
+require 'spec/test_helpers/null_logger'
+require 'spec/test_helpers/fake_commit_stage'
 
 module TestHelpers
   autoload :Fixtures, 'spec/test_helpers/fixtures'
