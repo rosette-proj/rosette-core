@@ -17,9 +17,13 @@ module Rosette
         #
         # @return [void]
         def execute!
+          logger.info("Finalizing commit #{commit_log.commit_id}")
+
           repo_config.tms.finalize(commit_log.commit_id)
           commit_log.finalize
           save_commit_log
+
+          logger.info("Finished finalizing commit #{commit_log.commit_id}")
         end
       end
 

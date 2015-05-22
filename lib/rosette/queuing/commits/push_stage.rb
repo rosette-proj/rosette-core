@@ -19,12 +19,16 @@ module Rosette
         #
         # @return [void]
         def execute!
+          logger.info("Pushing commit #{commit_log.commit_id}")
+
           if phrases.size > 0
             commit_log.phrase_count = phrases.size
             repo_config.tms.store_phrases(phrases, commit_log.commit_id)
           end
 
           commit_log.push
+
+          logger.info("Finished pushing commit #{commit_log.commit_id}")
         rescue Java::OrgEclipseJgitErrors::MissingObjectException => ex
           commit_log.missing
         ensure

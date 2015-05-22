@@ -19,6 +19,8 @@ module Rosette
         #
         # @return [void]
         def execute!
+          logger.info("Fetching git repository #{repo_config.name}")
+
           git.fetch
             .setRemote('origin')
             .setRemoveDeletedRefs(true)
@@ -26,6 +28,8 @@ module Rosette
 
           commit_log.fetch
           save_commit_log
+
+          logger.info("Finished fetching git repository #{repo_config.name}")
         end
 
         private

@@ -15,6 +15,8 @@ module Rosette
         #
         # @return [void]
         def execute!
+          logger.info("Extracting phrases for #{commit_log.commit_id}")
+
           Rosette::Core::Commands::CommitCommand.new(rosette_config)
             .set_repo_name(repo_config.name)
             .set_ref(commit_log.commit_id)
@@ -24,6 +26,8 @@ module Rosette
           commit_log.commit_datetime = Time.at(rev_commit.getCommitTime)
 
           save_commit_log
+
+          logger.info("Finished extracting phrases for #{commit_log.commit_id}")
         end
 
         protected

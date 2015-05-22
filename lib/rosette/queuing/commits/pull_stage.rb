@@ -29,6 +29,8 @@ module Rosette
         #
         # @return [void]
         def execute!
+          logger.info("Pulling commit #{commit_log.commit_id}")
+
           commit_id = commit_log.commit_id
           snapshot = snapshot_for(commit_id)
           phrases = phrases_for(snapshot)
@@ -40,6 +42,8 @@ module Rosette
           end
 
           update_logs
+
+          logger.info("Finished pulling commit #{commit_log.commit_id}")
         rescue Java::OrgEclipseJgitErrors::MissingObjectException => e
           commit_log.missing
         ensure
