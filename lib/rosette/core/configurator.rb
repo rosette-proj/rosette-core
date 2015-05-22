@@ -23,12 +23,14 @@ module Rosette
     #   @return [DataStore] The datastore to store phrases and translations in.
     # @!attribute [r] cache
     #   @return [#fetch] The cache instance to use (can be +nil+).
+    # @!attribute [r] queue
+    #   @return [Rosette::Queuing::Queue] The queue implementation to use.
     # @!attribute [r] error_reporter
     #   @return [ErrorReporter] The error reporter to use if errors occur.
     class Configurator
       include Integrations::Integratable
 
-      attr_reader :repo_configs, :datastore, :cache, :error_reporter
+      attr_reader :repo_configs, :datastore, :cache, :queue, :error_reporter
 
       # Creates a new config object.
       def initialize
@@ -43,7 +45,7 @@ module Rosette
       # @param [String] name The semantic name of the repo.
       # @return [void]
       def add_repo(name)
-        repo_configs << Rosette::Core::RepoConfig.new(name).tap do |repo_config|
+        repo_configs << Rosette::Core::RepoConfig.new(name, self).tap do |repo_config|
           yield repo_config
           repo_config.apply_integrations(repo_config)
         end
@@ -104,6 +106,34 @@ module Rosette
         @cache = ActiveSupport::Cache.lookup_store(args)
       end
 
+      # Set the queue implementation. Queues must implement the
+      # [Rosette::Queuing::Queue] interface.
+      #
+      # @param [Const, String] queue The queue to use. When this parameter
+      #   is a string, +use_queue+ will try to look up the corresponding
+      #   constant with a "Queue" suffix. If it's a constant instead, the
+      #   constant is used without modifications.
+      # @param [Hash] options A hash of options passed to the queue's
+      #   constructor.
+      # @return [void]
+      def use_queue(queue, options = {})
+        const = case queue
+          when String
+            if const = find_queue_const(queue)
+              const
+            else
+              raise ArgumentError, "'#{queue}' couldn't be found."
+            end
+          when Class
+            queue
+          else
+            raise ArgumentError, "'#{queue}' must be a String or Class."
+        end
+
+        @queue = const.new(options)
+        nil
+      end
+
       private
 
       def find_datastore_const(name)
@@ -111,6 +141,14 @@ module Rosette
 
         if Rosette::DataStores.const_defined?(const_str)
           Rosette::DataStores.const_get(const_str)
+        end
+      end
+
+      def find_queue_const(name)
+        const_str = "#{Rosette::Core::StringUtils.camelize(name)}Queue"
+
+        if Rosette::Queuing.const_defined?(const_str)
+          Rosette::Queuing.const_get(const_str)::Queue
         end
       end
     end

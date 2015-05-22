@@ -5,7 +5,8 @@ require 'spec_helper'
 include Rosette::Core
 
 describe RepoConfig do
-  let(:config) { RepoConfig.new('repo-name') }
+  let(:rosette_config) { nil }
+  let(:config) { RepoConfig.new('repo-name', rosette_config) }
 
   describe '#set_path' do
     it 'sets the repo path and instantiates a repo object inside the config' do

@@ -104,16 +104,17 @@ module Rosette
     class RepoConfig
       include Integrations::Integratable
 
-      attr_reader :name, :repo, :locales, :hooks, :description
       attr_reader :extractor_configs, :serializer_configs
+      attr_reader :name, :rosette_config, :repo, :locales, :hooks, :description
       attr_reader :translation_path_matchers, :placeholder_regexes
 
       # Creates a new repo config object.
       #
       # @param [String] name The name of the repository. Usually matches the
       #   name of the directory on disk, but that's not required.
-      def initialize(name)
+      def initialize(name, rosette_config)
         @name = name
+        @rosette_config = rosette_config
         @extractor_configs = []
         @serializer_configs = []
         @locales = []
