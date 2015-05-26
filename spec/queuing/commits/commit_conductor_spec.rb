@@ -57,8 +57,8 @@ describe CommitConductor do
       expect(commit_log.status).to eq('fake_stage_updated_me')
     end
 
-    it 'does not continue if the commit is TRANSLATED' do
-      commit_log.status = PhraseStatus::TRANSLATED
+    it 'does not enqueue a new job if the commit is finished' do
+      expect(conductor).to receive(:finished?).and_return(true)
 
       expect { conductor.advance(commit_log) }.to_not(
         change { TestQueue::Queue.list.size }.from(0)
