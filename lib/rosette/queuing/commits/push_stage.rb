@@ -26,6 +26,7 @@ module Rosette
             repo_config.tms.store_phrases(phrases, commit_log.commit_id)
           end
 
+          commit_log.phrase_count = phrases.size
           commit_log.push
 
           logger.info("Finished pushing commit #{commit_log.commit_id}")
