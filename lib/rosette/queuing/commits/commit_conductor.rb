@@ -58,6 +58,7 @@ module Rosette
         # @return [void]
         def advance(commit_log)
           create_stage_instance(commit_log).tap do |stage|
+            return unless stage
             stage.execute!
             return if finished?(stage)
             enqueue_job(stage.to_job)
@@ -67,7 +68,7 @@ module Rosette
         protected
 
         def finished?(stage)
-          !stage || stage.commit_log.status == FINISHED_STATUS
+          stage.commit_log.status == FINISHED_STATUS
         end
 
         def enqueue_job(job)
