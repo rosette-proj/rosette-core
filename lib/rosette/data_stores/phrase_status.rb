@@ -48,13 +48,13 @@ module Rosette
 
       def self.statuses
         @statuses ||= [
-          NOT_SEEN, UNTRANSLATED, PENDING, PULLING, PULLED, TRANSLATED
+          NOT_SEEN, FETCHED, UNTRANSLATED, PENDING, PULLING, PULLED, TRANSLATED
         ]
       end
 
       def self.incomplete
         @incomplete ||= [
-          NOT_SEEN, UNTRANSLATED, PENDING, PULLING, PULLED, NOT_FOUND
+          NOT_SEEN, FETCHED, UNTRANSLATED, PENDING, PULLING, PULLED, NOT_FOUND
         ]
       end
 

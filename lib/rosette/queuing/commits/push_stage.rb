@@ -24,9 +24,10 @@ module Rosette
           if phrases.size > 0
             commit_log.phrase_count = phrases.size
             repo_config.tms.store_phrases(phrases, commit_log.commit_id)
+            commit_log.push
+          else
+            commit_log.translate!
           end
-
-          commit_log.push
 
           logger.info("Finished pushing commit #{commit_log.commit_id}")
         rescue Java::OrgEclipseJgitErrors::MissingObjectException => ex

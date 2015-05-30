@@ -40,6 +40,12 @@ describe PushStage do
       ExtractStage.new(*args).execute!
     end
 
+    it 'updates the status to TRANSLATED when no phrases are found' do
+      expect(stage).to receive(:phrases).and_return([])
+      stage.execute!
+      expect(commit_log.status).to eq(PhraseStatus::TRANSLATED)
+    end
+
     it 'stores the phrases in the repository' do
       stage.execute!
       phrases = repo_config.tms.stored_phrases[commit_id].map(&:key)
