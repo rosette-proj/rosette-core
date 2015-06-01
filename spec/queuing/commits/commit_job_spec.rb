@@ -36,7 +36,9 @@ describe PullStage do
   end
 
   before(:each) do
-    allow(CommitConductor).to receive(:stage_classes).and_return([FakeStage])
+    allow(CommitConductor).to receive(:stage_classes).and_return(
+      [FakeCommitStage]
+    )
   end
 
   describe 'from_stage' do

@@ -4,7 +4,7 @@ module Rosette
   module Queuing
     module Commits
 
-      class FakeStage < Stage
+      class FakeCommitStage < Stage
         accepts *PhraseStatus.all
 
         def execute!
