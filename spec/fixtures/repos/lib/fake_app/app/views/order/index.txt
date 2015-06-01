@@ -1,7 +1,0 @@
-Total
-Grand total
-Total units
-Unit price
-Shipping address
-Sales tax
-Shipping fee

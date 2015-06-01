@@ -21,4 +21,5 @@ group :test do
   gem 'simplecov'
   gem 'rspec'
   gem 'jbundler'
+  gem 'rosette-test-helpers', github: 'rosette-proj/rosette-test-helpers'
 end

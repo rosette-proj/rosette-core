@@ -47,18 +47,17 @@ require 'rosette/queuing'
 require 'rosette/tms'
 require 'rosette/data_stores'
 require 'rosette/data_stores/in_memory_data_store'
+require 'rosette/test-helpers'
 require 'repo-fixture'
 require 'fileutils'
 require 'pry-nav'
 
-require 'spec/test_helpers'
-
 RSpec.configure do |config|
   # build all fixtures before tests run
-  TestHelpers::Fixtures.build_all
+  Rosette::TestHelpers::Fixtures.build_all
 
   def load_repo_fixture(*args)
-    TestHelpers::Fixtures.load_repo_fixture(*args) do |config, repo_config|
+    Rosette::TestHelpers::Fixtures.load_repo_fixture(*args) do |config, repo_config|
       repo_config.add_extractor('test/test') do |ext|
         ext.set_conditions do |conditions|
           conditions.match_file_extension('.txt')
@@ -70,7 +69,7 @@ RSpec.configure do |config|
   end
 
   config.after(:each) do
-    TestHelpers::Fixtures.cleanup
+    Rosette::TestHelpers::Fixtures.cleanup
     Rosette::DataStores::InMemoryDataStore.all_entries.clear
     Rosette::Queuing::TestQueue::Queue.clear
   end
