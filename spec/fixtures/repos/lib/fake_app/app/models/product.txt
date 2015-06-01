@@ -1,2 +1,0 @@
-Invalid price.
-A product must be associated with a user.
