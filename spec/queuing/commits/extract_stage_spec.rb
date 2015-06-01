@@ -46,5 +46,22 @@ describe FetchStage do
       stage.execute!
       expect(commit_log.status).to eq(PhraseStatus::UNTRANSLATED)
     end
+
+    it "updates the status to MISSING if the commit doesn't exist" do
+      fixture.repo.git('reset --hard HEAD')
+      fixture.repo.create_file('testfile.txt') { |f| f.write('foo') }
+      fixture.repo.add_all
+      fixture.repo.commit('Test commit')
+
+      commit_log.commit_id = fixture.repo.git('rev-parse HEAD').strip
+
+      fixture.repo.git('reset --hard HEAD~1')
+      fixture.repo.git('reflog expire --expire=now --all')
+      fixture.repo.git('fsck --unreachable')
+      fixture.repo.git('prune -v')
+
+      stage.execute!
+      expect(commit_log.status).to eq(PhraseStatus::MISSING)
+    end
   end
 end

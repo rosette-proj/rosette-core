@@ -25,9 +25,11 @@ module Rosette
           commit_log.extract
           commit_log.commit_datetime = Time.at(rev_commit.getCommitTime)
 
-          save_commit_log
-
           logger.info("Finished extracting phrases for #{commit_log.commit_id}")
+        rescue Java::OrgEclipseJgitErrors::MissingObjectException => e
+          commit_log.missing
+        ensure
+          save_commit_log
         end
 
         protected
