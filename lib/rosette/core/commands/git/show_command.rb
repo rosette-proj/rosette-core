@@ -143,16 +143,14 @@ module Rosette
           datastore.phrases_by_commits(repo_name, snapshot).to_a
         end
 
-        def retrieve_parent_phrases(parent_commit_ids, paths)
-          ensure_commits_have_been_processed(parent_commit_ids)
+        def retrieve_parent_phrases(parent_commit_id, paths)
+          ensure_commits_have_been_processed([parent_commit_id])
 
-          parent_commit_ids.flat_map do |parent_commit_id|
-            parent_snapshot = take_snapshot(
-              repo_config, parent_commit_id, paths
-            )
+          parent_snapshot = take_snapshot(
+            repo_config, parent_commit_id, paths
+          )
 
-            datastore.phrases_by_commits(repo_name, parent_snapshot).to_a
-          end
+          datastore.phrases_by_commits(repo_name, parent_snapshot).to_a
         end
 
         def calculate_phrase_diff_against(parent_commit_ids)
@@ -161,7 +159,7 @@ module Rosette
               git_diff = compute_git_diff_against(parent_commit_id)
               paths = compute_paths(git_diff)
               child_phrases = retrieve_child_phrases(paths)
-              parent_phrases = retrieve_parent_phrases(parent_commit_ids, paths)
+              parent_phrases = retrieve_parent_phrases(parent_commit_id, paths)
               phrase_diff = compare(child_phrases, parent_phrases)
 
               phrase_diff.each_pair do |state, phrases|
