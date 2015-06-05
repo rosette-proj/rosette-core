@@ -33,8 +33,6 @@ module Rosette
         attr_reader :strict
         alias_method :strict?, :strict
 
-        DiffSnapshot = Struct.new(:snapshot, :paths)
-
         def initialize(*args)
           super
           @strict = true
@@ -49,8 +47,19 @@ module Rosette
         #   representation of the diff hash.
         def execute
           parent_commit_ids = build_parent_commit_list
-          phrase_diff = calculate_phrase_diff_against(parent_commit_ids)
-          filter_phrase_diff(parent_commit_ids, phrase_diff)
+
+          # handle the case where this is the first commit (or there are no
+          # processed parents)
+          if parent_commit_ids.empty?
+            entries = retrieve_child_phrases([]).map do |p|
+              DiffEntry.new(p, :added)
+            end
+
+            { added: entries, removed: [], modified: [] }
+          else
+            phrase_diff = calculate_phrase_diff_against(parent_commit_ids)
+            filter_phrase_diff(parent_commit_ids, phrase_diff)
+          end
         end
 
         # Sets a boolean value that determines if the diff should be made
@@ -99,10 +108,10 @@ module Rosette
           end
         end
 
-        def compute_git_diff_against(parent_commit_ids)
+        def compute_git_diff_against(parent_commit_id)
           rev_walker = RevWalk.new(repo.jgit_repo)
           diff_finder = DiffFinder.new(repo.jgit_repo, rev_walker)
-          repo.diff(parent_commit_ids, commit_id, [], diff_finder)
+          repo.diff([parent_commit_id], commit_id, [], diff_finder)
         end
 
         def compute_paths(diff)
@@ -147,11 +156,19 @@ module Rosette
         end
 
         def calculate_phrase_diff_against(parent_commit_ids)
-          git_diff = compute_git_diff_against(parent_commit_ids)
-          paths = compute_paths(git_diff)
-          child_phrases = retrieve_child_phrases(paths)
-          parent_phrases = retrieve_parent_phrases(parent_commit_ids, paths)
-          compare(child_phrases, parent_phrases)
+          { added: [], modified: [], removed: [] }.tap do |final_diff|
+            parent_commit_ids.each do |parent_commit_id|
+              git_diff = compute_git_diff_against(parent_commit_id)
+              paths = compute_paths(git_diff)
+              child_phrases = retrieve_child_phrases(paths)
+              parent_phrases = retrieve_parent_phrases(parent_commit_ids, paths)
+              phrase_diff = compare(child_phrases, parent_phrases)
+
+              phrase_diff.each_pair do |state, phrases|
+                final_diff[state].concat(phrases)
+              end
+            end
+          end
         end
 
         def filter_phrase_diff(parent_commit_ids, phrase_diff)
