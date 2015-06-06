@@ -1,5 +1,7 @@
 # encoding: UTF-8
 
+require 'concurrent'
+
 module Rosette
   module Queuing
     module Commits
@@ -38,11 +40,7 @@ module Rosette
           phrases = phrases_for(snapshot)
           commit_ids = commit_ids_from(phrases)
 
-          repo_config.locales.each do |locale|
-            sync_commit(locale, phrases, commit_ids)
-            cache_checksum_for(locale)
-          end
-
+          sync_locales(phrases, commit_ids)
           update_logs
 
           logger.info("Finished pulling commit #{commit_log.commit_id}")
@@ -93,11 +91,11 @@ module Rosette
           )
         end
 
-        def sync_commits(phrases, commit_ids)
+        def sync_locales(phrases, commit_ids)
           pool = Concurrent::FixedThreadPool.new(THREAD_POOL_SIZE)
 
           repo_config.locales.each do |locale|
-            pool << Proc.new { sync_commit(locale, phrases, commit_ids) }
+            pool << Proc.new { sync_locale(locale, phrases, commit_ids) }
             cache_checksum_for(locale)
           end
 
@@ -113,7 +111,7 @@ module Rosette
           end
         end
 
-        def sync_commit(locale, phrases, commit_ids)
+        def sync_locale(locale, phrases, commit_ids)
           if should_import_translations?(locale)
             phrases.each do |phrase|
               sync_phrase(phrase, locale, commit_ids)
