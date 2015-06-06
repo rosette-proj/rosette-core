@@ -17,6 +17,8 @@ module Rosette
         # queue layer.
         CONSECUTIVE_PULL_DELAY = 10 * 60  # 10 minutes
 
+        THREAD_POOL_SIZE = 5
+
         # Executes this stage and updates the commit log. If the given commit
         # contains no phrases, this method doesn't pull but will still update
         # the commit log (status will be +TRANSLATED+). If the commit no longer
@@ -89,6 +91,26 @@ module Rosette
             tms_checksum_key(locale),
             tms.checksum_for(locale, commit_log.commit_id)
           )
+        end
+
+        def sync_commits(phrases, commit_ids)
+          pool = Concurrent::FixedThreadPool.new(THREAD_POOL_SIZE)
+
+          repo_config.locales.each do |locale|
+            pool << Proc.new { sync_commit(locale, phrases, commit_ids) }
+            cache_checksum_for(locale)
+          end
+
+          drain_pool(pool)
+        end
+
+        def drain_pool(pool)
+          pool.shutdown
+          last_completed_count = 0
+
+          while pool.shuttingdown?
+            sleep 1
+          end
         end
 
         def sync_commit(locale, phrases, commit_ids)
