@@ -89,7 +89,7 @@ describe PullStage do
         end
       end
 
-      it "doesn't pull translations if they haven't changed since the last pull" do
+      xit "doesn't pull translations if they haven't changed since the last pull" do
         stage.execute!
         expect(InMemoryDataStore::Translation.entries.size).to eq(6)
         InMemoryDataStore::Translation.entries.clear
