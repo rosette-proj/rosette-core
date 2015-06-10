@@ -19,9 +19,6 @@ module Rosette
         # queue layer.
         CONSECUTIVE_PULL_DELAY = 10 * 60  # 10 minutes
 
-        # The number of threads to use when syncing locales. One thread per locale.
-        THREAD_POOL_SIZE = 5
-
         # Enables or disables caching of tms checksums. If set to true, +PullStage+
         # will skip pulling if it notices that translations haven't changed between
         # consecutive pulls.
@@ -98,22 +95,9 @@ module Rosette
         end
 
         def sync_locales(phrases, commit_ids)
-          pool = Concurrent::FixedThreadPool.new(THREAD_POOL_SIZE)
-
           repo_config.locales.each do |locale|
-            pool << Proc.new { sync_locale(locale, phrases, commit_ids) }
+            sync_locale(locale, phrases, commit_ids)
             cache_checksum_for(locale)
-          end
-
-          drain_pool(pool)
-        end
-
-        def drain_pool(pool)
-          pool.shutdown
-          last_completed_count = 0
-
-          while pool.shuttingdown?
-            sleep 1
           end
         end
 
