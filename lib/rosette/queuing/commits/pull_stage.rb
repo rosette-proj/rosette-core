@@ -19,7 +19,13 @@ module Rosette
         # queue layer.
         CONSECUTIVE_PULL_DELAY = 10 * 60  # 10 minutes
 
+        # The number of threads to use when syncing locales. One thread per locale.
         THREAD_POOL_SIZE = 5
+
+        # Enables or disables caching of tms checksums. If set to true, +PullStage+
+        # will skip pulling if it notices that translations haven't changed between
+        # consecutive pulls.
+        ENABLE_CHANGE_CACHE = false
 
         # Executes this stage and updates the commit log. If the given commit
         # contains no phrases, this method doesn't pull but will still update
@@ -141,9 +147,14 @@ module Rosette
         end
 
         def translations_have_changed?(locale)
-          if checksum = rosette_config.cache.read(tms_checksum_key(locale))
-            checksum != tms.checksum_for(locale, commit_log.commit_id)
+          if ENABLE_CHANGE_CACHE
+            if checksum = rosette_config.cache.read(tms_checksum_key(locale))
+              checksum != tms.checksum_for(locale, commit_log.commit_id)
+            else
+              true
+            end
           else
+            # if change cache is disabled, assume that translations have always changed
             true
           end
         end
