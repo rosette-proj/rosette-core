@@ -12,10 +12,10 @@ module Rosette
         # Computes the status for an array of commit logs. Determining the
         # aggregate status of more than one commit log means choosing the least
         # far-along status from the list. In other words, if the list contains
-        # two commit logs with UNTRANSLATED and TRANSLATED statuses
-        # respectively, this method will return UNTRANSLATED because that's the
-        # least advanced status in the list. A list of commit logs is only as
-        # advanced as its 'weakest', least advanced member.
+        # two commit logs with FETCHED and FINALIZED statuses respectively, this
+        # method will return FETCHED because that's the least advanced status in
+        # the list. A list of commit logs is only as advanced as its 'weakest',
+        # least advanced element.
         #
         # @param [Array<CommitLog>] commit_logs The list of commit logs to
         #   derive the status from.
@@ -27,10 +27,10 @@ module Rosette
           if entry
             entry.status
           else
-            # since TRANSLATED commit_logs aren't considered, the absence of
-            # any commit logs (i.e. a nil entry) indicates the branch is
-            # fully translated
-            Rosette::DataStores::PhraseStatus::TRANSLATED
+            # since FINALIZED commit_logs aren't considered, the absence of any
+            # commit logs (i.e. a nil entry) indicates the branch is fully
+            # processed
+            Rosette::DataStores::PhraseStatus::FINALIZED
           end
         end
 

@@ -31,33 +31,15 @@ module Rosette
             end
 
             event :extract do
-              transitions from: FETCHED, to: UNTRANSLATED
+              transitions from: FETCHED, to: EXTRACTED
             end
 
             event :push do
-              transitions from: [UNTRANSLATED, PENDING], to: PENDING
-            end
-
-            event :pull do
-              transitions from: PULLING, to: PULLED, if: (lambda do |options = {}|
-                !!options.fetch(:fully_translated, false)
-              end)
-              transitions from: [PENDING, PULLING], to: PULLING
-              transitions from: PULLED, to: TRANSLATED
+              transitions from: [EXTRACTED, PUSHED], to: PUSHED
             end
 
             event :finalize do
-              transitions from: PULLING, to: PULLING
-              transitions from: [PULLED, TRANSLATED], to: TRANSLATED
-            end
-
-            # handles the zero phrases case (commit bypasses pulling
-            # state if it introduces no new/changed phrases)
-            event :translate do
-              transitions(
-                from: Rosette::DataStores::PhraseStatus.statuses,
-                to: TRANSLATED
-              )
+              transitions from: [EXTRACTED, PUSHED, FINALIZED], to: FINALIZED
             end
 
             # called when jgit can't find the commit

@@ -40,10 +40,10 @@ describe PushStage do
       ExtractStage.new(*args).execute!
     end
 
-    it 'updates the status to TRANSLATED when no phrases are found' do
+    it 'updates the status to FINALIZED when no phrases are found' do
       expect(stage).to receive(:phrases).and_return([])
       stage.execute!
-      expect(commit_log.status).to eq(PhraseStatus::TRANSLATED)
+      expect(commit_log.status).to eq(PhraseStatus::FINALIZED)
     end
 
     it 'stores the phrases in the repository' do
@@ -56,7 +56,7 @@ describe PushStage do
 
     it 'updates the commit log status' do
       stage.execute!
-      expect(commit_log.status).to eq(PhraseStatus::PENDING)
+      expect(commit_log.status).to eq(PhraseStatus::PUSHED)
     end
 
     it "updates the status to MISSING if one of the objects doesn't exist" do

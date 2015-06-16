@@ -32,19 +32,25 @@ describe CommitLogStatus do
     CommitLogStatusTester.new(status)
   end
 
-  context 'with an UNTRANSLATED status' do
-    let(:status) { PhraseStatus::UNTRANSLATED }
+  context 'with a NOT_SEEN status' do
+    let(:status) { PhraseStatus::NOT_SEEN }
 
-    describe 'on push' do
-      it 'transitions to PENDING' do
-        expect(instance.push).to be_truthy
-        expect(instance.status).to eq(PhraseStatus::PENDING)
+    describe 'on fetch' do
+      it 'transitions to FETCHED' do
+        expect(instance.fetch).to be_truthy
+        expect(instance.status).to eq(PhraseStatus::FETCHED)
       end
     end
 
-    describe 'on pull' do
+    describe 'on extract' do
       it 'raises an error' do
-        expect { instance.pull }.to raise_error(AASM::InvalidTransition)
+        expect { instance.extract }.to raise_error(AASM::InvalidTransition)
+      end
+    end
+
+    describe 'on push' do
+      it 'raises an error' do
+        expect { instance.push }.to raise_error(AASM::InvalidTransition)
       end
     end
 
@@ -54,13 +60,6 @@ describe CommitLogStatus do
       end
     end
 
-    describe 'on translate' do
-      it 'transitions to TRANSLATED' do
-        expect(instance.translate).to be_truthy
-        expect(instance.status).to eq(PhraseStatus::TRANSLATED)
-      end
-    end
-
     describe 'on missing' do
       it 'transitions to MISSING' do
         expect(instance.missing).to be_truthy
@@ -69,20 +68,25 @@ describe CommitLogStatus do
     end
   end
 
-  context 'with a PENDING status' do
-    let(:status) { PhraseStatus::PENDING }
+  context 'with a FETCHED status' do
+    let(:status) { PhraseStatus::FETCHED }
 
-    describe 'on push' do
-      it 'stays PENDING' do
-        expect(instance.push).to be_truthy
-        expect(instance.status).to eq(PhraseStatus::PENDING)
+    describe 'on fetch' do
+      it 'raises an error' do
+        expect { instance.fetch }.to raise_error(AASM::InvalidTransition)
       end
     end
 
-    describe 'on pull' do
-      it 'transitions to PULLING' do
-        expect(instance.pull).to be_truthy
-        expect(instance.status).to eq(PhraseStatus::PULLING)
+    describe 'on extract' do
+      it 'transitions to EXTRACTED' do
+        expect(instance.extract).to be_truthy
+        expect(instance.status).to eq(PhraseStatus::EXTRACTED)
+      end
+    end
+
+    describe 'on push' do
+      it 'raises an error' do
+        expect { instance.push }.to raise_error(AASM::InvalidTransition)
       end
     end
 
@@ -92,10 +96,40 @@ describe CommitLogStatus do
       end
     end
 
-    describe 'on translate' do
-      it 'transitions to TRANSLATED' do
-        expect(instance.translate).to be_truthy
-        expect(instance.status).to eq(PhraseStatus::TRANSLATED)
+    describe 'on missing' do
+      it 'transitions to MISSING' do
+        expect(instance.missing).to be_truthy
+        expect(instance.status).to eq(PhraseStatus::MISSING)
+      end
+    end
+  end
+
+  context 'with an EXTRACTED status' do
+    let(:status) { PhraseStatus::EXTRACTED }
+
+    describe 'on fetch' do
+      it 'raises an error' do
+        expect { instance.fetch }.to raise_error(AASM::InvalidTransition)
+      end
+    end
+
+    describe 'on extract' do
+      it 'raises an error' do
+        expect { instance.extract }.to raise_error(AASM::InvalidTransition)
+      end
+    end
+
+    describe 'on push' do
+      it 'transitions to PUSHED' do
+        expect(instance.push).to be_truthy
+        expect(instance.status).to eq(PhraseStatus::PUSHED)
+      end
+    end
+
+    describe 'on finalize' do
+      it 'transitions to FINALIZED' do
+        expect(instance.finalize).to be_truthy
+        expect(instance.status).to eq(PhraseStatus::FINALIZED)
       end
     end
 
@@ -107,38 +141,32 @@ describe CommitLogStatus do
     end
   end
 
-  context 'with a PULLING status' do
-    let(:status) { PhraseStatus::PULLING }
+  context 'with a PUSHED status' do
+    let(:status) { PhraseStatus::PUSHED }
 
-    describe 'on push' do
+    describe 'on fetch' do
       it 'raises an error' do
-        expect { instance.push }.to raise_error(AASM::InvalidTransition)
+        expect { instance.fetch }.to raise_error(AASM::InvalidTransition)
       end
     end
 
-    describe 'on pull' do
-      it 'stays PULLING' do
-        expect(instance.pull).to be_truthy
-        expect(instance.status).to eq(PhraseStatus::PULLING)
+    describe 'on extract' do
+      it 'raises an error' do
+        expect { instance.extract }.to raise_error(AASM::InvalidTransition)
       end
+    end
 
-      it 'transitions to PULLED if the fully_translated option is passed' do
-        expect(instance.pull(fully_translated: true)).to be_truthy
-        expect(instance.status).to eq(PhraseStatus::PULLED)
+    describe 'on push' do
+      it 'stays PUSHED' do
+        expect(instance.push).to be_truthy
+        expect(instance.status).to eq(PhraseStatus::PUSHED)
       end
     end
 
     describe 'on finalize' do
-      it 'stays PULLING' do
+      it 'transitions to FINALIZED' do
         expect(instance.finalize).to be_truthy
-        expect(instance.status).to eq(PhraseStatus::PULLING)
-      end
-    end
-
-    describe 'on translate' do
-      it 'transitions to TRANSLATED' do
-        expect(instance.translate).to be_truthy
-        expect(instance.status).to eq(PhraseStatus::TRANSLATED)
+        expect(instance.status).to eq(PhraseStatus::FINALIZED)
       end
     end
 
@@ -150,8 +178,20 @@ describe CommitLogStatus do
     end
   end
 
-  context 'with a PULLED status' do
-    let(:status) { PhraseStatus::PULLED }
+  context 'with a FINALIZED status' do
+    let(:status) { PhraseStatus::FINALIZED }
+
+    describe 'on fetch' do
+      it 'raises an error' do
+        expect { instance.fetch }.to raise_error(AASM::InvalidTransition)
+      end
+    end
+
+    describe 'on extract' do
+      it 'raises an error' do
+        expect { instance.extract }.to raise_error(AASM::InvalidTransition)
+      end
+    end
 
     describe 'on push' do
       it 'raises an error' do
@@ -159,65 +199,14 @@ describe CommitLogStatus do
       end
     end
 
-    describe 'on pull' do
-      it 'transitions to TRANSLATED' do
-        expect(instance.pull).to be_truthy
-        expect(instance.status).to eq(PhraseStatus::TRANSLATED)
-      end
-    end
-
     describe 'on finalize' do
-      it 'transitions to TRANSLATED' do
+      it 'stays FINALIZED' do
         expect(instance.finalize).to be_truthy
-        expect(instance.status).to eq(PhraseStatus::TRANSLATED)
+        expect(instance.status).to eq(PhraseStatus::FINALIZED)
       end
     end
 
-    describe 'on translate' do
-      it 'transitions to TRANSLATED' do
-        expect(instance.translate).to be_truthy
-        expect(instance.status).to eq(PhraseStatus::TRANSLATED)
-      end
-    end
-
-    describe 'missing' do
-      it 'transitions to MISSING' do
-        expect(instance.missing).to be_truthy
-        expect(instance.status).to eq(PhraseStatus::MISSING)
-      end
-    end
-  end
-
-  context 'with a TRANSLATED status' do
-    let(:status) { PhraseStatus::TRANSLATED }
-
-    describe 'on push' do
-      it 'raises an error' do
-        expect { instance.push }.to raise_error(AASM::InvalidTransition)
-      end
-    end
-
-    describe 'on pull' do
-      it 'raises an error' do
-        expect { instance.pull }.to raise_error(AASM::InvalidTransition)
-      end
-    end
-
-    describe 'on finalize' do
-      it 'stays TRANSLATED' do
-        expect(instance.finalize).to be_truthy
-        expect(instance.status).to eq(PhraseStatus::TRANSLATED)
-      end
-    end
-
-    describe 'on translate' do
-      it 'transitions to TRANSLATED' do
-        expect(instance.translate).to be_truthy
-        expect(instance.status).to eq(PhraseStatus::TRANSLATED)
-      end
-    end
-
-    describe 'missing' do
+    describe 'on missing' do
       it 'transitions to MISSING' do
         expect(instance.missing).to be_truthy
         expect(instance.status).to eq(PhraseStatus::MISSING)

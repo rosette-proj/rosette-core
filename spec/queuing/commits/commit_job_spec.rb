@@ -6,7 +6,7 @@ include Rosette::Queuing::Commits
 include Rosette::Queuing
 include Rosette::DataStores
 
-describe PullStage do
+describe CommitJob do
   let(:repo_name) { 'single_commit' }
   let(:commit_id) { fixture.repo.git('rev-parse HEAD').strip }
 

@@ -47,7 +47,7 @@ describe StatusCommand do
   context '#execute' do
     let(:translated_count) { 6 }
     let(:phrase_count) { 8 }
-    let(:status) { Rosette::DataStores::PhraseStatus::UNTRANSLATED }
+    let(:status) { Rosette::DataStores::PhraseStatus::NOT_SEEN }
 
     before do
       commit(fixture.config, repo_name, head_ref(fixture.repo))
@@ -73,7 +73,7 @@ describe StatusCommand do
     it 'returns the translation status for a commit' do
       status_result = command.execute
       expect(status_result[:commit_id]).to eq(head_ref(fixture.repo))
-      expect(status_result[:status]).to eq(Rosette::DataStores::PhraseStatus::UNTRANSLATED)
+      expect(status_result[:status]).to eq(Rosette::DataStores::PhraseStatus::NOT_SEEN)
       expect(status_result[:phrase_count]).to eq(phrase_count * 2)
 
       locales_result = locales.each_with_object({}) do |locale, ret|
@@ -100,29 +100,29 @@ describe StatusCommand do
       })
     end
 
-    context 'with TRANSLATED commit logs' do
-      let(:status) { Rosette::DataStores::PhraseStatus::TRANSLATED }
+    context 'with FINALIZED commit logs' do
+      let(:status) { Rosette::DataStores::PhraseStatus::FINALIZED }
 
-      it 'returns a TRANSLATED status' do
+      it 'returns a FINALIZED status' do
         expect(command.execute[:status]).to eq(
-          Rosette::DataStores::PhraseStatus::TRANSLATED
+          Rosette::DataStores::PhraseStatus::FINALIZED
         )
       end
     end
 
-    context 'with one UNTRANSLATED commit and one PULLED commit' do
+    context 'with one NOT_SEEN commit and one PUSHED commit' do
       before do
         fixture.config.datastore.add_or_update_commit_log(
           repo_name,
           head_ref(fixture.repo),
-          nil, Rosette::DataStores::PhraseStatus::PULLED,
+          nil, Rosette::DataStores::PhraseStatus::PUSHED,
           phrase_count
         )
       end
 
-      it 'returns an UNTRANSLATED status' do
+      it 'returns a NOT_SEEN status' do
         expect(command.execute[:status]).to eq(
-          Rosette::DataStores::PhraseStatus::UNTRANSLATED
+          Rosette::DataStores::PhraseStatus::NOT_SEEN
         )
       end
     end

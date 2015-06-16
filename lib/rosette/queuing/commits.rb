@@ -11,7 +11,6 @@ module Rosette
       autoload :FetchStage,      'rosette/queuing/commits/fetch_stage'
       autoload :ExtractStage,    'rosette/queuing/commits/extract_stage'
       autoload :PushStage,       'rosette/queuing/commits/push_stage'
-      autoload :PullStage,       'rosette/queuing/commits/pull_stage'
       autoload :FinalizeStage,   'rosette/queuing/commits/finalize_stage'
 
     end

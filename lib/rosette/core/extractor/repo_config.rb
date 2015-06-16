@@ -69,7 +69,7 @@ module Rosette
     #         ext.match_path('config/locales')
     #       )
     #     end
-    #     .add_serializer('rails', 'yaml/rails') do |ser|
+    #     .add_serializer('rails', format: 'yaml/rails') do |ser|
     #       ser.add_preprocessor('normalization') do |pre|
     #         pre.set_normalization_form(:nfc)
     #       end

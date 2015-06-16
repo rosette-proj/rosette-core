@@ -9,9 +9,9 @@ module Rosette
       #
       # @see RepoConfig
       class FinalizeStage < Stage
-        accepts PhraseStatus::PULLED
+        accepts PhraseStatus::PUSHED
 
-        # Executes this stage and updates the commit log with a +TRANSLATED+
+        # Executes this stage and updates the commit log with a +FINALIZED+
         # status. Calls the +finalize+ method on the translation management
         # system.
         #

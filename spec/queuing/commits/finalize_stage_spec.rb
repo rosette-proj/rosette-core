@@ -22,7 +22,7 @@ describe FinalizeStage do
 
   let(:commit_log) do
     InMemoryDataStore::CommitLog.create(
-      status: PhraseStatus::PULLED,
+      status: PhraseStatus::PUSHED,
       repo_name: repo_name,
       commit_id: commit_id,
       phrase_count: 0,
@@ -42,7 +42,7 @@ describe FinalizeStage do
 
     it 'updates the commit log status' do
       stage.execute!
-      expect(commit_log.status).to eq(PhraseStatus::TRANSLATED)
+      expect(commit_log.status).to eq(PhraseStatus::FINALIZED)
     end
   end
 end

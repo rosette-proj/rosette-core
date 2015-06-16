@@ -83,7 +83,7 @@ module Rosette
       end
 
       # Signals the repository to perform any cleanup tasks that may be required
-      # for the given commit once it's been fully translated.
+      # for the given commit once it's been fully processed.
       #
       # @param [String] commit_id
       def finalize(commit_id)

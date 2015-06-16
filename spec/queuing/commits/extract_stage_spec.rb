@@ -44,7 +44,7 @@ describe FetchStage do
 
     it 'updates the commit log status' do
       stage.execute!
-      expect(commit_log.status).to eq(PhraseStatus::UNTRANSLATED)
+      expect(commit_log.status).to eq(PhraseStatus::EXTRACTED)
     end
 
     it "updates the status to MISSING if the commit doesn't exist" do
