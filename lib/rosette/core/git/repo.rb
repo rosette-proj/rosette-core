@@ -46,7 +46,6 @@ module Rosette
       #   The jgit repo object to wrap.
       def initialize(jgit_repo)
         @jgit_repo = jgit_repo
-        @fetch_clone_mutex = Mutex.new
       end
 
       # Retrieves a jgit commit object for the given ref or commit id. If
@@ -249,9 +248,7 @@ module Rosette
       # @param [String] remote The remote to fetch from.
       # @return [void]
       def fetch(remote = 'origin')
-        @fetch_clone_mutex.synchronize do
-          git.fetch.setRemote(remote).call
-        end
+        git.fetch.setRemote(remote).call
       end
 
       # Clones a repository
@@ -260,12 +257,10 @@ module Rosette
       # @param [String] repo_dir The directory to store the local copy.
       # @return [void]
       def self.clone(repo_uri, repo_dir)
-        @fetch_clone_mutex.synchronize do
-          CloneCommand.new
-            .setDirectory(Java::JavaIo::File.new(repo_dir))
-            .setURI(repo_uri)
-            .call
-        end
+        CloneCommand.new
+          .setDirectory(Java::JavaIo::File.new(repo_dir))
+          .setURI(repo_uri)
+          .call
       end
 
       # Retrieves the first non-merge parent of the given ref or commit id.
