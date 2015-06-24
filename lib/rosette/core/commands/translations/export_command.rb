@@ -244,8 +244,10 @@ module Rosette
 
         def each_translation(snapshot)
           datastore.phrases_by_commits(repo_name, snapshot) do |phrase|
-            text = repo_config.tms.lookup_translation(locale_obj, phrase)
-            yield Translation.new(phrase, locale, text)
+            # only yield if a translation exists
+            if text = repo_config.tms.lookup_translation(locale_obj, phrase)
+              yield Translation.new(phrase, locale, text)
+            end
           end
         end
       end
