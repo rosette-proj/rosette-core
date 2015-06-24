@@ -36,7 +36,9 @@ SimpleCov.at_exit do
 end
 
 
-require 'jbundler'
+require 'expert'
+Expert.environment.require_all
+
 require 'rspec'
 require 'progress-reporters'
 require 'rosette/core'
