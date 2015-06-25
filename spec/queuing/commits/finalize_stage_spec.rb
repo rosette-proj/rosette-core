@@ -62,10 +62,12 @@ describe FinalizeStage do
     context 'with a fully translated status' do
       let(:locale_count) { commit_log.phrase_count }
 
-      it 'calls finalize on the tms and updates the status' do
+      it 'calls finalize on the tms, updates the status, and creates entries' do
         expect(repo_config.tms).to receive(:finalize)
         stage.execute!
         expect(commit_log.status).to eq(PhraseStatus::FINALIZED)
+        entries = InMemoryDataStore::CommitLogLocale.map(&:translated_count)
+        entries.each { |e| expect(e).to eq(commit_log.phrase_count) }
       end
     end
   end
