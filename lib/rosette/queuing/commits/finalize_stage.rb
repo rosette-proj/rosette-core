@@ -19,9 +19,21 @@ module Rosette
         def execute!
           logger.info("Finalizing commit #{commit_log.commit_id}")
 
-          repo_config.tms.finalize(commit_log.commit_id)
-          commit_log.finalize
-          save_commit_log
+          status = repo_config.tms.status(commit_log.commit_id)
+
+          if status.fully_translated?
+            repo_config.tms.finalize(commit_log.commit_id)
+            commit_log.finalize
+            save_commit_log
+          else
+            repo_config.locales.each do |locale|
+              locale_code = locale.code
+
+              rosette_config.datastore.add_or_update_commit_log_locale(
+                commit_log.commit_id, locale_code, status.locale_count(locale_code)
+              )
+            end
+          end
 
           logger.info("Finished finalizing commit #{commit_log.commit_id}")
         end
