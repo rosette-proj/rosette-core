@@ -10,8 +10,10 @@ module Rosette
       class ExtractStage < Stage
         accepts PhraseStatus::FETCHED
 
-        # Executes this stage and updates the commit log with an +UNTRANSLATED+
+        # Executes this stage and updates the commit log with an +EXTRACTED+
         # status. Uses [Rosette::Core::Commands::CommitCommand] under the hood.
+        # If the commit no longer exists in the git repository, the commit log
+        # will be updated with a status of +MISSING+.
         #
         # @return [void]
         def execute!

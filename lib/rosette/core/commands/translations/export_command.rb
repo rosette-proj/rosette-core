@@ -75,6 +75,15 @@ module Rosette
         validate :serializer, type: :serializer
         validate :encoding, type: :encoding
 
+        def initialize(*args)
+          super
+          @paths = []
+          @encoding = Encoding::UTF_8
+          @base_64_encode = false
+          @include_snapshot = false
+          @include_checksum = false
+        end
+
         # Sets the serializer used to export translations. Must be recognizable
         # as a serializer id, eg. 'yaml/rails' or 'json/key-value'.
         #
@@ -145,32 +154,23 @@ module Rosette
         #     64 encoded.
         #   * +locale+: The locale the translations in +payload+ are written in.
         #   * +snapshot+: The snapshot used to identify the translations in
-        #     +payload+. Not included if +base_64_encode+ is +false+.
         def execute
           stream = StringIO.new
-          repo_config = get_repo(repo_name)
-          serializer_config = get_serializer_config(repo_config)
-          serializer_instance = serializer_config.klass.new(stream, locale_obj, encoding)
           snapshot = take_snapshot(repo_config, commit_id, paths)
           translation_count = 0
           checksum_list = []
 
-          each_translation(repo_config, snapshot) do |trans|
-            next unless include_trans?(trans)
-            trans = apply_preprocessors(trans, serializer_config)
+          serializer_instance = serializer_config.klass.new(
+            stream, locale_obj, encoding
+          )
 
-            serializer_instance.write_key_value(
-              trans.phrase.index_value, trans.translation
-            )
-
+          write_translations_for(snapshot, serializer_instance) do |trans|
             translation_count += 1
 
             if include_checksum
               checksum_list << "#{trans.phrase.index_value}#{trans.translation}"
             end
           end
-
-          serializer_instance.flush
 
           params = {
             payload: encode(stream.string),
@@ -194,6 +194,20 @@ module Rosette
 
         private
 
+        def write_translations_for(snapshot, serializer_instance)
+          each_translation(snapshot) do |trans|
+            next unless include_trans?(trans)
+            trans = apply_preprocessors(trans, serializer_config)
+            yield trans if block_given?
+
+            serializer_instance.write_key_value(
+              trans.phrase.index_value, trans.translation
+            )
+          end
+
+          serializer_instance.flush
+        end
+
         def include_trans?(trans)
           paths.size == 0 || paths.include?(trans.phrase.file)
         end
@@ -203,7 +217,7 @@ module Rosette
         end
 
         def locale_obj
-          @locale_obj ||= get_repo(repo_name).get_locale(locale)
+          @locale_obj ||= repo_config.get_locale(locale)
         end
 
         def apply_preprocessors(translation, serializer_config)
@@ -220,13 +234,20 @@ module Rosette
           end
         end
 
-        def get_serializer_config(repo_config)
-          repo_config.get_serializer_config(serializer)
+        def serializer_config
+          @serializer_config ||= repo_config.get_serializer_config(serializer)
         end
 
-        def each_translation(repo_config, snapshot)
-          datastore.translations_by_commits(repo_name, locale, snapshot) do |trans|
-            yield trans
+        def repo_config
+          @repo_config ||= get_repo(repo_name)
+        end
+
+        def each_translation(snapshot)
+          datastore.phrases_by_commits(repo_name, snapshot) do |phrase|
+            # only yield if a translation exists
+            if text = repo_config.tms.lookup_translation(locale_obj, phrase)
+              yield Translation.new(phrase, locale, text)
+            end
           end
         end
       end

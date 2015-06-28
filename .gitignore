@@ -8,3 +8,4 @@ spec/fixtures/repos/bin
 .yardoc/
 doc/
 coverage/
+classpath.txt

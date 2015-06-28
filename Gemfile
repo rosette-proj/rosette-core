@@ -8,6 +8,7 @@ gem 'rosette-datastore-memory', github: 'rosette-proj/rosette-datastore-memory'
 
 group :development, :test do
   gem 'activemodel', '~> 3.2.20'
+  gem 'expert', '~> 1.0'
   gem 'pry-nav'
   gem 'rake'
   gem 'repo-fixture'
@@ -20,6 +21,5 @@ end
 group :test do
   gem 'simplecov'
   gem 'rspec'
-  gem 'jbundler'
   gem 'rosette-test-helpers', github: 'rosette-proj/rosette-test-helpers'
 end

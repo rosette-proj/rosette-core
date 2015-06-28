@@ -14,23 +14,14 @@ module Rosette
       # for processing it.
       FETCHED = 'FETCHED'
 
-      # Indicates the phrases have been imported but not submitted for
-      # translation.
-      UNTRANSLATED = 'UNTRANSLATED'
+      # Indicates the phrases have been extracted from the commit.
+      EXTRACTED = 'EXTRACTED'
 
-      # Indicates the phrases have been submitted for translation.
-      PENDING = 'PENDING'
+      # The extracted phrases have been submitted for translation.
+      PUSHED = 'PUSHED'
 
-      # Indicates the phrases have been pulled at least once, but not all
-      # translations were included.
-      PULLING = 'PULLING'
-
-      # Indicates all translations have been downloaded and catalogued.
-      PULLED = 'PULLED'
-
-      # Indicates the phrases have all been translated into every supported
-      # locale.
-      TRANSLATED = 'TRANSLATED'
+      # The commit has been completely processed.
+      FINALIZED = 'FINALIZED'
 
       # Indicates that the commit no longer exists, i.e. the associated branch
       # was deleted or was force-pushed over.
@@ -41,20 +32,19 @@ module Rosette
 
       def self.all
         @all ||= [
-          NOT_SEEN, FETCHED, UNTRANSLATED, PENDING, PULLING, PULLED, TRANSLATED,
-          MISSING, NOT_FOUND
+          NOT_SEEN, FETCHED, EXTRACTED, PUSHED, FINALIZED, MISSING, NOT_FOUND
         ]
       end
 
       def self.statuses
         @statuses ||= [
-          NOT_SEEN, FETCHED, UNTRANSLATED, PENDING, PULLING, PULLED, TRANSLATED
+          NOT_SEEN, FETCHED, EXTRACTED, PUSHED, FINALIZED
         ]
       end
 
       def self.incomplete
         @incomplete ||= [
-          NOT_SEEN, FETCHED, UNTRANSLATED, PENDING, PULLING, PULLED, NOT_FOUND
+          NOT_SEEN, FETCHED, EXTRACTED, PUSHED, NOT_FOUND
         ]
       end
 

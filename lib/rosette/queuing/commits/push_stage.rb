@@ -9,13 +9,13 @@ module Rosette
       #
       # @see RepoConfig
       class PushStage < Stage
-        accepts PhraseStatus::UNTRANSLATED
+        accepts PhraseStatus::EXTRACTED
 
         # Executes this stage and updates the commit log. If the given commit
         # contains no phrases, this method doesn't push anything but will still
-        # update the commit log with a +PENDING+ status. If the commit no longer
-        # exists in the git repository, the commit log will be updated with a
-        # status of +MISSING+.
+        # update the commit log with a +FINALIZED+ status. If the commit no
+        # longer exists in the git repository, the commit log will be updated
+        # with a status of +MISSING+.
         #
         # @return [void]
         def execute!
@@ -26,7 +26,7 @@ module Rosette
             repo_config.tms.store_phrases(phrases, commit_log.commit_id)
             commit_log.push
           else
-            commit_log.translate!
+            commit_log.finalize!
           end
 
           logger.info("Finished pushing commit #{commit_log.commit_id}")

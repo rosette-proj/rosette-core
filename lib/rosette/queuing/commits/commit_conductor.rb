@@ -16,7 +16,7 @@ module Rosette
       class CommitConductor
         # The status that indicates a commit is completely processed, i.e. has
         # no more stages to pass through.
-        FINISHED_STATUS = Rosette::DataStores::PhraseStatus::TRANSLATED
+        FINISHED_STATUS = Rosette::DataStores::PhraseStatus::FINALIZED
 
         attr_reader :rosette_config, :repo_name, :logger
 

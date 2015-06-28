@@ -31,7 +31,7 @@ describe BranchUtils do
   before(:each) do
     commit_log.create(
       repo_name: repo_name, phrase_count: 5, commit_id: 'abc123',
-      status: PhraseStatus::UNTRANSLATED
+      status: PhraseStatus::FETCHED
     )
 
     commit_log_locale.create(
@@ -44,7 +44,7 @@ describe BranchUtils do
 
     commit_log.create(
       repo_name: repo_name, phrase_count: 5, commit_id: 'def456',
-      status: PhraseStatus::PULLING
+      status: PhraseStatus::PUSHED
     )
 
     commit_log_locale.create(
@@ -55,7 +55,7 @@ describe BranchUtils do
   describe 'derive_status_from' do
     it 'returns the lowest-ranked status' do
       status = BranchUtils.derive_status_from(commit_log.entries)
-      expect(status).to eq(PhraseStatus::UNTRANSLATED)
+      expect(status).to eq(PhraseStatus::FETCHED)
     end
   end
 
