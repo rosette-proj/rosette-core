@@ -11,6 +11,11 @@ module Rosette
       class FinalizeStage < Stage
         accepts PhraseStatus::PUSHED
 
+        # The number of seconds to wait in between consecutive pulls. This value
+        # will be passed to the queue implementation, as delay is handled at the
+        # queue layer.
+        CONSECUTIVE_FINALIZE_DELAY = 10 * 60  # 10 minutes
+
         # Executes this stage and updates the commit log. If the commit has been
         # fully translated, the commit log will be updated with a +FINALIZED+
         # status, and the +finalize+ method will be called on the translation
@@ -40,6 +45,22 @@ module Rosette
           end
 
           logger.info("Finished finalizing commit #{commit_log.commit_id}")
+        end
+
+        # Converts this stage to a job that can be enqueued. This method should
+        # be called after +#execute!+, meaning the commit log has been updated
+        # to the next status in the pipeline. If that next status also happens
+        # to be PUSHED, this method adds a delay to avoid finalizing too often.
+        # If the chosen queue implementation does not support delays, setting
+        # this value should be a safe no-op (i.e. have no adverse side-effects).
+        #
+        # @return [CommitJob]
+        def to_job
+          super.tap do |job|
+            if commit_log.status == PhraseStatus::PUSHED
+              job.set_delay(CONSECUTIVE_FINALIZE_DELAY)
+            end
+          end
         end
       end
 
