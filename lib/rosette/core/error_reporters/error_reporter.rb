@@ -18,6 +18,13 @@ module Rosette
       def report_warning(error, options = {})
         raise NotImplementedError, 'Please use a derived class.'
       end
+
+      # Catch errors raised by the block and report them.
+      def with_error_reporting
+        yield
+      rescue Exception => e
+        report_error(e)
+      end
     end
 
   end
