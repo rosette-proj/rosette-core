@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
 require 'active_support'
+require 'rosette/integrations'
 
 module Rosette
   module Core
