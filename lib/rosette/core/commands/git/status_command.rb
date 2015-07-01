@@ -107,13 +107,13 @@ module Rosette
           end
         end
 
-        def commit_logs_for(branch_names, repo_config, rev_walk, refs)
+        def commit_logs_for(branch_names, repo_config, rev_walk, all_refs)
           statuses = Rosette::DataStores::PhraseStatus.incomplete
           commit_logs = datastore.each_commit_log_with_status(repo_name, statuses)
 
           commit_logs.each_with_object([]) do |commit_log, ret|
             refs = repo_config.repo.refs_containing(
-              commit_log.commit_id, rev_walk, refs
+              commit_log.commit_id, rev_walk, all_refs
             )
 
             if refs.any? { |ref| branch_names.include?(ref.getName) }
