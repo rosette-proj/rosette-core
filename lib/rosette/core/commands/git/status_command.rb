@@ -41,7 +41,7 @@ module Rosette
         # @return [Hash] a hash of status information for the ref:
         #   * +commit_id+: the commit id of the ref the status came from.
         #   * +status+: One of +"FETCHED"+, +"EXTRACTED"+, +"PUSHED"+,
-        #     +"FINALIZED"+, or +"NOT FOUND"+.
+        #     +"FINALIZED"+, or +"NOT_FOUND"+.
         #   * +phrase_count+: The number of phrases found in the commit.
         #   * +locales+: A hash of locale codes to locale statuses having these
         #     entries:
