@@ -9,12 +9,12 @@ rosette-core
 
 ## Installation
 
-`gem install twitter_cldr`
+`gem install rosette-core`
 
 ## Usage
 
 ```ruby
-require 'twitter_cldr'
+require 'rosette/core'
 ```
 
 ## Intro
@@ -40,7 +40,7 @@ Rosette::Core::Commands::ShowCommand.new(rosette_config)
 
 ### Git Classes
 
-Rosette manages git repos by leveraging the open-source jGit library, which is a full git implementation for the JVM. The `Repo` and `DiffFinder` classes wrap jGit and provide a set of methods for interacting with git repositories in a slightly more Ruby-ish way. Specifically, `Repo` offers generic methods like `#parents_of` and `#read_object_bytes`, while `DiffFinder` finds diffs between git refs. Here's an example of creating a `Repo` instance and calculating a diff:
+Rosette manages git repos by leveraging the open-source [jGit library](https://eclipse.org/jgit), which is a full git implementation for the JVM. The `Repo` and `DiffFinder` classes wrap jGit and provide a set of methods for interacting with git repositories in a slightly more Ruby-ish way. Specifically, `Repo` offers generic methods like `#parents_of` and `#read_object_bytes`, while `DiffFinder` finds diffs between git refs. Here's an example of creating a `Repo` instance and calculating a diff:
 
 ```ruby
 repo = Rosette::Core::Repo.from_path('/path/to/my_repo/.git')
@@ -83,7 +83,15 @@ If you're not using a queue to process new commits, you'll have to process them 
 
 ### Interfaces
 
-rosette-core contains a few base classes that serve as interfaces for implementations that live in other gems. For example, the rosette-extractor-yaml gem defines the `YamlExtractor` class, which inherits from `Rosette::Core::Extractor`. Other interfaces include `Rosette::Tms::Repository`, `Rosette::Serializers::Serializer`, `Rosette::Preprocessors::Preprocessor`, and more.
+rosette-core contains a few base classes that serve as interfaces for implementations that live in other gems. For example, the [rosette-extractor-yaml gem](https://github.com/rosette-proj/rosette-extractor-yaml) defines the `YamlExtractor` class, which inherits from `Rosette::Core::Extractor`. Other interfaces include `Rosette::Tms::Repository`, `Rosette::Serializers::Serializer`, `Rosette::Preprocessors::Preprocessor`, and more.
+
+## Requirements
+
+All Rosette components only run under jRuby. Java dependencies are managed via the [expert gem](https://github.com/camertron/expert). Run `bundle exec expert install` to install Java dependencies.
+
+## Running Tests
+
+`bundle`, then `bundle exec expert install`, then `bundle exec rspec`.
 
 ## Authors
 
