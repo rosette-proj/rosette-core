@@ -1,11 +1,7 @@
 rosette-core
 ========
 
-[![Build Status](https://travis-ci.org/rosette-proj/rosette-core.svg?branch=master)](https://travis-ci.org/rosette-proj/rosette-core.svg?branch=master)
-
-[![Code Climate](https://codeclimate.com/github/rosette-proj/rosette-core/badges/gpa.svg)](https://codeclimate.com/github/rosette-proj/rosette-core)
-
-[![Test Coverage](https://codeclimate.com/github/rosette-proj/rosette-core/badges/coverage.svg)](https://codeclimate.com/github/rosette-proj/rosette-core/coverage)
+[![Build Status](https://travis-ci.org/rosette-proj/rosette-core.svg?branch=master)](https://travis-ci.org/rosette-proj/rosette-core.svg?branch=master) [![Code Climate](https://codeclimate.com/github/rosette-proj/rosette-core/badges/gpa.svg)](https://codeclimate.com/github/rosette-proj/rosette-core) [![Test Coverage](https://codeclimate.com/github/rosette-proj/rosette-core/badges/coverage.svg)](https://codeclimate.com/github/rosette-proj/rosette-core/coverage)
 
 ## Installation
 
