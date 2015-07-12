@@ -1,5 +1,8 @@
 # encoding: UTF-8
 
+require "codeclimate-test-reporter"
+CodeClimate::TestReporter.start
+
 # SimpleCov code adapted from:
 # http://www.dixis.com/?p=713
 require 'simplecov'
