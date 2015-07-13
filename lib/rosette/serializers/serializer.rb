@@ -22,17 +22,19 @@ module Rosette
         #
         # @param [#write, #flush] stream The stream object to write serialized
         #   phrases and translations to.
+        # @param [Locale] locale The associated locale.
         # @return [Serializer]
-        def from_stream(stream)
-          new(stream)
+        def from_stream(stream, locale)
+          new(stream, locale)
         end
 
         # Creates a new serializer around the given file. Opens the file and
         # instantiates a new serializer with the handle.
         #
         # @param [String] file The file.
-        def open(file)
-          new(File.open(file))
+        # @param [Locale] locale The associated locale.
+        def open(file, locale)
+          new(File.open(file), locale)
         end
 
         # Returns the default file extension for the file type this serializer
