@@ -174,19 +174,20 @@ module Rosette
           diff = repo.diff(diff_point_commit_id, head_commit_id, [], diff_finder)
           head = repo.get_rev_commit(head_commit_id, rev_walker)
 
-          head_snapshot = {}
           head_paths = []
 
           diff.each_pair do |_, diff_entries|
             diff_entries.each do |diff_entry|
               path = diff_entry.getNewPath
+              path = (path == '/dev/null' ? diff_entry.getOldPath : path)
+
               if repo_config.extractor_configs.any? { |ext| ext.matches?(path) }
-                head_snapshot[path] = head_commit_id
-                head_paths << (path == '/dev/null' ? diff_entry.getOldPath : path)
+                head_paths << path
               end
             end
           end
 
+          head_snapshot = take_snapshot(repo_config, head_commit_id, head_paths)
           head_phrases = datastore.phrases_by_commits(repo_name, head_snapshot).to_a
           diff_point_snapshot = take_snapshot(repo_config, diff_point_commit_id, head_paths)
           ensure_commits_have_been_processed(diff_point_snapshot.values)

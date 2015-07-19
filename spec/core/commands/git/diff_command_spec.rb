@@ -12,7 +12,7 @@ describe DiffCommand do
       config.use_datastore('in-memory')
       repo_config.add_extractor('test/test') do |extractor_config|
         extractor_config.set_conditions do |conditions|
-          conditions.match_regex(//)
+          conditions.match_file_extension('.txt')
         end
       end
     end
@@ -181,6 +181,36 @@ describe DiffCommand do
             expect(removed_phrases.first.phrase.key).to eq(@key)
           end
 
+        end
+
+        context "when the given head doesn't contain phrase changes" do
+          let(:file_path) { fixture.working_dir.join('folder/new_file.txt') }
+
+          before do
+            File.open(file_path, 'w+') do |f|
+              f.write('foobarbazboo')
+            end
+
+            fixture.repo.add_all
+            fixture.repo.commit('Added a string')
+            commit(fixture.config, repo_name, head_ref)
+
+            # the .foo file extension isn't processed by the text/text extractor
+            fixture.repo.create_file('test.foo') do |writer|
+              writer.write('foobarbaz')
+            end
+
+            fixture.repo.add_all
+            fixture.repo.commit('Commit message')
+            commit(fixture.config, repo_name, head_ref)
+            diff_command.set_head_ref(head_ref)
+          end
+
+          it 'should show the correct added phrases' do
+            diff = diff_command.execute
+            expect(diff[:added].size).to eq(1)
+            expect(diff[:added].first.phrase.key).to eq('foobarbazboo')
+          end
         end
       end
     end
