@@ -94,8 +94,6 @@ module Rosette
 
           if refs.include?('refs/remotes/origin/master')
             'refs/remotes/origin/master'
-          elsif refs.include?('refs/heads/master')
-            'refs/heads/master'
           else
             filter_refs(refs).first
           end
