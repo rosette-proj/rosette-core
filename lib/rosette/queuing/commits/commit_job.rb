@@ -74,7 +74,8 @@ module Rosette
             commit_log
           else
             rosette_config.datastore.add_or_update_commit_log(
-              repo_name, commit_id, nil, Rosette::DataStores::PhraseStatus::NOT_SEEN
+              repo_name, commit_id, nil, Rosette::DataStores::PhraseStatus::NOT_SEEN,
+              nil, get_branch_name(rosette_config)
             )
 
             lookup_commit_log(rosette_config)
@@ -85,6 +86,30 @@ module Rosette
           rosette_config.datastore.lookup_commit_log(
             repo_name, commit_id
           )
+        end
+
+        def get_branch_name(rosette_config)
+          repo = rosette_config.get_repo(repo_name).repo
+          refs = repo.refs_containing(commit_id).map(&:getName)
+
+          if refs.include?('refs/remotes/origin/master')
+            'refs/remotes/origin/master'
+          elsif refs.include?('refs/heads/master')
+            'refs/heads/master'
+          else
+            filter_refs(refs).first
+          end
+        end
+
+        def filter_refs(refs)
+          refs.each_with_object([]) do |ref, ret|
+            ret << ref if valid_ref?(ref)
+          end
+        end
+
+        def valid_ref?(ref_text)
+          ref = Rosette::Core::Ref.parse(ref_text)
+          ref && ref.remote? && ref.name != 'master' && ref.name != 'HEAD'
         end
       end
 

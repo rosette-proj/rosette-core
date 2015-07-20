@@ -9,6 +9,7 @@ include Rosette::DataStores
 describe CommitJob do
   let(:repo_name) { 'single_commit' }
   let(:commit_id) { fixture.repo.git('rev-parse HEAD').strip }
+  let(:status) { PhraseStatus::FETCHED }
 
   let(:fixture) do
     load_repo_fixture(repo_name) do |config, repo_config|
@@ -22,8 +23,13 @@ describe CommitJob do
   let(:logger) { NullLogger.new }
 
   let(:commit_log) do
-    InMemoryDataStore::CommitLog.create(
-      status: PhraseStatus::FETCHED,
+    entry = InMemoryDataStore::CommitLog.entries.find do |entry|
+      entry.commit_id == commit_id
+      entry.repo_name == repo_name
+    end
+
+    entry || InMemoryDataStore::CommitLog.create(
+      status: status,
       repo_name: repo_name,
       commit_id: commit_id,
       phrase_count: 0,
@@ -32,7 +38,7 @@ describe CommitJob do
   end
 
   let(:job) do
-    CommitJob.new(repo_name, commit_id, commit_log.status)
+    CommitJob.new(repo_name, commit_id, status)
   end
 
   before(:each) do

@@ -16,13 +16,16 @@ module Rosette
     #   @return [String] the [PhraseStatus] of this commit.
     # @!attribute [rw] commit_datetime
     #   @return [DateTime] the time this commit was made.
+    # @!attribute [rw] branch_name
+    #   @return [String] the name of the branch that contains this commit.
     class CommitLog
-      def initialize(repo_name, commit_id, phrase_count = nil, status = nil, commit_datetime = nil)
+      def initialize(repo_name, commit_id, phrase_count = nil, status = nil, commit_datetime = nil, branch_name = nil)
         @repo_name = repo_name
         @commit_id = commit_id
         @phrase_count = phrase_count
         @status = status
         @commit_datetime = commit_datetime
+        @branch_name = branch_name
       end
     end
 
