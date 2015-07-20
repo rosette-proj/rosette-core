@@ -9,6 +9,7 @@ include Rosette::DataStores
 describe CommitJob do
   let(:repo_name) { 'single_commit' }
   let(:commit_id) { fixture.repo.git('rev-parse HEAD').strip }
+  let(:status) { PhraseStatus::FETCHED }
 
   let(:fixture) do
     load_repo_fixture(repo_name) do |config, repo_config|
@@ -22,8 +23,13 @@ describe CommitJob do
   let(:logger) { NullLogger.new }
 
   let(:commit_log) do
-    InMemoryDataStore::CommitLog.create(
-      status: PhraseStatus::FETCHED,
+    entry = InMemoryDataStore::CommitLog.entries.find do |entry|
+      entry.commit_id == commit_id
+      entry.repo_name == repo_name
+    end
+
+    entry || InMemoryDataStore::CommitLog.create(
+      status: status,
       repo_name: repo_name,
       commit_id: commit_id,
       phrase_count: 0,
@@ -32,7 +38,7 @@ describe CommitJob do
   end
 
   let(:job) do
-    CommitJob.new(repo_name, commit_id, commit_log.status)
+    CommitJob.new(repo_name, commit_id, status)
   end
 
   before(:each) do
@@ -76,6 +82,44 @@ describe CommitJob do
 
       entry = InMemoryDataStore::CommitLog.entries.first
       expect(entry.status).to eq('fake_stage_updated_me')
+    end
+
+    it 'uses the master branch if the commit exists in master' do
+      InMemoryDataStore::CommitLog.entries.clear
+
+      remote_repo = TmpRepo.new
+
+      # git doesn't allow you to push to the currently checked out branch, so
+      # create a new branch to avoid an error
+      remote_repo.git('checkout -b new_branch')
+      fixture.repo.git("remote add origin #{remote_repo.working_dir}")
+      fixture.repo.git('push origin HEAD')
+
+      job.work(rosette_config, logger)
+      entry = InMemoryDataStore::CommitLog.entries.first
+      expect(entry.branch_name).to eq('refs/remotes/origin/master')
+    end
+
+    it 'uses the first remote ref as the branch when creating a new commit log' do
+      InMemoryDataStore::CommitLog.entries.clear
+
+      fixture.repo.git('checkout -b my_branch')
+      fixture.repo.create_file('test.txt') do |writer|
+        writer.write('test test test')
+      end
+
+      fixture.repo.add_all
+      fixture.repo.commit('Commit message')
+
+      remote_repo = TmpRepo.new
+      fixture.repo.git("remote add origin #{remote_repo.working_dir}")
+      fixture.repo.git('push origin HEAD')
+
+      job.work(rosette_config, logger)
+      entry = InMemoryDataStore::CommitLog.entries.first
+      expect(entry.branch_name).to eq('refs/remotes/origin/my_branch')
+
+      remote_repo.unlink
     end
   end
 end

@@ -81,7 +81,7 @@ module Rosette
           rosette_config.datastore.add_or_update_commit_log(
             commit_log.repo_name, commit_log.commit_id,
             commit_log.commit_datetime, commit_log.status,
-            commit_log.phrase_count
+            commit_log.phrase_count, commit_log.branch_name
           )
         end
       end

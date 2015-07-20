@@ -58,6 +58,7 @@ module Rosette
 
     autoload :StringUtils,                   'rosette/core/string_utils'
 
+    autoload :Ref,                           'rosette/core/git/ref'
     autoload :Repo,                          'rosette/core/git/repo'
     autoload :DiffFinder,                    'rosette/core/git/diff_finder'
 

@@ -25,7 +25,8 @@ describe FetchStage do
       repo_name: repo_name,
       commit_id: commit_id,
       phrase_count: 0,
-      commit_datetime: nil
+      commit_datetime: nil,
+      branch_name: 'refs/heads/master'
     )
   end
 
