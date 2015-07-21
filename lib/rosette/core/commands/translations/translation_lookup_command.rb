@@ -32,6 +32,7 @@ module Rosette
         attr_reader :key, :meta_key
 
         include WithRepoName
+        include WithRef
         include WithLocale
 
         def set_key(key)

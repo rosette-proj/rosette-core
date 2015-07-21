@@ -11,6 +11,7 @@ describe TranslationLookupCommand do
 
   let(:fixture) do
     load_repo_fixture(repo_name) do |config, repo_config|
+      config.use_datastore('in-memory')
       repo_config.use_tms('test')
       repo_config.add_locale('de-DE')
     end
@@ -24,22 +25,34 @@ describe TranslationLookupCommand do
     TranslationLookupCommand.new(rosette_config)
       .set_repo_name(repo_name)
       .set_locale('de-DE')
+      .set_commit_id(commit_id)
   end
 
   describe '#execute' do
-    let!(:phrase1) { Phrase.new("sweet phrase", 'sweet.phrase') }
-    let!(:phrase2) { Phrase.new("perfect phrase", 'perfect.phrase') }
+    let!(:phrase1) do
+      InMemoryDataStore::Phrase.create(
+        key: 'sweet phrase', meta_key: 'sweet.phrase',
+        repo_name: repo_name, commit_id: commit_id
+      )
+    end
+
+    let!(:phrase2) do
+      InMemoryDataStore::Phrase.create(
+        key: 'perfect phrase', meta_key: 'perfect.phrase',
+        repo_name: repo_name, commit_id: commit_id
+      )
+    end
 
     it 'looks up the translation string' do
       repo_config.tms.store_phrases([phrase1, phrase2], commit_id)
       repo_config.tms.auto_translate(locale, phrase1)
       repo_config.tms.auto_translate(locale, phrase2)
 
-      trans = repo_config.tms.lookup_translation(locale, phrase1)
-      expect(trans).to eq('eetsway asephray')
+      command.set_meta_key(phrase1.meta_key)
+      expect(command.execute).to eq('eetsway asephray')
 
-      trans = repo_config.tms.lookup_translation(locale, phrase2)
-      expect(trans).to eq('erfectpay asephray')
+      command.set_meta_key(phrase2.meta_key)
+      expect(command.execute).to eq('erfectpay asephray')
     end
   end
 end
