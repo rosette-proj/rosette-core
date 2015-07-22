@@ -51,7 +51,10 @@ describe DiffCommand do
     before(:each) do
       diff_command.set_diff_point_ref(head_ref)
       diff_command.set_repo_name(repo_name)
-      commit(fixture.config, repo_name, head_ref)
+
+      fixture.repo.each_commit_id do |commit_id|
+        commit(fixture.config, repo_name, commit_id)
+      end
     end
 
     describe '#execute' do
@@ -93,6 +96,33 @@ describe DiffCommand do
           expect(removed_phrases.map { |diff_entry| diff_entry.phrase.key }).to eq([
             "I'm a little teapot",
             "The green albatross flitters in the moonlight"
+          ])
+        end
+      end
+
+      context "when the parent hasn't been processed yet" do
+        let(:repo_name) { 'four_commits' }
+
+        before do
+          parent_commit_id = fixture.repo.git('rev-parse HEAD~3').strip
+          diff_command.set_head_ref(head_ref)
+          diff_command.set_diff_point_ref(parent_commit_id)
+
+          Rosette::DataStores::InMemoryDataStore::CommitLog.entries.reject! do |entry|
+            entry.commit_id == parent_commit_id
+          end
+        end
+
+        it 'raises an error in strict mode' do
+          expect { diff_command.execute }.to raise_error(
+            Rosette::Core::Commands::Errors::UnprocessedCommitError
+          )
+        end
+
+        it 'uses the most recently processed commit in non-strict mode' do
+          show_hash = diff_command.set_strict(false).execute
+          expect(show_hash[:added].map { |entry| entry.phrase.key}.sort).to eq([
+            'bar', 'baz', 'foo', 'goo'
           ])
         end
       end
