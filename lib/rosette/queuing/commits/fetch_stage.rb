@@ -27,6 +27,13 @@ module Rosette
             .call
 
           commit_log.fetch
+
+          # git won't know about the commit before a fetch, which is why branch
+          # name is set in this stage and not when the commit is first enqueued
+          commit_log.branch_name = Rosette::Core::BranchUtils.derive_branch_name(
+            commit_log.commit_id, repo_config.repo
+          )
+
           save_commit_log
 
           logger.info("Finished fetching git repository #{repo_config.name}")

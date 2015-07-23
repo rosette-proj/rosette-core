@@ -26,7 +26,7 @@ describe FetchStage do
       commit_id: commit_id,
       phrase_count: 0,
       commit_datetime: nil,
-      branch_name: 'refs/heads/master'
+      branch_name: nil
     )
   end
 
@@ -39,27 +39,63 @@ describe FetchStage do
 
   before(:each) do
     stage.instance_variable_set(:'@git', git)
+
+    allow(git).to(
+      receive_message_chain(git_message_chain).and_return(git)
+    )
   end
 
   describe '#execute!' do
     it 'runs a git fetch on the repo' do
-      allow(git).to(
-        receive_message_chain(git_message_chain).and_return(git)
-      )
-
       expect(git).to receive(:call)
       stage.execute!
     end
 
-    it 'updates the commit log status' do
-      allow(git).to(
-        receive_message_chain(git_message_chain).and_return(git)
-      )
+    context 'with a mocked fetch operation' do
+      before(:each) do
+        allow(git).to receive(:call)
+      end
 
-      allow(git).to receive(:call)
+      it 'updates the commit log status' do
+        stage.execute!
+        expect(commit_log.status).to eq(PhraseStatus::FETCHED)
+      end
 
-      stage.execute!
-      expect(commit_log.status).to eq(PhraseStatus::FETCHED)
+      it 'sets branch_name to the master branch if the commit exists in master' do
+        remote_repo = TmpRepo.new
+
+        # git doesn't allow you to push to the currently checked out branch, so
+        # create a new branch to avoid an error
+        remote_repo.git('checkout -b new_branch')
+        fixture.repo.git("remote add origin #{remote_repo.working_dir}")
+        fixture.repo.git('push origin HEAD')
+
+        stage.execute!
+        entry = InMemoryDataStore::CommitLog.entries.first
+        expect(entry.branch_name).to eq('refs/remotes/origin/master')
+
+        remote_repo.unlink
+      end
+
+      it 'sets branch_name to the first remote ref when creating a new commit log' do
+        fixture.repo.git('checkout -b my_branch')
+        fixture.repo.create_file('test.txt') do |writer|
+          writer.write('test test test')
+        end
+
+        fixture.repo.add_all
+        fixture.repo.commit('Commit message')
+
+        remote_repo = TmpRepo.new
+        fixture.repo.git("remote add origin #{remote_repo.working_dir}")
+        fixture.repo.git('push origin HEAD')
+
+        stage.execute!
+        entry = InMemoryDataStore::CommitLog.entries.first
+        expect(entry.branch_name).to eq('refs/remotes/origin/my_branch')
+
+        remote_repo.unlink
+      end
     end
   end
 end

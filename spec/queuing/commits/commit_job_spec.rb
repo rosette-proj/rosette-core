@@ -83,43 +83,5 @@ describe CommitJob do
       entry = InMemoryDataStore::CommitLog.entries.first
       expect(entry.status).to eq('fake_stage_updated_me')
     end
-
-    it 'uses the master branch if the commit exists in master' do
-      InMemoryDataStore::CommitLog.entries.clear
-
-      remote_repo = TmpRepo.new
-
-      # git doesn't allow you to push to the currently checked out branch, so
-      # create a new branch to avoid an error
-      remote_repo.git('checkout -b new_branch')
-      fixture.repo.git("remote add origin #{remote_repo.working_dir}")
-      fixture.repo.git('push origin HEAD')
-
-      job.work(rosette_config, logger)
-      entry = InMemoryDataStore::CommitLog.entries.first
-      expect(entry.branch_name).to eq('refs/remotes/origin/master')
-    end
-
-    it 'uses the first remote ref as the branch when creating a new commit log' do
-      InMemoryDataStore::CommitLog.entries.clear
-
-      fixture.repo.git('checkout -b my_branch')
-      fixture.repo.create_file('test.txt') do |writer|
-        writer.write('test test test')
-      end
-
-      fixture.repo.add_all
-      fixture.repo.commit('Commit message')
-
-      remote_repo = TmpRepo.new
-      fixture.repo.git("remote add origin #{remote_repo.working_dir}")
-      fixture.repo.git('push origin HEAD')
-
-      job.work(rosette_config, logger)
-      entry = InMemoryDataStore::CommitLog.entries.first
-      expect(entry.branch_name).to eq('refs/remotes/origin/my_branch')
-
-      remote_repo.unlink
-    end
   end
 end
