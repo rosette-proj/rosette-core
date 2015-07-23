@@ -117,7 +117,7 @@ module Rosette
       # @param [Hash] options A hash of options passed to the queue's
       #   constructor.
       # @return [void]
-      def use_queue(queue, options = {})
+      def use_queue(queue)
         const = case queue
           when String
             if const = find_queue_const(queue)
@@ -131,7 +131,9 @@ module Rosette
             raise ArgumentError, "'#{queue}' must be a String or Class."
         end
 
-        @queue = const.new(options)
+        configurator = Rosette::Queuing::QueueConfigurator.new
+        yield configurator if block_given?
+        @queue = const.new(configurator)
         nil
       end
 

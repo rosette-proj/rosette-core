@@ -3,11 +3,12 @@
 module Rosette
   module Queuing
 
-    autoload :Queue,   'rosette/queuing/queue'
-    autoload :Job,     'rosette/queuing/job'
-    autoload :Worker,  'rosette/queuing/worker'
+    autoload :QueueConfigurator, 'rosette/queuing/queue_configurator'
+    autoload :Job,               'rosette/queuing/job'
+    autoload :Queue,             'rosette/queuing/queue'
+    autoload :Worker,            'rosette/queuing/worker'
 
-    autoload :Commits, 'rosette/queuing/commits'
+    autoload :Commits,           'rosette/queuing/commits'
 
   end
 end
