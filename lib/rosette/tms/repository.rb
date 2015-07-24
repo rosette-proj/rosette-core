@@ -3,8 +3,6 @@
 module Rosette
   module Tms
     class Repository
-      PhraseStorageGranularity = Rosette::Queuing::Commits::PhraseStorageGranularity
-
       # Creates a new instance of this repository.
       #
       # @param [Object] configurator The implementation-specific configuration
@@ -43,7 +41,7 @@ module Rosette
       # @param [Array<Phrase>] phrases The list of phrases to store.
       # @param [String] commit_id The commit id to associate the phrases with.
       # @return [void]
-      def store_phrases(phrases, commit_id, granularity = PhraseStorageGranularity::COMMIT)
+      def store_phrases(phrases, commit_id)
         raise NotImplementedError,
           'expected to be implemented in derived classes'
       end
@@ -54,7 +52,7 @@ module Rosette
       # @param [Phrase] phrase The phrase to store.
       # @param [String] commit_id The commit id to associate the phrase with.
       # @return [void]
-      def store_phrase(phrase, commit_id, granularity = PhraseStorageGranularity::COMMIT)
+      def store_phrase(phrase, commit_id)
         raise NotImplementedError,
           'expected to be implemented in derived classes'
       end
