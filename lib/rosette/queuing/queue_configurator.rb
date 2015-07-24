@@ -19,6 +19,7 @@ module Rosette
       #
       # @return [QueueConfigurator]
       def initialize
+        @queue_options = {}
         @queue_configs = []
       end
 
