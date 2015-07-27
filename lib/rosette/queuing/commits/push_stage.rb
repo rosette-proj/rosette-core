@@ -43,7 +43,16 @@ module Rosette
         protected
 
         def granularity
-          queue_config.phrase_storage_granularity
+          case queue_config.phrase_storage_granularity
+            when PhraseStorageGranularity::BRANCH
+              if commit_log.branch_name
+                PhraseStorageGranularity::BRANCH
+              else
+                PhraseStorageGranularity::COMMIT
+              end
+            else
+              queue_config.phrase_storage_granularity
+          end
         end
 
         def phrases

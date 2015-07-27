@@ -118,7 +118,7 @@ describe PushStage do
       end
 
       let(:commit_log) do
-        InMemoryDataStore::CommitLog.entries.last
+        InMemoryDataStore::CommitLog.entries.first
       end
 
       let(:stage) do
@@ -129,7 +129,15 @@ describe PushStage do
         it 'pushes all the phrases in the branch' do
           stage.execute!
           phrases = repo_config.tms.stored_phrases[commit_log.commit_id]
-          expect(phrases.map(&:key)).to eq(%w(second first))
+          keys = phrases.map(&:key)
+          expect(keys).to eq(%w(second first))
+        end
+
+        it 'pushes by commit if the branch name is null' do
+          commit_log.branch_name = nil
+          stage.execute!
+          phrases = repo_config.tms.stored_phrases[commit_log.commit_id]
+          expect(phrases.map(&:key)).to eq(%w(second))
         end
       end
     end
