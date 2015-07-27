@@ -27,11 +27,7 @@ module Rosette
 
           if phrases.size > 0
             commit_log.phrase_count = phrases.size
-
-            repo_config.tms.store_phrases(
-              phrases, commit_log.commit_id, granularity
-            )
-
+            repo_config.tms.store_phrases(phrases, commit_log.commit_id)
             commit_log.push
           else
             commit_log.finalize!
