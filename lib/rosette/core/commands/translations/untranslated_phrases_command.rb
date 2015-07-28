@@ -29,7 +29,7 @@ module Rosette
           repo_config.locales.each_with_object(result) do |locale, ret|
             phrases.each do |phrase|
               trans = repo_config.tms.lookup_translation(locale, phrase)
-              result[locale.code] << phrase
+              result[locale.code] << phrase unless trans
             end
           end
         end
