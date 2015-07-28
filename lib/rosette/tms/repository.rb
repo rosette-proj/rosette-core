@@ -3,7 +3,6 @@
 module Rosette
   module Tms
     class Repository
-
       # Creates a new instance of this repository.
       #
       # @param [Object] configurator The implementation-specific configuration

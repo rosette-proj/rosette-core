@@ -22,5 +22,5 @@ group :test do
   gem 'codeclimate-test-reporter', require: nil
   gem 'simplecov'
   gem 'rspec'
-  gem 'rosette-test-helpers', github: 'rosette-proj/rosette-test-helpers'
+  gem 'rosette-test-helpers', github: 'rosette-proj/rosette-test-helpers', branch: 'granularity'
 end

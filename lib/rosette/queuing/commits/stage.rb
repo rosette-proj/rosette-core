@@ -84,6 +84,11 @@ module Rosette
             commit_log.phrase_count, commit_log.branch_name
           )
         end
+
+        def queue_config
+          @queue_config ||=
+            rosette_config.queue.configurator.get_queue_config('commits')
+        end
       end
 
     end
