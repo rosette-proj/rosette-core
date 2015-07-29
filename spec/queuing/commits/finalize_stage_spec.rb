@@ -72,4 +72,17 @@ describe FinalizeStage do
       end
     end
   end
+
+  describe '#to_job' do
+    it 'adds a delay to the job if the status is still PUSHED' do
+      job = stage.to_job
+      expect(job.delay).to be > 0
+    end
+
+    it 'does not add a delay if the job is FINALIZED' do
+      stage.commit_log.status = PhraseStatus::FINALIZED
+      job = stage.to_job
+      expect(job.delay).to eq(0)
+    end
+  end
 end
