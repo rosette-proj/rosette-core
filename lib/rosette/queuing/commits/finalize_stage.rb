@@ -14,7 +14,8 @@ module Rosette
         # The number of seconds to wait in between consecutive pulls. This value
         # will be passed to the queue implementation, as delay is handled at the
         # queue layer.
-        CONSECUTIVE_FINALIZE_DELAY = 10 * 60  # 10 minutes
+        CONSECUTIVE_FINALIZE_DELAY_MIN = 10 * 60  # 10 minutes
+        CONSECUTIVE_FINALIZE_DELAY_MAX = 45 * 60  # 45 minutes
 
         # Executes this stage and updates the commit log. If the commit has been
         # fully translated, the commit log will be updated with a +FINALIZED+
@@ -58,9 +59,15 @@ module Rosette
         def to_job
           super.tap do |job|
             if commit_log.status == PhraseStatus::PUSHED
-              job.set_delay(CONSECUTIVE_FINALIZE_DELAY)
+              job.set_delay(random_delay)
             end
           end
+        end
+
+        protected
+
+        def random_delay
+          rand(CONSECUTIVE_FINALIZE_DELAY_MIN..CONSECUTIVE_FINALIZE_DELAY_MAX)
         end
       end
 
