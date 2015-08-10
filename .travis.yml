@@ -9,3 +9,5 @@ rvm:
 env:
   - GIT_BUNDLE=true JRUBY_OPTS="--2.0"
 script: 'git config --global user.name "Fake User" && git config --global user.email "fake@user.com" && bundle exec expert install && bundle exec rspec'
+notifications:
+  email: false
