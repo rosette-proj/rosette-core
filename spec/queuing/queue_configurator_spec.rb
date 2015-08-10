@@ -9,7 +9,7 @@ describe QueueConfigurator do
 
   describe '#enable_queue' do
     it "raises an error if the queue can't be determined" do
-      expect { configurator.enable_queue('foo') }.to raise_error
+      expect { configurator.enable_queue('foo') }.to raise_error(ArgumentError)
     end
 
     it 'adds the queue config to the list of configured queues' do

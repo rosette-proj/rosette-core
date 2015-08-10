@@ -41,6 +41,9 @@ module Rosette
       #   @return [Array<String>] the list of paths to export translations
       #     for. Any translations that belong to phrases that did not come
       #     from a path in this list will not be included in the export.
+      # @!attribute [r] fall_back_to_source
+      #   @return [Boolean] whether or not to fall back to the source phrase if
+      #     a translation doesn't exist.
       #
       # @example
       #   cmd = ExportCommand.new(configuration)
@@ -64,7 +67,9 @@ module Rosette
       class ExportCommand < GitCommand
         attr_reader :locale, :serializer, :base_64_encode
         attr_reader :encoding, :include_snapshot, :include_checksum
-        attr_reader :paths
+        attr_reader :paths, :fall_back_to_source
+
+        alias_method :fall_back_to_source?, :fall_back_to_source
 
         include WithRepoName
         include WithRef
@@ -82,6 +87,7 @@ module Rosette
           @base_64_encode = false
           @include_snapshot = false
           @include_checksum = false
+          @fall_back_to_source = true
         end
 
         # Sets the serializer used to export translations. Must be recognizable
@@ -141,6 +147,16 @@ module Rosette
         # matching these paths will be included in the export payload.
         def set_paths(paths)
           @paths = Array(paths)
+          self
+        end
+
+        # If set to true, any untranslated phrases will fall back to the source
+        # locale, English for example.
+        #
+        # @param [Boolean] fall_back Whether or not to fall back to source.
+        # @return [self]
+        def set_fall_back_to_source(fall_back)
+          @fall_back_to_source = fall_back
           self
         end
 
@@ -244,8 +260,10 @@ module Rosette
 
         def each_translation(snapshot)
           datastore.phrases_by_commits(repo_name, snapshot) do |phrase|
-            # only yield if a translation exists
-            if text = repo_config.tms.lookup_translation(locale_obj, phrase)
+            text = repo_config.tms.lookup_translation(locale_obj, phrase)
+            text ||= phrase.key if fall_back_to_source?
+
+            if text
               yield Translation.new(phrase, locale, text)
             end
           end

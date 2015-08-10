@@ -6,9 +6,6 @@ module Rosette
 
       # Returns the translation for the given phrase and locale combination.
       #
-      # @!attribute [r] locale
-      #   @return [String] the locale to export translations for.
-      #
       # @example
       #   cmd = TranslationLookupCommand.new(configuration)
       #     .set_repo_name('my_repo')

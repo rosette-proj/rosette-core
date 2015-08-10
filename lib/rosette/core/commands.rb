@@ -8,29 +8,30 @@ module Rosette
     # Namespace for all Rosette commands.
     module Commands
 
-      autoload :Errors,                   'rosette/core/commands/errors'
+      autoload :Errors,                     'rosette/core/commands/errors'
 
-      autoload :CommitCommand,            'rosette/core/commands/git/commit_command'
-      autoload :DiffBaseCommand,          'rosette/core/commands/git/diff_base_command'
-      autoload :DiffCommand,              'rosette/core/commands/git/diff_command'
-      autoload :ShowCommand,              'rosette/core/commands/git/show_command'
-      autoload :StatusCommand,            'rosette/core/commands/git/status_command'
-      autoload :FetchCommand,             'rosette/core/commands/git/fetch_command'
-      autoload :SnapshotCommand,          'rosette/core/commands/git/snapshot_command'
-      autoload :RepoSnapshotCommand,      'rosette/core/commands/git/repo_snapshot_command'
-      autoload :WithRepoName,             'rosette/core/commands/git/with_repo_name'
-      autoload :WithRef,                  'rosette/core/commands/git/with_ref'
-      autoload :WithRefs,                 'rosette/core/commands/git/with_refs'
-      autoload :WithNonMergeRef,          'rosette/core/commands/git/with_non_merge_ref'
-      autoload :WithSnapshots,            'rosette/core/commands/git/with_snapshots'
-      autoload :DiffEntry,                'rosette/core/commands/git/diff_entry'
+      autoload :CommitCommand,              'rosette/core/commands/git/commit_command'
+      autoload :DiffBaseCommand,            'rosette/core/commands/git/diff_base_command'
+      autoload :DiffCommand,                'rosette/core/commands/git/diff_command'
+      autoload :ShowCommand,                'rosette/core/commands/git/show_command'
+      autoload :StatusCommand,              'rosette/core/commands/git/status_command'
+      autoload :FetchCommand,               'rosette/core/commands/git/fetch_command'
+      autoload :SnapshotCommand,            'rosette/core/commands/git/snapshot_command'
+      autoload :RepoSnapshotCommand,        'rosette/core/commands/git/repo_snapshot_command'
+      autoload :WithRepoName,               'rosette/core/commands/git/with_repo_name'
+      autoload :WithRef,                    'rosette/core/commands/git/with_ref'
+      autoload :WithRefs,                   'rosette/core/commands/git/with_refs'
+      autoload :WithNonMergeRef,            'rosette/core/commands/git/with_non_merge_ref'
+      autoload :WithSnapshots,              'rosette/core/commands/git/with_snapshots'
+      autoload :DiffEntry,                  'rosette/core/commands/git/diff_entry'
 
-      autoload :WithLocale,               'rosette/core/commands/translations/with_locale'
-      autoload :ExportCommand,            'rosette/core/commands/translations/export_command'
-      autoload :TranslationLookupCommand, 'rosette/core/commands/translations/translation_lookup_command'
+      autoload :WithLocale,                 'rosette/core/commands/translations/with_locale'
+      autoload :ExportCommand,              'rosette/core/commands/translations/export_command'
+      autoload :TranslationLookupCommand,   'rosette/core/commands/translations/translation_lookup_command'
+      autoload :UntranslatedPhrasesCommand, 'rosette/core/commands/translations/untranslated_phrases_command'
 
-      autoload :EnqueueCommitCommand,     'rosette/core/commands/queuing/enqueue_commit_command'
-      autoload :RequeueCommitCommand,     'rosette/core/commands/queuing/requeue_commit_command'
+      autoload :EnqueueCommitCommand,       'rosette/core/commands/queuing/enqueue_commit_command'
+      autoload :RequeueCommitCommand,       'rosette/core/commands/queuing/requeue_commit_command'
 
       # Base class for all Rosette commands.
       #

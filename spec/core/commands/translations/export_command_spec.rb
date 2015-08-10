@@ -54,6 +54,13 @@ describe ExportCommand do
     end
   end
 
+  it 'falls back to source if no translation is found' do
+    phrase = phrase_model.entries.first
+    repo_config.tms.translations.delete(phrase.index_value)
+    result = command.execute
+    expect(result[:payload]).to include("#{phrase.key} = #{phrase.key}")
+  end
+
   it 'includes basic information about the payload' do
     result = command.execute
     expect(result[:encoding]).to eq('UTF-8')
