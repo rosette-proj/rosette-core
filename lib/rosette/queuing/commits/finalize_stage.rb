@@ -14,8 +14,8 @@ module Rosette
         # The number of seconds to wait in between consecutive pulls. This value
         # will be passed to the queue implementation, as delay is handled at the
         # queue layer.
-        CONSECUTIVE_FINALIZE_DELAY_MIN = 10 * 60  # 10 minutes
-        CONSECUTIVE_FINALIZE_DELAY_MAX = 45 * 60  # 45 minutes
+        CONSECUTIVE_FINALIZE_DELAY_MIN = ENV.fetch('CONSECUTIVE_FINALIZE_DELAY_MIN', 10 * 60) # 10 minutes
+        CONSECUTIVE_FINALIZE_DELAY_MAX = ENV.fetch('CONSECUTIVE_FINALIZE_DELAY_MAX', 45 * 60) # 45 minutes
 
         # Executes this stage and updates the commit log. If the commit has been
         # fully translated, the commit log will be updated with a +FINALIZED+
