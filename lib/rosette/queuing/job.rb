@@ -17,18 +17,18 @@ module Rosette
         # ignored.
         #
         # @return [String] The name of the queue.
-        def queue_name
-          @queue_name || DEFAULT_QUEUE_NAME
+        def queue
+          @queue || DEFAULT_QUEUE_NAME
         end
 
         # Sets the name of the queue this job will be run in. Implementations
         # that don't offer named queues shouldn't need to call this method,
         # although nothing bad will happen if they do.
         #
-        # @param [String] queue_name The name of the queue to run the job in.
+        # @param [String] queue The name of the queue to run the job in.
         # @return [void]
-        def set_queue_name(queue_name)
-          @queue_name = queue_name
+        def set_queue(queue)
+          @queue = queue
         end
       end
 
@@ -67,6 +67,14 @@ module Rosette
       # @return [void]
       def set_delay(delay)
         @delay = delay
+      end
+
+      # Sets the queue for this specific job instance
+      #
+      # @param [String] queue The name of the queue
+      # @return [String] The name of the queue
+      def set_queue(queue)
+        @queue = queue
       end
     end
 
