@@ -60,6 +60,7 @@ module Rosette
           super.tap do |job|
             if commit_log.status == PhraseStatus::PUSHED
               job.set_delay(random_delay)
+              job.set_queue('finalize')
             end
           end
         end

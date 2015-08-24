@@ -16,7 +16,7 @@ module Rosette
       class CommitJob < Job
         attr_reader :repo_name, :commit_id, :status
 
-        set_queue_name 'commits'
+        set_queue 'commits'
 
         # Creates a new [CommitJob] object from a [Stage].
         #
