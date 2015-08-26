@@ -14,7 +14,7 @@ module Rosette
       #   @return [String] the current status of the commit (mostly for display
       #     and tracking purposes).
       class CommitJob < Job
-        attr_reader :repo_name, :commit_id, :status
+        attr_reader :repo_name, :commit_id, :status, :queue
 
         set_queue 'commits'
 
