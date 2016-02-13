@@ -9,3 +9,4 @@ spec/fixtures/repos/bin
 doc/
 coverage/
 classpath.txt
+pkg/
