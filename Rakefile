@@ -1,5 +1,6 @@
 # encoding: UTF-8
 
+$:.push('./lib')
 require 'rubygems' unless ENV['NO_RUBYGEMS']
 
 require 'bundler'
