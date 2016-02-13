@@ -98,7 +98,7 @@ module Rosette
         def find_const(candidates, namespace)
           candidates.each do |segments|
             found_const = segments.inject(namespace) do |const, segment|
-              if const && const.const_defined?(segment)
+              if const && const.constants.include?(segment.to_sym)
                 const.const_get(segment)
               end
             end

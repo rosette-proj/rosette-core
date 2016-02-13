@@ -1,3 +1,8 @@
 == 1.0.0
 
 * Birthday!
+
+== 1.1.0
+
+* Untranslated phrases command
+* Upgrade to jruby 9000

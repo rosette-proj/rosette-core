@@ -2,12 +2,12 @@ source "https://rubygems.org"
 
 gemspec
 
-ruby '2.0.0', engine: 'jruby', engine_version: '1.7.15'
+ruby '2.2.2', engine: 'jruby', engine_version: '9.0.4.0'
 
 gem 'rosette-datastore-memory', github: 'rosette-proj/rosette-datastore-memory'
 
 group :development, :test do
-  gem 'activemodel', '>= 3.2.20'
+  gem 'activemodel', '>= 3.2', '< 5'
   gem 'expert', '~> 1.0'
   gem 'pry-nav'
   gem 'rake'
