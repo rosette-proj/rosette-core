@@ -212,7 +212,7 @@ module Rosette
       # @return [void]
       def add_extractor(extractor_id)
         klass = ExtractorId.resolve(extractor_id)
-        extractor_configs << ExtractorConfig.new(extractor_id, klass).tap do |config|
+        extractor_configs << ExtractorConfig.new(klass).tap do |config|
           yield config if block_given?
         end
       end
