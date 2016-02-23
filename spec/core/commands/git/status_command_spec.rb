@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 
+include Rosette::Core
 include Rosette::Core::Commands
 
 describe StatusCommand do
@@ -55,11 +56,16 @@ describe StatusCommand do
       command.set_repo_name(repo_name)
 
       repo_config.repo.each_commit do |rev_commit|
+        branch_name = BranchUtils.derive_branch_name(
+          rev_commit.getId.name, repo_config.repo
+        )
+
         fixture.config.datastore.add_or_update_commit_log(
           repo_name,
           rev_commit.getId.name,
           nil, status,
-          phrase_count
+          phrase_count,
+          branch_name
         )
 
         locales.each do |locale|

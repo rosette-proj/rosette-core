@@ -52,21 +52,8 @@ module Rosette
         #       for this commit.
         def execute
           repo_config = get_repo(repo_name)
-          rev_walk = RevWalk.new(repo_config.repo.jgit_repo)
-          all_refs = repo_config.repo.all_refs.values
-          refs = repo_config.repo.refs_containing(
-            commit_id, rev_walk, all_refs
-          )
-
-          commit_logs = commit_logs_for(
-            refs.map(&:getName), repo_config, rev_walk, all_refs
-          )
-
-          status, phrase_count, locale_statuses = derive(
-            refs, commit_logs, repo_config
-          )
-
-          rev_walk.dispose
+          branch_name = BranchUtils.derive_branch_name(commit_id, repo_config.repo)
+          status, phrase_count, locale_statuses = derive(branch_name, repo_config)
 
           {
             status: status,
@@ -78,8 +65,9 @@ module Rosette
 
         protected
 
-        def derive(refs, commit_logs, repo_config)
-          status = derive_status(refs, commit_logs)
+        def derive(branch_name, repo_config)
+          commit_logs = commit_logs_for(branch_name, repo_config)
+          status = derive_status(branch_name, commit_logs)
           phrase_count = BranchUtils.derive_phrase_count_from(commit_logs)
           locale_statuses = BranchUtils.derive_locale_statuses_from(
             commit_logs, repo_name, datastore, phrase_count
@@ -93,33 +81,26 @@ module Rosette
           ]
         end
 
-        def derive_status(refs, commit_logs)
-          if all_refs_exist?(refs)
-            BranchUtils.derive_status_from(commit_logs)
-          else
-            Rosette::DataStores::PhraseStatus::NOT_FOUND
-          end
-        end
-
-        def all_refs_exist?(refs)
-          refs.all? do |ref|
-            datastore.commit_log_exists?(repo_name, ref.getObjectId.name)
-          end
-        end
-
-        def commit_logs_for(branch_names, repo_config, rev_walk, all_refs)
-          statuses = Rosette::DataStores::PhraseStatus.incomplete
-          commit_logs = datastore.each_commit_log_with_status(repo_name, statuses)
-
-          commit_logs.each_with_object([]) do |commit_log, ret|
-            refs = repo_config.repo.refs_containing(
-              commit_log.commit_id, rev_walk, all_refs
+        def derive_status(branch_name, commit_logs)
+          if branch_name
+            statuses = [Rosette::DataStores::PhraseStatus::FINALIZED]
+            finalized = datastore.commit_log_with_status_count(
+              repo_name, statuses, branch_name
             )
 
-            if refs.any? { |ref| branch_names.include?(ref.getName) }
-              ret << commit_log
+            if finalized > 0
+              BranchUtils.derive_status_from(commit_logs)
+            else
+              Rosette::DataStores::PhraseStatus::NOT_FOUND
             end
+          else
+            BranchUtils.derive_status_from(commit_logs)
           end
+        end
+
+        def commit_logs_for(branch_name, repo_config)
+          statuses = Rosette::DataStores::PhraseStatus.incomplete
+          datastore.each_commit_log_with_status(repo_name, statuses, branch_name).to_a
         end
       end
 

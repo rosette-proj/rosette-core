@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 gemspec
 
-ruby '2.2.2', engine: 'jruby', engine_version: '9.0.4.0'
+ruby '2.0.0', engine: 'jruby', engine_version: '1.7.15'
 
 gem 'rosette-datastore-memory', github: 'rosette-proj/rosette-datastore-memory'
 

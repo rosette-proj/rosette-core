@@ -109,7 +109,13 @@ module Rosette
           if refs.include?('refs/remotes/origin/master')
             'refs/remotes/origin/master'
           else
-            filter_refs(refs).first
+            if ref = filter_refs(refs).first
+              ref
+            else
+              if refs.include?('refs/heads/master')
+                'refs/remotes/origin/master'
+              end
+            end
           end
         end
 
